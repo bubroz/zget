@@ -1,0 +1,708 @@
+/* zget Retro Terminal Theme
+ * 
+ * Inspired by classic amber/green terminal aesthetics.
+ * CRT vibes with modern Textual components.
+ */
+
+/* ============================================================================
+ * BASE STYLES
+ * ============================================================================ */
+
+Screen {
+    background: #0a0a0a;
+}
+
+Header {
+    background: #1a1a1a;
+    color: #ffb000;
+    text-style: bold;
+    dock: top;
+    height: 3;
+}
+
+Footer {
+    background: #1a1a1a;
+    color: #666666;
+    dock: bottom;
+}
+
+/* ============================================================================
+ * CONTAINERS
+ * ============================================================================ */
+
+#dashboard {
+    padding: 1;
+}
+
+#library {
+    padding: 1;
+}
+
+.container {
+    background: #0a0a0a;
+    border: solid #ffb000;
+    padding: 1;
+}
+
+.panel {
+    background: #1a1a1a;
+    border: solid #666666;
+    margin: 1;
+    padding: 1;
+}
+
+.panel-title {
+    background: #ffb000;
+    color: #0a0a0a;
+    text-style: bold;
+    padding: 0 1;
+    text-align: center;
+}
+
+/* ============================================================================
+ * INPUT WIDGETS
+ * ============================================================================ */
+
+Input {
+    background: #1a1a1a;
+    border: solid #ffb000;
+    color: #ffb000;
+    padding: 0 1;
+}
+
+Input:focus {
+    border: double #ffb000;
+    background: #2a2a2a;
+}
+
+Input.-invalid {
+    border: solid #ff4444;
+}
+
+/* ============================================================================
+ * BUTTONS
+ * ============================================================================ */
+
+Button {
+    background: #1a1a1a;
+    color: #ffb000;
+    border: solid #ffb000;
+    min-width: 10;
+    padding: 0 2;
+}
+
+Button:hover {
+    background: #ffb000;
+    color: #0a0a0a;
+    text-style: bold;
+}
+
+Button:focus {
+    border: double #ffb000;
+}
+
+Button.-primary {
+    background: #ffb000;
+    color: #0a0a0a;
+    text-style: bold;
+}
+
+Button.-success {
+    border: solid #00ff00;
+    color: #00ff00;
+}
+
+Button.-success:hover {
+    background: #00ff00;
+    color: #0a0a0a;
+}
+
+Button.-danger {
+    border: solid #ff4444;
+    color: #ff4444;
+}
+
+Button.-danger:hover {
+    background: #ff4444;
+    color: white;
+}
+
+/* ============================================================================
+ * PROGRESS BARS
+ * ============================================================================ */
+
+ProgressBar {
+    padding: 0 1;
+}
+
+ProgressBar > .bar--bar {
+    color: #ffb000;
+}
+
+ProgressBar > .bar--complete {
+    color: #00ff00;
+}
+
+/* ============================================================================
+ * DATA TABLES
+ * ============================================================================ */
+
+DataTable {
+    background: #0a0a0a;
+}
+
+DataTable > .datatable--header {
+    background: #1a1a1a;
+    color: #ffb000;
+    text-style: bold;
+}
+
+DataTable > .datatable--cursor {
+    background: #1a1a0a;  /* Subtle dark amber tint */
+    color: #ccaa66;       /* Softer amber, not bright */
+}
+
+DataTable > .datatable--hover {
+    background: #1a1a1a;
+}
+
+/* ============================================================================
+ * DOWNLOAD QUEUE STYLES
+ * ============================================================================ */
+
+.queue-item {
+    background: #1a1a1a;
+    border: solid #666666;
+    margin: 0 0 1 0;
+    padding: 1;
+    height: auto;
+}
+
+.queue-item.--pending {
+    border: solid #666666;
+}
+
+.queue-item.--downloading {
+    border: solid #ffb000;
+    background: #2a2a2a;
+}
+
+.queue-item.--complete {
+    border: solid #00ff00;
+}
+
+.queue-item.--failed {
+    border: solid #ff4444;
+}
+
+.queue-item.--cancelled {
+    border: dashed #666666;
+    color: #666666;
+}
+
+.queue-title {
+    color: #ffb000;
+    text-style: bold;
+}
+
+.queue-meta {
+    color: #666666;
+}
+
+.queue-progress {
+    color: #ffb000;
+}
+
+.queue-speed {
+    color: #00ff00;
+}
+
+.queue-error {
+    color: #ff4444;
+}
+
+/* ============================================================================
+ * VIDEO LIST STYLES
+ * ============================================================================ */
+
+.video-row {
+    padding: 0 1;
+    height: 3;
+}
+
+.video-row:hover {
+    background: #1a1a1a;
+}
+
+.video-row:focus {
+    background: #2a2a2a;
+}
+
+.video-title {
+    color: #ffb000;
+    text-style: bold;
+}
+
+.video-uploader {
+    color: #666666;
+}
+
+.video-meta {
+    color: #666666;
+}
+
+.video-duration {
+    color: #ffb000;
+}
+
+/* ============================================================================
+ * PLATFORM BADGES
+ * ============================================================================ */
+
+.badge {
+    padding: 0 1;
+    text-style: bold;
+}
+
+.badge-youtube {
+    color: #ff0000;
+    background: #1a1a1a;
+}
+
+.badge-tiktok {
+    color: #ff0050;
+    background: #1a1a1a;
+}
+
+.badge-instagram {
+    color: #e1306c;
+    background: #1a1a1a;
+}
+
+.badge-twitter {
+    color: #1da1f2;
+    background: #1a1a1a;
+}
+
+.badge-reddit {
+    color: #ff4500;
+    background: #1a1a1a;
+}
+
+.badge-other {
+    color: #666666;
+    background: #1a1a1a;
+}
+
+/* ============================================================================
+ * STATUS INDICATORS
+ * ============================================================================ */
+
+.status-success {
+    color: #00ff00;
+}
+
+.status-error {
+    color: #ff4444;
+}
+
+.status-warning {
+    color: #ffff00;
+}
+
+.status-pending {
+    color: #666666;
+}
+
+.status-active {
+    color: #ffb000;
+}
+
+/* ============================================================================
+ * NOTIFICATIONS
+ * ============================================================================ */
+
+.notification-badge {
+    background: #ff4444;
+    color: white;
+    text-style: bold;
+    padding: 0 1;
+    min-width: 3;
+    text-align: center;
+}
+
+Toast {
+    background: #1a1a1a;
+    border: solid #ffb000;
+    color: #ffb000;
+}
+
+/* ============================================================================
+ * SEARCH BAR
+ * ============================================================================ */
+
+.search-container {
+    height: 3;
+    margin: 0 0 1 0;
+    background: #0a0a0a;
+}
+
+#search-section {
+    height: auto;
+    max-height: 3;
+    margin-bottom: 1;
+    background: #0a0a0a;
+}
+
+#search-section Input {
+    width: 1fr;
+}
+
+.library-info {
+    color: #888888;
+    text-align: right;
+    min-width: 20;
+    padding: 0 1;
+    background: #0a0a0a;
+}
+
+.search-input {
+    width: 100%;
+}
+
+.search-results-count {
+    color: #666666;
+    text-align: right;
+    padding: 0 1;
+}
+
+/* ============================================================================
+ * STATS PANEL
+ * ============================================================================ */
+
+.stats-panel {
+    background: #1a1a1a;
+    border: solid #ffb000;
+    padding: 1;
+}
+
+.stat-value {
+    color: #ffb000;
+    text-style: bold;
+}
+
+.stat-label {
+    color: #666666;
+}
+
+/* ============================================================================
+ * SCROLLBARS - Global override for all scrollbars
+ * ============================================================================ */
+
+Scrollbar {
+    background: #0a0a0a;
+    color: #333333;
+    scrollbar-background: #0a0a0a;
+    scrollbar-color: #333333;
+}
+
+ScrollbarSlider {
+    color: #666666;
+    background: #666666;
+}
+
+ScrollbarSlider:hover {
+    color: #ffb000;
+    background: #ffb000;
+}
+
+/* DataTable specific scrollbar */
+DataTable Scrollbar {
+    background: #0a0a0a;
+    color: #333333;
+}
+
+DataTable ScrollbarSlider {
+    color: #666666;
+}
+
+/* ScrollableContainer scrollbar */
+ScrollableContainer Scrollbar {
+    background: #0a0a0a;
+    color: #333333;
+}
+
+ScrollableContainer ScrollbarSlider {
+    color: #666666;
+}
+
+/* Vertical scrollbar specific */
+Scrollbar.-vertical {
+    background: #0a0a0a;
+    color: #333333;
+    width: 1;
+}
+
+/* Horizontal scrollbar specific */
+Scrollbar.-horizontal {
+    background: #0a0a0a;
+    color: #333333;
+}
+
+/* ============================================================================
+ * LABELS AND TEXT
+ * ============================================================================ */
+
+Label {
+    color: #ffb000;
+}
+
+.label-muted {
+    color: #666666;
+}
+
+.label-error {
+    color: #ff4444;
+}
+
+.label-success {
+    color: #00ff00;
+}
+
+/* ============================================================================
+ * LOADING INDICATOR
+ * ============================================================================ */
+
+LoadingIndicator {
+    color: #ffb000;
+}
+
+/* ============================================================================
+ * RULE (DIVIDER)
+ * ============================================================================ */
+
+Rule {
+    color: #666666;
+    margin: 1 0;
+}
+
+/* ============================================================================
+ * INPUT SECTION
+ * ============================================================================ */
+
+#input-section {
+    height: auto;
+    max-height: 12;
+}
+
+#input-buttons {
+    height: 3;
+    margin-top: 1;
+}
+
+#input-buttons Button {
+    margin-right: 1;
+}
+
+#stats-row {
+    height: 3;
+    padding: 0 1;
+}
+
+#stats-label {
+    width: 100%;
+}
+
+#queue-section {
+    height: 1fr;
+}
+
+#queue-container {
+    height: 100%;
+}
+
+#queue-empty {
+    color: #666666;
+    text-align: center;
+    padding: 2;
+}
+
+/* ============================================================================
+ * LIBRARY SECTION
+ * ============================================================================ */
+
+#search-section {
+    height: 3;
+    background: #0a0a0a;
+}
+
+#search-input {
+    width: 1fr;
+}
+
+.library-info {
+    width: auto;
+    min-width: 20;
+    text-align: left;
+    color: #888888;
+    padding: 0 1;
+}
+
+#results-count {
+    width: auto;
+    min-width: 15;
+}
+
+#library-stats {
+    height: 3;
+    margin: 1 0;
+}
+
+#table-section {
+    height: 1fr;
+}
+
+#video-table {
+    height: 100%;
+    scrollbar-background: #0a0a0a;
+    scrollbar-color: #333333;
+}
+
+/* Force scrollbar colors on all scrollable elements */
+* > Scrollbar {
+    background: #0a0a0a;
+    color: #333333;
+}
+
+* > ScrollbarSlider {
+    background: #444444;
+    color: #444444;
+}
+
+/* ============================================================================
+ * UNIFIED SCREEN LAYOUT
+ * ============================================================================ */
+
+#unified {
+    padding: 1;
+}
+
+#top-section {
+    height: auto;
+    margin-bottom: 1;
+    padding: 0;
+}
+
+#logo-placeholder {
+    width: 20;
+    height: 3;
+    content-align: center middle;
+    background: #1a1a0a;
+    border-right: solid #333333;
+    margin-right: 1;
+}
+
+#top-right {
+    height: auto;
+    width: 1fr;
+}
+
+#top-right Input {
+    width: 100%;
+    margin: 0;
+    border: solid #333333;
+    background: #111111;
+    color: #ffb000;
+    padding: 0 1;
+}
+
+#top-right Input:focus {
+    border: solid #ffb000;
+    background: #1a1a1a;
+    text-style: bold;
+}
+
+#top-right #stats-label {
+    width: 100%;
+    color: #666666;
+    background: #0a0a0a;
+    padding-left: 1;
+    margin-bottom: 0;
+}
+
+/* ============================================================================
+ * REGISTRY SCREEN
+ * ============================================================================ */
+
+#registry-container {
+    padding: 1;
+}
+
+#registry-header {
+    height: 3;
+    margin-bottom: 1;
+    background: #1a1a1a;
+}
+
+#registry-title {
+    width: 20;
+    color: #ffb000;
+    text-style: bold;
+    padding: 1 1;
+}
+
+#registry-search {
+    width: 1fr;
+    max-width: 40;
+    border: none;
+    background: #0a0a0a;
+}
+
+#registry-stats {
+    width: auto;
+    padding: 1 1;
+    color: #888888;
+}
+
+#registry-table {
+    height: 1fr;
+}
+
+#downloads-section {
+    height: auto;
+    max-height: 12;
+    margin-bottom: 1;
+}
+
+#downloads-section CollapsibleTitle {
+    background: #1a1a1a;
+    color: #ffb000;
+}
+
+#downloads-section DataTable {
+    height: auto;
+    max-height: 8;
+}
+
+#library-header {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#library-header #library-info {
+    width: auto;
+    min-width: 20;
+    color: #ffb000;
+}
+
+#library-header #search-input {
+    width: 1fr;
+    max-width: 40;
+    margin-left: 2;
+}
+
+#library-table {
+    height: 1fr;
+    scrollbar-background: #0a0a0a;
+    scrollbar-color: #333333;
+}
