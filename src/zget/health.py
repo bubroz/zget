@@ -44,7 +44,7 @@ TOP_SITES = [
 class SiteHealth:
     """Manages the status and health of supported download sites."""
 
-    def __init__(self, store: VideoStore):
+    def __init__(self, store: VideoStore = None):
         self.store = store
         self._matrix: Dict[str, bool] = {}
         self._metadata: Dict[str, Dict] = {}
@@ -63,13 +63,16 @@ class SiteHealth:
 
     def _check_sync_needed(self) -> bool:
         """Check if we need to sync based on last_sync metadata."""
+        if not self.store:
+            return True
+
         last_sync_str = self.store.get_metadata("last_registry_sync")
         if not last_sync_str:
             return True
 
         try:
-            last_sync = datetime.fromisoformat(last_sync_str)
-            return datetime.now() - last_sync > timedelta(days=7)
+            last_sync = datetime.fromisoformat(last_sync_str.replace("Z", ""))
+            return datetime.utcnow() - last_sync > timedelta(days=7)
         except (ValueError, TypeError):
             return True
 
@@ -81,11 +84,13 @@ class SiteHealth:
                 resp = await client.get(SUPPORTED_SITES_URL, timeout=10.0)
                 if resp.status_code == 200:
                     self._matrix = self._parse_markdown(resp.text)
-                    self.store.set_metadata("cached_site_matrix", json.dumps(self._matrix))
+                    if self.store:
+                        self.store.set_metadata("cached_site_matrix", json.dumps(self._matrix))
             except Exception:
-                cached_str = self.store.get_metadata("cached_site_matrix")
-                if cached_str:
-                    self._matrix = json.loads(cached_str)
+                if self.store:
+                    cached_str = self.store.get_metadata("cached_site_matrix")
+                    if cached_str:
+                        self._matrix = json.loads(cached_str)
 
             # 2. Load enriched metadata from local file first
             local_path = self._project_root / "data/enriched_registry.json"
@@ -94,7 +99,10 @@ class SiteHealth:
                 try:
                     with open(local_path, "r") as f:
                         self._metadata = json.load(f)
-                    self.store.set_metadata("cached_registry_metadata", json.dumps(self._metadata))
+                    if self.store:
+                        self.store.set_metadata(
+                            "cached_registry_metadata", json.dumps(self._metadata)
+                        )
                 except Exception:
                     pass
 
@@ -104,19 +112,22 @@ class SiteHealth:
                     resp = await client.get(METADATA_MANIFEST_URL, timeout=10.0)
                     if resp.status_code == 200:
                         self._metadata = resp.json()
-                        self.store.set_metadata(
-                            "cached_registry_metadata", json.dumps(self._metadata)
-                        )
+                        if self.store:
+                            self.store.set_metadata(
+                                "cached_registry_metadata", json.dumps(self._metadata)
+                            )
                 except Exception:
-                    cached_str = self.store.get_metadata("cached_registry_metadata")
-                    if cached_str:
-                        self._metadata = json.loads(cached_str)
+                    if self.store:
+                        cached_str = self.store.get_metadata("cached_registry_metadata")
+                        if cached_str:
+                            self._metadata = json.loads(cached_str)
 
         # 3. Load Health Log
         self._health_log = load_health_log(self._health_log_path)
 
         # Update sync timestamp
-        self.store.set_metadata("last_registry_sync", datetime.now().isoformat())
+        if self.store:
+            self.store.set_metadata("last_registry_sync", datetime.utcnow().isoformat() + "Z")
 
     def _parse_markdown(self, content: str) -> Dict[str, bool]:
         """Parses the yt-dlp Markdown file."""
@@ -163,23 +174,19 @@ class SiteHealth:
         self,
         site_id: str,
         force: bool = False,
+        proxy: Optional[str] = None,
+        tested_from: str = "local",
     ) -> HealthResult:
         """
         Verify a single site's health on-demand.
-
-        Args:
-            site_id: The site identifier
-            force: If True, verify even if recently checked
-
-        Returns:
-            HealthResult with status
         """
         # Check if we have a recent result (within 1 hour)
         existing = self._health_log.get(site_id.lower())
         if existing and not force:
             try:
-                verified_at = datetime.fromisoformat(existing.get("verified_at", ""))
-                if datetime.now() - verified_at < timedelta(hours=1):
+                verified_at_str = existing.get("verified_at", "")
+                verified_at = datetime.fromisoformat(verified_at_str.replace("Z", ""))
+                if datetime.utcnow() - verified_at < timedelta(hours=1):
                     return HealthResult(
                         site=site_id,
                         status=HealthStatus(existing["status"]),
@@ -187,6 +194,7 @@ class SiteHealth:
                         error=existing.get("error"),
                         verified_at=existing["verified_at"],
                         test_url=existing.get("test_url"),
+                        tested_from=existing.get("tested_from", "local"),
                     )
             except (ValueError, KeyError):
                 pass
@@ -195,7 +203,7 @@ class SiteHealth:
         site_meta = self._metadata.get(site_id.lower(), {})
         test_url = site_meta.get("test_url", "")
 
-        result = await verify_site(site_id, test_url)
+        result = await verify_site(site_id, test_url, proxy=proxy, tested_from=tested_from)
 
         # Update health log
         self._health_log[site_id.lower()] = result.to_dict()
@@ -207,20 +215,16 @@ class SiteHealth:
         self,
         sites: Optional[List[str]] = None,
         concurrency: int = 5,
+        proxy: Optional[str] = None,
+        tested_from: str = "local",
         on_result: Optional[Callable[[HealthResult], None]] = None,
     ) -> List[HealthResult]:
         """
         Run smokescreen verification on multiple sites.
-
-        Args:
-            sites: List of site IDs to verify. If None, verifies TOP_SITES.
-            concurrency: Max concurrent verifications
-            on_result: Callback for each result
-
-        Returns:
-            List of HealthResult objects
         """
         if sites is None:
+            # If nothing specified, try to find sites needing verification
+            # For now, just TOP_SITES or all if specifically requested
             sites = TOP_SITES
 
         # Build site info list with test URLs
@@ -233,6 +237,8 @@ class SiteHealth:
         results = await verify_sites_batch(
             site_infos,
             concurrency=concurrency,
+            proxy=proxy,
+            tested_from=tested_from,
             on_result=on_result,
         )
 

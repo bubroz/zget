@@ -3,6 +3,7 @@ Smokescreen Health Verification Engine
 
 Active health verification for yt-dlp extractors using --simulate mode.
 Tests sites with their test URLs to determine actual health status.
+Supports proxies and multi-region testing.
 """
 
 import asyncio
@@ -37,6 +38,7 @@ class HealthResult:
     error: Optional[str]
     verified_at: str
     test_url: Optional[str] = None
+    tested_from: str = "local"  # e.g., 'local', 'us', 'nl', 'se'
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
@@ -47,6 +49,7 @@ class HealthResult:
             "error": self.error,
             "verified_at": self.verified_at,
             "test_url": self.test_url,
+            "tested_from": self.tested_from,
         }
 
 
@@ -67,6 +70,8 @@ async def verify_site(
     site_id: str,
     test_url: str,
     timeout: int = 15,
+    proxy: Optional[str] = None,
+    tested_from: str = "local",
 ) -> HealthResult:
     """
     Verify a site's health by running yt-dlp --simulate on its test URL.
@@ -75,6 +80,8 @@ async def verify_site(
         site_id: The site identifier (e.g., 'youtube', 'tiktok')
         test_url: The test URL to verify
         timeout: Maximum time to wait (seconds)
+        proxy: Optional proxy string (e.g., 'socks5://user:pass@host:port')
+        tested_from: Identifier for test location
 
     Returns:
         HealthResult with status, latency, and any error message
@@ -85,21 +92,30 @@ async def verify_site(
             status=HealthStatus.NO_TEST_URL,
             latency_ms=0,
             error="No test URL available",
-            verified_at=datetime.now().isoformat(),
+            verified_at=datetime.utcnow().isoformat() + "Z",
+            tested_from=tested_from,
         )
 
     start_time = time.time()
 
+    cmd = [
+        "yt-dlp",
+        "--simulate",
+        "--no-warnings",
+        "--no-playlist",
+        "--socket-timeout",
+        "10",
+    ]
+
+    if proxy:
+        cmd.extend(["--proxy", proxy])
+
+    cmd.append(test_url)
+
     try:
         # Run yt-dlp in simulate mode (no download)
         proc = await asyncio.create_subprocess_exec(
-            "yt-dlp",
-            "--simulate",
-            "--no-warnings",
-            "--no-playlist",
-            "--socket-timeout",
-            "10",
-            test_url,
+            *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
@@ -107,7 +123,10 @@ async def verify_site(
         try:
             stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
         except asyncio.TimeoutError:
-            proc.kill()
+            try:
+                proc.kill()
+            except ProcessLookupError:
+                pass
             await proc.wait()
             latency_ms = int((time.time() - start_time) * 1000)
             return HealthResult(
@@ -115,8 +134,9 @@ async def verify_site(
                 status=HealthStatus.TIMEOUT,
                 latency_ms=latency_ms,
                 error=f"Timeout after {timeout}s",
-                verified_at=datetime.now().isoformat(),
+                verified_at=datetime.utcnow().isoformat() + "Z",
                 test_url=test_url,
+                tested_from=tested_from,
             )
 
         latency_ms = int((time.time() - start_time) * 1000)
@@ -127,8 +147,9 @@ async def verify_site(
                 status=HealthStatus.OK,
                 latency_ms=latency_ms,
                 error=None,
-                verified_at=datetime.now().isoformat(),
+                verified_at=datetime.utcnow().isoformat() + "Z",
                 test_url=test_url,
+                tested_from=tested_from,
             )
 
         # Check for geo-blocking
@@ -143,8 +164,9 @@ async def verify_site(
                     status=HealthStatus.GEO_BLOCKED,
                     latency_ms=latency_ms,
                     error=f"Geo-blocked: {pattern}",
-                    verified_at=datetime.now().isoformat(),
+                    verified_at=datetime.utcnow().isoformat() + "Z",
                     test_url=test_url,
+                    tested_from=tested_from,
                 )
 
         # Generic broken
@@ -154,8 +176,9 @@ async def verify_site(
             status=HealthStatus.BROKEN,
             latency_ms=latency_ms,
             error=error_msg.strip() or "Unknown error",
-            verified_at=datetime.now().isoformat(),
+            verified_at=datetime.utcnow().isoformat() + "Z",
             test_url=test_url,
+            tested_from=tested_from,
         )
 
     except FileNotFoundError:
@@ -164,8 +187,9 @@ async def verify_site(
             status=HealthStatus.BROKEN,
             latency_ms=0,
             error="yt-dlp not found in PATH",
-            verified_at=datetime.now().isoformat(),
+            verified_at=datetime.utcnow().isoformat() + "Z",
             test_url=test_url,
+            tested_from=tested_from,
         )
     except Exception as e:
         latency_ms = int((time.time() - start_time) * 1000)
@@ -174,14 +198,17 @@ async def verify_site(
             status=HealthStatus.BROKEN,
             latency_ms=latency_ms,
             error=str(e)[:200],
-            verified_at=datetime.now().isoformat(),
+            verified_at=datetime.utcnow().isoformat() + "Z",
             test_url=test_url,
+            tested_from=tested_from,
         )
 
 
 async def verify_sites_batch(
     sites: List[Dict[str, str]],
     concurrency: int = 5,
+    proxy: Optional[str] = None,
+    tested_from: str = "local",
     on_result: Optional[Callable[[HealthResult], None]] = None,
 ) -> List[HealthResult]:
     """
@@ -190,19 +217,22 @@ async def verify_sites_batch(
     Args:
         sites: List of dicts with 'site' and 'test_url' keys
         concurrency: Max concurrent verifications
+        proxy: Optional proxy string
+        tested_from: Location tag
         on_result: Optional callback for each result
 
     Returns:
         List of HealthResult objects
     """
     semaphore = asyncio.Semaphore(concurrency)
-    results = []
 
     async def verify_with_semaphore(site_info: Dict[str, str]) -> HealthResult:
         async with semaphore:
             result = await verify_site(
                 site_id=site_info["site"],
                 test_url=site_info.get("test_url", ""),
+                proxy=proxy,
+                tested_from=tested_from,
             )
             if on_result:
                 on_result(result)
@@ -215,7 +245,7 @@ async def verify_sites_batch(
 
 
 def save_health_log(results: List[HealthResult], path: Path) -> None:
-    """Save health results to JSON file."""
+    """Save health results to JSON file, merging with existing data."""
     # Load existing results
     existing = {}
     if path.exists():
@@ -227,7 +257,13 @@ def save_health_log(results: List[HealthResult], path: Path) -> None:
 
     # Update with new results
     for result in results:
+        # We store as {site_id: { ... }}
+        # If multiple locations test the same site, we might want to store all or latest
+        # For simplicity, we store by site, but could be nested by location
         existing[result.site] = result.to_dict()
+
+    # Ensure directory exists
+    path.parent.mkdir(parents=True, exist_ok=True)
 
     # Save
     with open(path, "w") as f:
@@ -252,20 +288,18 @@ if __name__ == "__main__":
     async def test_sites():
         # Test a few known sites
         test_cases = [
-            {"site": "youtube", "test_url": "https://www.youtube.com/watch?v=BaW_jenozKc"},
-            {"site": "vimeo", "test_url": "https://vimeo.com/76979871"},
+            {"site": "youtube", "test_url": "https://www.youtube.com/watch?v=jNQXAC9IVRw"},
         ]
 
-        print("Testing Smokescreen engine...")
+        print("Testing Smokescreen engine with proxy support...")
         results = await verify_sites_batch(
             test_cases,
-            on_result=lambda r: print(f"  {r.site}: {r.status.value} ({r.latency_ms}ms)"),
+            tested_from="test_runner",
+            on_result=lambda r: print(
+                f"  {r.site}: {r.status.value} ({r.latency_ms}ms) from {r.tested_from}"
+            ),
         )
 
         print(f"\nTotal: {len(results)} sites tested")
-        for status in HealthStatus:
-            count = sum(1 for r in results if r.status == status)
-            if count:
-                print(f"  {status.value}: {count}")
 
     asyncio.run(test_sites())
