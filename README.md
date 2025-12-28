@@ -89,6 +89,16 @@ src/zget/
     └── screens/    # Screen components
 ```
 
+## Acknowledgments
+
+zget is built on the shoulders of giants:
+
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** — The incredible extraction engine that powers all 1,899 site integrations. This project wouldn't exist without the yt-dlp team and community.
+- **[Textual](https://github.com/Textualize/textual)** — The modern TUI framework that enables the "Archivist's Terminal" experience.
+- **[Rich](https://github.com/Textualize/rich)** — Beautiful terminal formatting.
+
+The enriched registry metadata was curated using site data from yt-dlp extractors, enhanced with category, country, and description information.
+
 ## License
 
 MIT
