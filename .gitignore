@@ -6,3 +6,9 @@ __pycache__/
 Downloads/
 .env
 .model_cache/
+
+# Large directories (development only)
+libs/
+scripts/
+
+# Keep data/ tracked for registry

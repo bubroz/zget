@@ -28,7 +28,7 @@ class ZgetApp(App):
 
     def on_mount(self) -> None:
         """Initialize the app on mount."""
-        self.install_screen(RegistryScreen(), name="registry")
+        self.install_screen(RegistryScreen(self.store), name="registry")
         self.push_screen(UnifiedScreen())
 
 
