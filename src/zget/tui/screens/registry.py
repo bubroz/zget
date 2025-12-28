@@ -36,7 +36,7 @@ class RegistryScreen(Screen):
         self.health = SiteHealth(store)
         self._all_sites: list[dict] = []
         self._filtered_sites: list[dict] = []
-        self._sort_cols = ["name", "working", "country", "language"]
+        self._sort_cols = ["name", "working", "country", "category"]
         self._sort_index = 0
 
     def compose(self) -> ComposeResult:
@@ -58,10 +58,10 @@ class RegistryScreen(Screen):
                     yield Static("", id="site-desc")
                     with Vertical(id="details-meta"):
                         yield Label("", id="site-country")
-                        yield Label("", id="site-lang")
                         yield Label("", id="site-category")
                         yield Label("", id="site-confidence")
-                        yield Label("", id="site-working-status")
+                        yield Label("", id="site-health-status")
+                        yield Label("", id="site-health-verified")
 
         yield Footer()
 
@@ -69,11 +69,10 @@ class RegistryScreen(Screen):
         """Initialize the site list."""
         table = self.query_one("#registry-table", DataTable)
         table.add_column("Site Name", width=25)
-        table.add_column("Health", width=8)  # New column
+        table.add_column("Health", width=8)
         table.add_column("Category", width=20)
         table.add_column("Status", width=12)
         table.add_column("Region", width=8)
-        table.add_column("Language", width=15)
         table.zebra_stripes = True
 
         await self._load_data()
@@ -99,22 +98,30 @@ class RegistryScreen(Screen):
         table.clear()
 
         for site_info in self._filtered_sites:
-            # Determine Health Icon
+            # Determine Health Icon from smokescreen verification
             health_data = site_info.get("health")
             if health_data:
-                health_icon = "🟢" if health_data["status"] == "PASS" else "🔴"
+                status_val = health_data.get("status", "unknown")
+                if status_val == "ok":
+                    health_icon = "🟢"
+                elif status_val == "geo_blocked":
+                    health_icon = "🟡"
+                elif status_val in ("broken", "timeout"):
+                    health_icon = "🔴"
+                else:
+                    health_icon = "⚪"
             else:
-                health_icon = "⚪"
+                health_icon = "⚪"  # Never verified
 
-            # Use dimming for broken sites via Markdown or CSS if possible
-            # Here we just use the status text color
+            # Status text from yt-dlp matrix
+            status_text = "Working" if site_info.get("working", True) else "Broken"
+
             table.add_row(
                 site_info["name"],
                 health_icon,
                 site_info.get("category", "Uncategorized"),
-                status,
-                site_info.get("country", "Unknown"),
-                site_info.get("language", "Universal"),
+                status_text,
+                site_info.get("country", "??"),
                 key=site_info["name"],
             )
 
@@ -125,12 +132,16 @@ class RegistryScreen(Screen):
     def _update_stats(self) -> None:
         """Update the stats label."""
         total = len(self._all_sites)
-        working = sum(1 for s in self._all_sites if s["working"])
+        working = sum(1 for s in self._all_sites if s.get("working", True))
         broken = total - working
+
+        # Count verified sites
+        verified = sum(1 for s in self._all_sites if s.get("health"))
 
         stats = self.query_one("#registry-stats", Label)
         stats.update(
-            f"Total: {total} | [green]Working: {working}[/green] | [red]Broken: {broken}[/red]"
+            f"Total: {total} | [green]Working: {working}[/green] | "
+            f"[red]Broken: {broken}[/red] | Verified: {verified}"
         )
 
     def on_input_changed(self, event: Input.Changed) -> None:
@@ -143,7 +154,9 @@ class RegistryScreen(Screen):
                 self._filtered_sites = [
                     s
                     for s in self._all_sites
-                    if query in s["name"].lower() or query in s.get("category", "").lower()
+                    if query in s["name"].lower()
+                    or query in s.get("category", "").lower()
+                    or query in s.get("country", "").lower()
                 ]
             self._populate_table()
 
@@ -157,56 +170,76 @@ class RegistryScreen(Screen):
 
     def _update_details(self, site_info: dict) -> None:
         """Update the side detail panel."""
-        # Use simple string formatting for description, cleaner layout
-        desc = site_info["description"]
+        # Description
+        desc = site_info.get("description", "")
         if not desc or desc == "No description available.":
             desc = "[italic]No detailed description available.[/italic]"
-
         self.query_one("#site-desc", Static).update(desc)
 
+        # Country
         self.query_one("#site-country", Label).update(
             f"[bold]Region:[/bold] {site_info.get('country', 'Unknown')}"
         )
-        self.query_one("#site-lang", Label).update(
-            f"[bold]Language:[/bold] {site_info.get('language', 'Universal')}"
-        )
+
+        # Category
         self.query_one("#site-category", Label).update(
             f"[bold]Category:[/bold] {site_info.get('category', 'Uncategorized')}"
         )
 
+        # Confidence
         confidence = site_info.get("confidence", "low").upper()
         conf_color = (
             "green" if confidence == "HIGH" else "yellow" if confidence == "MEDIUM" else "red"
         )
-
         self.query_one("#site-confidence", Label).update(
             f"[bold]Confidence:[/bold] [{conf_color}]{confidence}[/{conf_color}]"
         )
 
-        status_text = (
-            "[green]● OPERATIONAL[/green]" if site_info["working"] else "[red]● FAILED CHECKS[/red]"
+        # Health Status (from yt-dlp matrix)
+        working = site_info.get("working", True)
+        status_text = "[green]● OPERATIONAL[/green]" if working else "[red]● BROKEN[/red]"
+        self.query_one("#site-health-status", Label).update(
+            f"[bold]yt-dlp Status:[/bold] {status_text}"
         )
-        self.query_one("#site-working-status", Label).update(f"[bold]Status:[/bold] {status_text}")
 
-        # Add Last Verified
+        # Smokescreen Verification
         health_data = site_info.get("health")
-        verified_text = "[italic]Never verified[/italic]"
         if health_data:
-            dt = health_data["timestamp"].split("T")[0]
-            lat = health_data["latency"]
-            color = "green" if health_data["status"] == "PASS" else "red"
-            verified_text = f"[{color}]{health_data['status']} ({lat}s) on {dt}[/{color}]"
+            status_val = health_data.get("status", "unknown")
+            latency = health_data.get("latency_ms", 0)
+            verified_at = health_data.get("verified_at", "")
+
+            # Format the verified time
+            if verified_at:
+                try:
+                    from datetime import datetime
+
+                    dt = datetime.fromisoformat(verified_at)
+                    time_str = dt.strftime("%Y-%m-%d %H:%M")
+                except Exception:
+                    time_str = verified_at[:16]
+            else:
+                time_str = "Unknown"
+
+            # Color based on status
+            status_colors = {
+                "ok": "green",
+                "broken": "red",
+                "timeout": "yellow",
+                "geo_blocked": "yellow",
+            }
+            color = status_colors.get(status_val, "white")
+
+            verified_text = f"[{color}]{status_val.upper()}[/{color}] ({latency}ms) @ {time_str}"
 
             if health_data.get("error"):
-                verified_text += f"\n[red]Error: {health_data['error']}[/red]"
+                error_msg = health_data["error"][:60]
+                verified_text += f"\n[dim]{error_msg}[/dim]"
+        else:
+            verified_text = "[dim]Never verified[/dim]"
 
-        # We might need a new label for this in the compose method,
-        # but for now append to status label or replace a static
-        # Let's assume we can append to the description or add a yield in compose.
-        # Edit: I will add a yield in compose first via a separate edit,
-        # or just append to working status here for simplicity.
-        self.query_one("#site-working-status", Label).update(
-            f"[bold]Status:[/bold] {status_text}\n[bold]Verified:[/bold] {verified_text}"
+        self.query_one("#site-health-verified", Label).update(
+            f"[bold]Smokescreen:[/bold] {verified_text}"
         )
 
     def action_focus_search(self) -> None:
@@ -221,7 +254,9 @@ class RegistryScreen(Screen):
         col = self._sort_cols[self._sort_index]
         self.notify(f"Sorting by {col.capitalize()}...", timeout=1)
 
-        self._all_sites.sort(key=lambda x: x[col], reverse=(col == "working"))
+        # Sort with proper handling of missing keys
+        self._all_sites.sort(key=lambda x: str(x.get(col, "")), reverse=(col == "working"))
+        self._filtered_sites = self._all_sites
         self._populate_table()
 
     def action_go_back(self) -> None:
