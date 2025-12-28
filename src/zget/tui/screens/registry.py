@@ -208,13 +208,15 @@ class RegistryScreen(Screen):
             status_val = health_data.get("status", "unknown")
             latency = health_data.get("latency_ms", 0)
             verified_at = health_data.get("verified_at", "")
+            tested_from = health_data.get("tested_from", "local")
 
             # Format the verified time
             if verified_at:
                 try:
                     from datetime import datetime
 
-                    dt = datetime.fromisoformat(verified_at)
+                    # Handle Z suffix often used in ISO format
+                    dt = datetime.fromisoformat(verified_at.replace("Z", ""))
                     time_str = dt.strftime("%Y-%m-%d %H:%M")
                 except Exception:
                     time_str = verified_at[:16]
@@ -230,17 +232,21 @@ class RegistryScreen(Screen):
             }
             color = status_colors.get(status_val, "white")
 
+            # Map location identifiers to flags
+            loc_names = {"us": "🇺🇸 US", "nl": "🇳🇱 NL", "se": "🇸🇪 SE", "local": "🏠 Local"}
+            loc_display = loc_names.get(tested_from.lower(), tested_from.upper())
+
             verified_text = f"[{color}]{status_val.upper()}[/{color}] ({latency}ms) @ {time_str}"
-
             if health_data.get("error"):
-                error_msg = health_data["error"][:60]
-                verified_text += f"\n[dim]{error_msg}[/dim]"
-        else:
-            verified_text = "[dim]Never verified[/dim]"
+                verified_text += f"\n[dim]{health_data['error'][:60]}[/dim]"
 
-        self.query_one("#site-health-verified", Label).update(
-            f"[bold]Smokescreen:[/bold] {verified_text}"
-        )
+            self.query_one("#site-health-verified", Label).update(
+                f"[bold]Smokescreen:[/bold] {verified_text}\n[bold]Tested From:[/bold] {loc_display}"
+            )
+        else:
+            self.query_one("#site-health-verified", Label).update(
+                f"[bold]Smokescreen:[/bold] [dim]Never verified[/dim]"
+            )
 
     def action_focus_search(self) -> None:
         self.query_one("#registry-search", Input).focus()

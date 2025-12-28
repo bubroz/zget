@@ -91,9 +91,36 @@ def main():
         help="Show library statistics",
     )
 
+    # Smokescreen Health Verification
+    parser.add_argument(
+        "--health",
+        action="store_true",
+        help="Run smokescreen health verification",
+    )
+    parser.add_argument(
+        "--proxy",
+        help="SOCKS5/HTTP proxy for health checks",
+    )
+    parser.add_argument(
+        "--location",
+        default="local",
+        help="Location identifier for health checks",
+    )
+    parser.add_argument(
+        "--all-sites",
+        action="store_true",
+        help="Verify ALL sites in registry (caution: slow)",
+    )
+
     args = parser.parse_args()
 
     # Handle non-download commands first
+    if args.health:
+        import asyncio
+
+        asyncio.run(handle_health(args))
+        return
+
     if args.search:
         handle_search(args.search)
         return
@@ -114,6 +141,47 @@ def main():
 
     # Direct download mode
     handle_download(args)
+
+
+async def handle_health(args):
+    """Handle smokescreen health verification from CLI."""
+    from zget.health import SiteHealth
+    from rich.live import Live
+    from rich.table import Table
+
+    health = SiteHealth()
+    # Ensure metadata is loaded
+    await health.sync()
+
+    sites = None
+    if args.all_sites:
+        sites = list(health._metadata.keys())
+    elif args.url:
+        # If a URL or site name was passed as positional arg
+        sites = [args.url]
+
+    table = Table(title=f"Smokescreen Health Check: {args.location}")
+    table.add_column("Site")
+    table.add_column("Status")
+    table.add_column("Latency")
+    table.add_column("Details")
+
+    with Live(table, console=console, refresh_per_second=4):
+
+        def on_result(r):
+            status_color = (
+                "green" if r.status == "ok" else "yellow" if r.status == "geo_blocked" else "red"
+            )
+            table.add_row(
+                r.site,
+                f"[{status_color}]{r.status.value.upper()}[/{status_color}]",
+                f"{r.latency_ms}ms",
+                r.error or "-",
+            )
+
+        await health.run_smokescreen(
+            sites=sites, proxy=args.proxy, tested_from=args.location, on_result=on_result
+        )
 
 
 def launch_tui():
