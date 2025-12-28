@@ -1,0 +1,37 @@
+[
+  {
+    "status": "FAIL",
+    "latency": 0.248,
+    "error": "ERROR: [fc2] 201403223kCqB3Ez: Unable to download JSON metadata: [Errno 61] Connection refused (caused by TransportError('[Errno 61] Connection refused'))",
+    "site": "fc2:embed",
+    "timestamp": "2025-12-28T03:12:41.841759"
+  },
+  {
+    "status": "PASS",
+    "latency": 5.552,
+    "error": null,
+    "site": "rainews",
+    "timestamp": "2025-12-28T03:12:47.394312"
+  },
+  {
+    "status": "PASS",
+    "latency": 0.736,
+    "error": null,
+    "site": "bandlab",
+    "timestamp": "2025-12-28T03:12:48.130854"
+  },
+  {
+    "status": "PASS",
+    "latency": 2.358,
+    "error": null,
+    "site": "bigo",
+    "timestamp": "2025-12-28T03:12:50.488896"
+  },
+  {
+    "status": "PASS",
+    "latency": 3.941,
+    "error": null,
+    "site": "nrktv",
+    "timestamp": "2025-12-28T03:12:54.430275"
+  }
+]

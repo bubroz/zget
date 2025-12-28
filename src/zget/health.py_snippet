@@ -1,0 +1,27 @@
+                    if resp.status_code == 200:
+                        self._metadata = resp.json()
+                        self.store.set_metadata("cached_registry_metadata", json.dumps(self._metadata))
+                except Exception:
+                    cached_str = self.store.get_metadata("cached_registry_metadata")
+                    if cached_str:
+                        self._metadata = json.loads(cached_str)
+
+        # 3. Load Health Log
+        # In dev mode, check local file first
+        # Try to find project root relative to this file
+        project_root = Path(__file__).resolve().parent.parent.parent
+        health_path = project_root / "data/health_log.json"
+        
+        if health_path.exists():
+            try:
+                with open(health_path, "r") as f:
+                    logs = json.load(f)
+                    # Convert list to dict by site {site: {status, timestamp, latency}}
+                    # Sort by timestamp desc to get latest
+                    logs.sort(key=lambda x: x["timestamp"])
+                    self._health_log = {item["site"]: item for item in logs}
+            except Exception:
+                pass
+
+        # Update sync timestamp
+        self.store.set_metadata("last_registry_sync", datetime.now().isoformat())

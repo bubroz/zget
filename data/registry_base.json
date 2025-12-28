@@ -1,0 +1,7199 @@
+{
+  "mux": {
+    "name": "mux",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zeenews": {
+    "name": "zeenews",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "lumni": {
+    "name": "lumni",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lovehomeporn": {
+    "name": "lovehomeporn",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "nowness": {
+    "name": "nowness:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "googledrive": {
+    "name": "GoogleDrive:Folder",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "genericembeds": {
+    "name": "generic:quoted-html",
+    "description": "For common cases of quoted/escaped html parts in the webpage",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "streaks": {
+    "name": "streaks",
+    "description": "",
+    "countries": [
+      "JP"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "rcti": {
+    "name": "rcti",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "servus": {
+    "name": "servus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dumpert": {
+    "name": "dumpert",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sbscokr": {
+    "name": "sbs.co.kr:allvod_program",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rtvs": {
+    "name": "stvr",
+    "description": "Slovak Television and Radio (formerly RTVS)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "playwire": {
+    "name": "playwire",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "usanetwork": {
+    "name": "usanetwork",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ninenow": {
+    "name": "9now.com.au",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telegraaf": {
+    "name": "telegraaf",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sen": {
+    "name": "sen",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kika": {
+    "name": "kika",
+    "description": "KiKA.de",
+    "countries": [
+      "DE"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "radiocomercial": {
+    "name": "radiocomercial",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sbs": {
+    "name": "sbs",
+    "description": "sbs.com.au",
+    "countries": [
+      "AU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "usatoday": {
+    "name": "usatoday",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "onet": {
+    "name": "onet.tv:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "blackboardcollaborate": {
+    "name": "blackboardcollaborate",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "detik": {
+    "name": "detik",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "toggle": {
+    "name": "mewatch",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kakao": {
+    "name": "kakao",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "melonvod": {
+    "name": "melonvod",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cinemax": {
+    "name": "cinemax",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "unitednations": {
+    "name": "unitednations",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pornbox": {
+    "name": "pornbox",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "photobucket": {
+    "name": "photobucket",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "frontro": {
+    "name": "frontro",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ichinanalive": {
+    "name": "17live:clip",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "flickr": {
+    "name": "flickr",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "myspace": {
+    "name": "MySpace:album",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "azmedien": {
+    "name": "azmedien",
+    "description": "AZ Medien videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "polskieradio": {
+    "name": "polskieradio:podcast:list",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "genius": {
+    "name": "genius",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fancode": {
+    "name": "fancode:live",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "canalplus": {
+    "name": "canalplus",
+    "description": "mycanal.fr and piwiplus.fr",
+    "countries": [
+      "FR"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "clubic": {
+    "name": "clubic",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "movingimage": {
+    "name": "movingimage",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nytimes": {
+    "name": "NYTimesCookingGuide",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bbc": {
+    "name": "bbc.co.uk:iplayer:episodes",
+    "description": "BBC iPlayer",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "masters": {
+    "name": "masters",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bpb": {
+    "name": "bpb",
+    "description": "Bundeszentrale f\u00fcr politische Bildung",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "duoplay": {
+    "name": "duoplay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "adobepass": {
+    "name": "adobepass",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gopro": {
+    "name": "gopro",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "triller": {
+    "name": "triller",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "minoto": {
+    "name": "minoto",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "megatvcom": {
+    "name": "megatvcom:embed",
+    "description": "megatv.com videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wikimedia": {
+    "name": "wikimedia.org",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "opencast": {
+    "name": "opencast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "contv": {
+    "name": "contv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vodplatform": {
+    "name": "vodplatform",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fathom": {
+    "name": "fathom",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "skynewsarabia": {
+    "name": "skynewsarabia:article",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "murrtube": {
+    "name": "murrtube",
+    "description": "Murrtube user profile",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "rule34video": {
+    "name": "rule34video",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "teamtreehouse": {
+    "name": "teamtreehouse",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cammodels": {
+    "name": "cammodels",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pluralsight": {
+    "name": "pluralsight:course",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aitube": {
+    "name": "aitube",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "glide": {
+    "name": "glide",
+    "description": "Glide mobile video messages (glide.me)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "itprotv": {
+    "name": "itprotv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "senategov": {
+    "name": "senate.gov:isvp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nfb": {
+    "name": "nfb:series",
+    "description": "nfb.ca and onf.ca films and episodes",
+    "countries": [
+      "CA"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "rudovideo": {
+    "name": "rudovideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "canalc2": {
+    "name": "canalc2.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rbgtum": {
+    "name": "rbgtum",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "snotr": {
+    "name": "snotr",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cybrary": {
+    "name": "cybrary",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telequebec": {
+    "name": "telequebec",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lenta": {
+    "name": "lenta",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "videopress": {
+    "name": "videopress",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "islamchannel": {
+    "name": "islamchannel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "teachertube": {
+    "name": "teachertube:user:collection",
+    "description": "teachertube.com videos",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "netapp": {
+    "name": "netapp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "minds": {
+    "name": "minds",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "onenewsnz": {
+    "name": "1News",
+    "description": "1news.co.nz article videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "freespeech": {
+    "name": "freespeech.org",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vidio": {
+    "name": "vidio",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "adultswim": {
+    "name": "adultswim",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "mixlr": {
+    "name": "mixlr",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tubitv": {
+    "name": "tubitv:series",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nfhsnetwork": {
+    "name": "NFHSNetwork",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "restudy": {
+    "name": "restudy",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "clippit": {
+    "name": "clippit",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mailru": {
+    "name": "mailru:music:search",
+    "description": "\u0412\u0438\u0434\u0435\u043e@Mail.Ru",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "audius": {
+    "name": "audius:playlist",
+    "description": "Audius.co",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "scrolller": {
+    "name": "scrolller",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rds": {
+    "name": "rds",
+    "description": "RDS.ca",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "radioradicale": {
+    "name": "radioradicale",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tass": {
+    "name": "tass",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "peertv": {
+    "name": "peer.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xxxymovies": {
+    "name": "xxxymovies",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ruv": {
+    "name": "ruv.is:spila",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "boxcast": {
+    "name": "boxcast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "toggo": {
+    "name": "toggo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pokergo": {
+    "name": "pokergo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "alphaporno": {
+    "name": "alphaporno",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "tnaflix": {
+    "name": "tnaflix",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bundestag": {
+    "name": "bundestag",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "daystar": {
+    "name": "daystar:clip",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cspan": {
+    "name": "cspan",
+    "description": "C-SPAN",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bandcamp": {
+    "name": "Bandcamp:weekly",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "newsy": {
+    "name": "newsy",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rtlnl": {
+    "name": "rtl.lu:tele-vod",
+    "description": "rtl.nl and rtlxl.nl",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "historicfilms": {
+    "name": "historicfilms",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "apa": {
+    "name": "apa",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "piramidetv": {
+    "name": "piramidetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nbc": {
+    "name": "nbcolympics:stream",
+    "description": "",
+    "countries": [
+      "US"
+    ],
+    "is_adult": false,
+    "working": false
+  },
+  "box": {
+    "name": "box",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tele5": {
+    "name": "tele5",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "epicon": {
+    "name": "epicon",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "matchtv": {
+    "name": "matchtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "novaplay": {
+    "name": "novaplay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "arnes": {
+    "name": "video.arnes.si",
+    "description": "Arnes Video",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "chaturbate": {
+    "name": "chaturbate",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nest": {
+    "name": "nest",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "comedycentral": {
+    "name": "comedycentral",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ard": {
+    "name": "ARDMediathek",
+    "description": "",
+    "countries": [
+      "DE"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "nzonscreen": {
+    "name": "nzonscreen",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "angel": {
+    "name": "angel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "drbonanza": {
+    "name": "drbonanza",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "crooksandliars": {
+    "name": "crooksandliars",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "newspicks": {
+    "name": "newspicks",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "allocine": {
+    "name": "allocine",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pgatour": {
+    "name": "pgatour",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "teletask": {
+    "name": "teletask",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "globo": {
+    "name": "globo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cctv": {
+    "name": "cctv",
+    "description": "\u592e\u89c6\u7f51",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "scrippsnetworks": {
+    "name": "scrippsnetworks:watch",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gofile": {
+    "name": "gofile",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "soundgasm": {
+    "name": "soundgasm:profile",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "shemaroome": {
+    "name": "shemaroome",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "webofstories": {
+    "name": "webofstories",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "filmweb": {
+    "name": "filmweb",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ciscolive": {
+    "name": "ciscolive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "voxmedia": {
+    "name": "voxmedia",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "softwhiteunderbelly": {
+    "name": "softwhiteunderbelly",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xvideos": {
+    "name": "xvideos:quickies",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "monstercat": {
+    "name": "monstercat",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gamespot": {
+    "name": "gamespot",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "applepodcasts": {
+    "name": "applepodcasts",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hollywoodreporter": {
+    "name": "hollywoodreporter",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ivi": {
+    "name": "ivi:compilation",
+    "description": "ivi.ru",
+    "countries": [
+      "RU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "tunein": {
+    "name": "tunein:podcast:program",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hidive": {
+    "name": "hidive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fuyintv": {
+    "name": "fuyintv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "egghead": {
+    "name": "egghead:course",
+    "description": "egghead.io course",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dreisat": {
+    "name": "3sat",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "spiegel": {
+    "name": "spiegel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rentv": {
+    "name": "rentv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "tvn24": {
+    "name": "tvn24",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "kickstarter": {
+    "name": "kickstarter",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tv2": {
+    "name": "tv2",
+    "description": "",
+    "countries": [
+      "FI",
+      "NO"
+    ],
+    "is_adult": false,
+    "working": false
+  },
+  "eltrecetv": {
+    "name": "eltrecetv",
+    "description": "El Trece TV (Argentina)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "la7": {
+    "name": "la7.it:pod:episode",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fczenit": {
+    "name": "fczenit",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bleacherreport": {
+    "name": "bleacherreport",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "mediaset": {
+    "name": "mediaset",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "stv": {
+    "name": "stv:player",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "toongoggles": {
+    "name": "toongoggles",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bloomberg": {
+    "name": "bloomberg",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "heise": {
+    "name": "heise",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mixch": {
+    "name": "mixch:archive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zdf": {
+    "name": "zdf:channel",
+    "description": "",
+    "countries": [
+      "DE"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "tmz": {
+    "name": "tmz",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ted": {
+    "name": "ted",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "spankbang": {
+    "name": "spankbang",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "discogs": {
+    "name": "discogs",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wordpress": {
+    "name": "wordpress:mb.miniAudioPlayer",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "substack": {
+    "name": "substack",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tumblr": {
+    "name": "tumblr",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "abcnews": {
+    "name": "abcnews:video",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "noodlemagazine": {
+    "name": "noodlemagazine",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "redge": {
+    "name": "redcdnlivx",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "freetv": {
+    "name": "freetv:series",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "stacommu": {
+    "name": "theatercomplextown:vod",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pornotube": {
+    "name": "pornotube",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "newgrounds": {
+    "name": "Newgrounds:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "livestreamfails": {
+    "name": "livestreamfails",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bitchute": {
+    "name": "bitchute",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rokfin": {
+    "name": "rokfin:channel",
+    "description": "Rokfin Stacks",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "screencast": {
+    "name": "screencast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "orf": {
+    "name": "orf:fm4:story",
+    "description": "iptv.ORF.at",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "foxnews": {
+    "name": "foxnews:article",
+    "description": "Fox News and Fox Business Video",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "medaltv": {
+    "name": "medaltv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "shiey": {
+    "name": "shiey",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gputechconf": {
+    "name": "gputechconf",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vidflex": {
+    "name": "vidflex",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "unsupported": {
+    "name": "unsupported",
+    "description": "Sites that are known to use DRM for all their videos\n\nAdd to this list only if:\n* You are reasonably certain that the site uses DRM for ALL their videos\n* Multiple users have asked about this site on github/discord",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bigo": {
+    "name": "bigo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "metacritic": {
+    "name": "metacritic",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tva": {
+    "name": "tvaplus",
+    "description": "TVA+",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "manyvids": {
+    "name": "manyvids",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "antenna": {
+    "name": "ant1newsgr:article",
+    "description": "antenna.gr and ant1news.gr videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "amcnetworks": {
+    "name": "amcnetworks",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wppilot": {
+    "name": "wppilot:channels",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telecinco": {
+    "name": "telecinco",
+    "description": "telecinco.es, cuatro.com and mediaset.es",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mlb": {
+    "name": "mlb",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aenetworks": {
+    "name": "aenetworks:collection",
+    "description": "A+E Networks: A&E, Lifetime, History.com, FYI Network and History Vault",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cbc": {
+    "name": "cbc.ca:player:playlist",
+    "description": "",
+    "countries": [
+      "CA"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "nosnl": {
+    "name": "nosnl",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kuwo": {
+    "name": "kuwo:category",
+    "description": "\u9177\u6211\u97f3\u4e50",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "webcaster": {
+    "name": "webcaster",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wrestleuniverse": {
+    "name": "wrestleuniverse",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "iltalehti": {
+    "name": "iltalehti",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "giantbomb": {
+    "name": "giantbomb",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "listennotes": {
+    "name": "listennotes",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "senalcolombia": {
+    "name": "senalcolombia",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "yandexvideo": {
+    "name": "dzen.ru:channel",
+    "description": "\u0414\u0437\u0435\u043d (dzen) formerly \u042f\u043d\u0434\u0435\u043a\u0441.\u0414\u0437\u0435\u043d (Yandex Zen)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rockstargames": {
+    "name": "rockstargames",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "zoom": {
+    "name": "zoom",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kankanews": {
+    "name": "kankanews",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "faulio": {
+    "name": "faulio",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nascar": {
+    "name": "nascar",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rts": {
+    "name": "rts",
+    "description": "RTS.ch",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "pinkbike": {
+    "name": "pinkbike",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "internazionale": {
+    "name": "internazionale",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hgtv": {
+    "name": "hgtv.com:show",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rcs": {
+    "name": "rcs",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "videodetective": {
+    "name": "videodetective",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xminus": {
+    "name": "xminus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "nate": {
+    "name": "nate",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vidyard": {
+    "name": "vidyard",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "markiza": {
+    "name": "markiza",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "slutload": {
+    "name": "slutload",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cloudycdn": {
+    "name": "cloudycdn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "stretchinternet": {
+    "name": "stretchinternet",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "adobeconnect": {
+    "name": "adobeconnect",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bitmovin": {
+    "name": "bitmovin",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "atscaleconf": {
+    "name": "atscaleconf",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bundesliga": {
+    "name": "bundesliga",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ccc": {
+    "name": "media.ccc.de:lists",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "peekvids": {
+    "name": "peekvids",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "piksel": {
+    "name": "piksel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vodpl": {
+    "name": "vodpl",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "leeco": {
+    "name": "leeco",
+    "description": "\u4e50\u89c6\u7f51",
+    "countries": [
+      "CN"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "umg": {
+    "name": "umg:de",
+    "description": "Universal Music Deutschland",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "caracoltv": {
+    "name": "caracoltv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "qingting": {
+    "name": "qingting",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tvnoe": {
+    "name": "tvnoe",
+    "description": "Televize Noe",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tv24ua": {
+    "name": "24tv.ua",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wykop": {
+    "name": "wykop:post:comment",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sverigesradio": {
+    "name": "sverigesradio:publication",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "openrec": {
+    "name": "openrec:capture",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "worldstarhiphop": {
+    "name": "worldstarhiphop",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "polsatgo": {
+    "name": "polsatgo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "medici": {
+    "name": "medici",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mediasite": {
+    "name": "mediasite",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dplay": {
+    "name": "dplay",
+    "description": "Subclasses must set _PRODUCT, _DISCO_API_PARAMS",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "alsace20tv": {
+    "name": "alsace20tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lastfm": {
+    "name": "lastfm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tv5mondeplus": {
+    "name": "TV5MONDE",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rheinmaintv": {
+    "name": "rheinmaintv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bigflix": {
+    "name": "bigflix",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wevidi": {
+    "name": "wevidi",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "plutotv": {
+    "name": "plutotv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "blerp": {
+    "name": "blerp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "smotrim": {
+    "name": "smotrim:playlist",
+    "description": "",
+    "countries": [
+      "RU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "altcensored": {
+    "name": "altcensored:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nfl": {
+    "name": "nfl.com:plus:episode",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ebay": {
+    "name": "ebay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bokecc": {
+    "name": "bokecc",
+    "description": "CC\u89c6\u9891",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "yle_areena": {
+    "name": "yle_areena",
+    "description": "",
+    "countries": [
+      "FI"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "ebaumsworld": {
+    "name": "ebaumsworld",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nextmedia": {
+    "name": "nextmedia",
+    "description": "\u860b\u679c\u65e5\u5831",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "gettr": {
+    "name": "gettr",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "idolplus": {
+    "name": "idolplus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kaltura": {
+    "name": "kaltura",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "springboardplatform": {
+    "name": "springboardplatform",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "playsuisse": {
+    "name": "playsuisse",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "firsttv": {
+    "name": "1tv:live",
+    "description": "\u041f\u0435\u0440\u0432\u044b\u0439 \u043a\u0430\u043d\u0430\u043b",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pearvideo": {
+    "name": "pearvideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rinsefm": {
+    "name": "rinsefm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bet": {
+    "name": "bet",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "yahoo": {
+    "name": "screen.yahoo:search",
+    "description": "Yahoo screen and movies",
+    "countries": [
+      "JP"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "streamable": {
+    "name": "streamable",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fujitv": {
+    "name": "fujitv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "swearnet": {
+    "name": "swearnet",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "godresource": {
+    "name": "godresource",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lynda": {
+    "name": "lynda:course",
+    "description": "lynda.com videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hrefli": {
+    "name": "href.li",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "digiview": {
+    "name": "digiview",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "udemy": {
+    "name": "udemy:course",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "acfun": {
+    "name": "acfun",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tfo": {
+    "name": "tfo",
+    "description": "",
+    "countries": [
+      "CA"
+    ],
+    "is_adult": false,
+    "working": false
+  },
+  "bongacams": {
+    "name": "bongacams",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fivetv": {
+    "name": "fivetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "banbye": {
+    "name": "banbye",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "adobetv": {
+    "name": "adobetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "japandiet": {
+    "name": "japandiet",
+    "description": "\u8846\u8b70\u9662\u30a4\u30f3\u30bf\u30fc\u30cd\u30c3\u30c8\u5be9\u8b70\u4e2d\u7d99",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mirrorcouk": {
+    "name": "mirrorcouk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "blogger": {
+    "name": "blogger.com",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mzaalo": {
+    "name": "mzaalo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "condenast": {
+    "name": "condenast",
+    "description": "Cond\u00e9 Nast is a media group, some of its sites use a custom HTML5 player\nthat works the same in all of them.",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pornoxo": {
+    "name": "pornoxo",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": false
+  },
+  "panopto": {
+    "name": "panopto",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "uplynk": {
+    "name": "uplynk:preplay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "onionstudios": {
+    "name": "onionstudios",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mediaite": {
+    "name": "mediaite",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kukululive": {
+    "name": "kukululive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "qdance": {
+    "name": "qdance",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telegram": {
+    "name": "telegram:embed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "yandexmusic": {
+    "name": "yandexmusic:artist:tracks",
+    "description": "\u042f\u043d\u0434\u0435\u043a\u0441.\u041c\u0443\u0437\u044b\u043a\u0430 - \u0422\u0440\u0435\u043a",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "prosiebensat1": {
+    "name": "prosiebensat1",
+    "description": "ProSiebenSat.1 Digital",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "owncloud": {
+    "name": "owncloud",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "videofyme": {
+    "name": "videofy.me",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "oneplace": {
+    "name": "oneplace",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "brainpop": {
+    "name": "brainpop",
+    "description": "BrainPOP Espa\u00f1ol",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "franceinter": {
+    "name": "franceinter",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "iqiyi": {
+    "name": "iq.com:album",
+    "description": "\u7231\u5947\u827a",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "yapfiles": {
+    "name": "yapfiles",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "parlview": {
+    "name": "parlview",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "brightcove": {
+    "name": "brightcove:legacy",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ina": {
+    "name": "ina",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "europa": {
+    "name": "europa",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "dfb": {
+    "name": "tv.dfb.de",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fifa": {
+    "name": "fifa",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vimeo": {
+    "name": "vimeo:watchlater",
+    "description": "Information extractor for vimeo.com.",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "jwplatform": {
+    "name": "jwplatform",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "goshgay": {
+    "name": "goshgay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nrl": {
+    "name": "nrl",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "sejmpl": {
+    "name": "sejm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fc2": {
+    "name": "fc2:embed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gaskrank": {
+    "name": "gaskrank",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ettutv": {
+    "name": "ettutv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "uol": {
+    "name": "uol.com.br",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dvtv": {
+    "name": "dvtv",
+    "description": "http://video.aktualne.cz/",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "arcpublishing": {
+    "name": "arcpublishing",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mtv": {
+    "name": "mtv",
+    "description": "",
+    "countries": [
+      "US"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "rtve": {
+    "name": "rtve.es:television",
+    "description": "RTVE a la carta and Play",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "archiveorg": {
+    "name": "web.archive:youtube",
+    "description": "archive.org video and audio",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vgtv": {
+    "name": "bt:vestlendingen",
+    "description": "VGTV, BTTV, FTV, Aftenposten and Aftonbladet",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "udn": {
+    "name": "udn",
+    "description": "\u806f\u5408\u5f71\u97f3",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "podchaser": {
+    "name": "podchaser",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "afreecatv": {
+    "name": "soop:catchstory",
+    "description": "sooplive.co.kr",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "maoritv": {
+    "name": "maoritv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nhk": {
+    "name": "nhk",
+    "description": "Portal page for each school subjects, like Japanese (kokugo, \u56fd\u8a9e) or math (sansuu/suugaku or \u7b97\u6570\u30fb\u6570\u5b66)",
+    "countries": [
+      "JP"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "mit": {
+    "name": "techtv.mit.edu",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "outsidetv": {
+    "name": "outsidetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mgtv": {
+    "name": "MangoTV",
+    "description": "\u8292\u679cTV",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mbn": {
+    "name": "mbn",
+    "description": "mbn.co.kr (\ub9e4\uc77c\ubc29\uc1a1)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "biobiochiletv": {
+    "name": "biobiochiletv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "teachable": {
+    "name": "teachable",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "audimedia": {
+    "name": "audimedia",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fourtube": {
+    "name": "fourtube",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ctvnews": {
+    "name": "ctvnews",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dangalplay": {
+    "name": "dangalplay:season",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telemundo": {
+    "name": "telemundo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "boosty": {
+    "name": "boosty",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ninenews": {
+    "name": "9News",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "folketinget": {
+    "name": "folketinget",
+    "description": "Folketinget (ft.dk; Danish parliament)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "imggaming": {
+    "name": "imggaming",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xboxclips": {
+    "name": "xboxclips",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "golem": {
+    "name": "golem",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "moview": {
+    "name": "moview",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cloudflarestream": {
+    "name": "cloudflarestream",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "naver": {
+    "name": "Naver:live",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kelbyone": {
+    "name": "kelbyone",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "brilliantpala": {
+    "name": "Brilliantpala:Classes",
+    "description": "VoD on elearn.brilliantpala.org",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lecture2go": {
+    "name": "lecture2go",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "palcomp3": {
+    "name": "PalcoMP3:artist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aol": {
+    "name": "aol.com",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "washingtonpost": {
+    "name": "washingtonpost:article",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "funk": {
+    "name": "funk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "amp": {
+    "name": "amp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ku6": {
+    "name": "ku6",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mdr": {
+    "name": "mdr",
+    "description": "MDR.DE",
+    "countries": [
+      "DE"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "gamejolt": {
+    "name": "gamejolt",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "screencastify": {
+    "name": "screencastify",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tviplayer": {
+    "name": "tviplayer",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "manoto": {
+    "name": "manoto",
+    "description": "Manoto TV (Episode)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "performgroup": {
+    "name": "performgroup",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "massengeschmacktv": {
+    "name": "massengeschmack.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "elementorembed": {
+    "name": "elementorembed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "parti": {
+    "name": "parti:livestream",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "radiko": {
+    "name": "radiko",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "getcourseru": {
+    "name": "getcourseru",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mlssoccer": {
+    "name": "mlssoccer",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sapo": {
+    "name": "sapo",
+    "description": "SAPO V\u00eddeos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ridehome": {
+    "name": "ridehome",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vtm": {
+    "name": "vtm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "weiqitv": {
+    "name": "weiqitv",
+    "description": "WQTV",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "viddler": {
+    "name": "viddler",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "tbs": {
+    "name": "tbs",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "learningonscreen": {
+    "name": "learningonscreen",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "glomex": {
+    "name": "glomex:embed",
+    "description": "Glomex videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "academicearth": {
+    "name": "AcademicEarth:Course",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dtube": {
+    "name": "dtube",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "tvw": {
+    "name": "tvw:tvchannels",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nationalgeographic": {
+    "name": "natgeo:video",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "showroomlive": {
+    "name": "showroomlive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "podbayfm": {
+    "name": "podbayfm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "adn": {
+    "name": "adn",
+    "description": "Animation Digital Network",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "on24": {
+    "name": "on24",
+    "description": "ON24",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pornhub": {
+    "name": "pornhub",
+    "description": "PornHub and Thumbzilla",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "gaia": {
+    "name": "gaia",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dbtv": {
+    "name": "dbtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eporner": {
+    "name": "eporner",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "mave": {
+    "name": "mave:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "damtomo": {
+    "name": "damtomo:record",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "screenrec": {
+    "name": "screenrec",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rte": {
+    "name": "rte:radio",
+    "description": "Raidi\u00f3 Teilif\u00eds \u00c9ireann TV",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pinterest": {
+    "name": "pinterest",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "filmon": {
+    "name": "filmon:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "playtvak": {
+    "name": "playtvak",
+    "description": "Playtvak.cz, iDNES.cz and Lidovky.cz",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pornovoisines": {
+    "name": "pornovoisines",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": false
+  },
+  "unity": {
+    "name": "unity",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "stageplus": {
+    "name": "stageplus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "commonmistakes": {
+    "name": "commonmistakes",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "floatplane": {
+    "name": "floatplane",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "skylinewebcams": {
+    "name": "skylinewebcams",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "laxarxames": {
+    "name": "laxarxames",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dailymail": {
+    "name": "dailymail",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tvigle": {
+    "name": "tvigle",
+    "description": "\u0418\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u0442\u0435\u043b\u0435\u0432\u0438\u0434\u0435\u043d\u0438\u0435 Tvigle.ru",
+    "countries": [
+      "RU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "moviezine": {
+    "name": "moviezine",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "peertube": {
+    "name": "PeerTube:Playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "musescore": {
+    "name": "musescore",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nintendo": {
+    "name": "nintendo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "crtvg": {
+    "name": "crtvg",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vrsquare": {
+    "name": "vrsquare:channel",
+    "description": "VR SQUARE",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mediaworksnz": {
+    "name": "mediaworksnz",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tubetugraz": {
+    "name": "tubetugraz",
+    "description": "tube.tugraz.at",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "redbulltv": {
+    "name": "redbulltv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zattoo": {
+    "name": "zattoo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ntvru": {
+    "name": "ntv.ru",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "caltrans": {
+    "name": "caltrans",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "thesun": {
+    "name": "thesun",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "popcorntimes": {
+    "name": "popcorntimes",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "theholetv": {
+    "name": "theholetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "europeantour": {
+    "name": "europeantour",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "radiojavan": {
+    "name": "radiojavan",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "cliprs": {
+    "name": "cliprs",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "sibnet": {
+    "name": "sibnet",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "groupon": {
+    "name": "groupon",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "samplefocus": {
+    "name": "samplefocus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "indavideo": {
+    "name": "indavideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "netverse": {
+    "name": "netverse",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cnn": {
+    "name": "cnn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "podomatic": {
+    "name": "podomatic",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "democracynow": {
+    "name": "democracynow",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "beatbump": {
+    "name": "beatbump",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bfi": {
+    "name": "bfi:player",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "slideshare": {
+    "name": "slideshare",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "craftsy": {
+    "name": "craftsy",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "oftv": {
+    "name": "oftv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "roya": {
+    "name": "roya",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "daum": {
+    "name": "daum.net:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zingmp3": {
+    "name": "zingmp3:chart-music-video",
+    "description": "zingmp3.vn",
+    "countries": [
+      "VN"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "cracked": {
+    "name": "cracked",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nexx": {
+    "name": "nexx",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hrfensehen": {
+    "name": "hrfernsehen",
+    "description": "",
+    "countries": [
+      "DE"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "bibeltv": {
+    "name": "bibeltv:series",
+    "description": "BibelTV single video",
+    "countries": [
+      "DE",
+      "AT",
+      "CH"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "kenh14": {
+    "name": "kenh14",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ninecninemedia": {
+    "name": "9c9media",
+    "description": "",
+    "countries": [
+      "CA"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "tvplayer": {
+    "name": "tvplayer",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "elonet": {
+    "name": "elonet",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "toutv": {
+    "name": "tou.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "likee": {
+    "name": "likee:user",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "clipchamp": {
+    "name": "clipchamp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vrt": {
+    "name": "vrtmax",
+    "description": "VRT NWS, Flanders News, Flandern Info and Sporza",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "msn": {
+    "name": "msn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hotstar": {
+    "name": "hotstar:series",
+    "description": "JioHotstar",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aws": {
+    "name": "aws",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wat": {
+    "name": "wat.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "disney": {
+    "name": "disney",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rtvcplay": {
+    "name": "rtvcplay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "unistra": {
+    "name": "unistra",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "theweatherchannel": {
+    "name": "theweatherchannel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eurosport": {
+    "name": "eurosport",
+    "description": "",
+    "countries": [
+      "DE",
+      "FR",
+      "NL",
+      "IT",
+      "EU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "douyutv": {
+    "name": "douyutv",
+    "description": "\u6597\u9c7c\u76f4\u64ad",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nuvid": {
+    "name": "nuvid",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "drtalks": {
+    "name": "drtalks",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "myspass": {
+    "name": "myspass",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sina": {
+    "name": "sina",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vidly": {
+    "name": "vidly",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "canal1": {
+    "name": "canal1",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "odnoklassniki": {
+    "name": "odnoklassniki",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "threespeak": {
+    "name": "threespeak",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cinetecamilano": {
+    "name": "cinetecamilano",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eggs": {
+    "name": "eggs:single",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "camtasia": {
+    "name": "camtasia",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "projectveritas": {
+    "name": "projectveritas",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "asobichannel": {
+    "name": "asobichannel:tag",
+    "description": "ASOBI CHANNEL",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bannedvideo": {
+    "name": "bannedvideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "redtube": {
+    "name": "redtube",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "asobistage": {
+    "name": "asobistage",
+    "description": "ASOBISTAGE (\u30a2\u30bd\u30d3\u30b9\u30c6\u30fc\u30b8)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "spreaker": {
+    "name": "spreaker",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fox": {
+    "name": "fox",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "stripchat": {
+    "name": "stripchat",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "facebook": {
+    "name": "facebook:reel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tempo": {
+    "name": "tempo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eyedotv": {
+    "name": "eyedotv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "awaan": {
+    "name": "awaan:season",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sauceplus": {
+    "name": "sauceplus",
+    "description": "Sauce+",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kinopoisk": {
+    "name": "kinopoisk",
+    "description": "",
+    "countries": [
+      "RU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "sky": {
+    "name": "sky:sports:news",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "inc": {
+    "name": "inc",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "neteasemusic": {
+    "name": "netease:playlist",
+    "description": "\u7f51\u6613\u4e91\u97f3\u4e50",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tbsjp": {
+    "name": "tbsjp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "weibo": {
+    "name": "weibo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "philharmoniedeparis": {
+    "name": "philharmoniedeparis",
+    "description": "Philharmonie de Paris",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tagesschau": {
+    "name": "tagesschau",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "moviepilot": {
+    "name": "moviepilot",
+    "description": "Moviepilot trailer",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gazeta": {
+    "name": "gazeta",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "sohu": {
+    "name": "sohu",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wsj": {
+    "name": "wsj",
+    "description": "Wall Street Journal",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dispeak": {
+    "name": "dispeak",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "imdb": {
+    "name": "imdb:list",
+    "description": "Internet Movie Database trailers",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "npr": {
+    "name": "npr",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "myvideoge": {
+    "name": "myvideoge",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vimm": {
+    "name": "Vimm:recording",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "thisoldhouse": {
+    "name": "thisoldhouse",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "noice": {
+    "name": "noice",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xinpianchang": {
+    "name": "xinpianchang",
+    "description": "\u65b0\u7247\u573a",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ximalaya": {
+    "name": "ximalaya:album",
+    "description": "\u559c\u9a6c\u62c9\u96c5FM",
+    "countries": [
+      "CN"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "srmediathek": {
+    "name": "sr:mediathek",
+    "description": "Saarl\u00e4ndischer Rundfunk",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "niconicochannelplus": {
+    "name": "NiconicoChannelPlus:channel:videos",
+    "description": "\u30cb\u30b3\u30cb\u30b3\u30c1\u30e3\u30f3\u30cd\u30eb\u30d7\u30e9\u30b9",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "microsoftstream": {
+    "name": "microsoftstream",
+    "description": "Microsoft Stream",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "allstar": {
+    "name": "allstar",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "megaphone": {
+    "name": "megaphone.fm",
+    "description": "megaphone.fm embedded players",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sport5": {
+    "name": "sport5",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vk": {
+    "name": "vk:uservideos",
+    "description": "VK",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "toypics": {
+    "name": "toypics",
+    "description": "Toypics video",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "wdr": {
+    "name": "wdr:mobile",
+    "description": "",
+    "countries": [
+      "DE"
+    ],
+    "is_adult": false,
+    "working": false
+  },
+  "infoq": {
+    "name": "infoq",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nekohacker": {
+    "name": "nekohacker",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "startv": {
+    "name": "startv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ustudio": {
+    "name": "ustudio:embed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aljazeera": {
+    "name": "aljazeera",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "izlesene": {
+    "name": "izlesene",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nts": {
+    "name": "nts.live",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "myvidster": {
+    "name": "myvidster",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vtv": {
+    "name": "vtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cjsw": {
+    "name": "cjsw",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ceskatelevize": {
+    "name": "ceskatelevize",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "agora": {
+    "name": "wyborcza:video",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pornflip": {
+    "name": "pornflip",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "dlive": {
+    "name": "dlive:stream",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gab": {
+    "name": "gab",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aeonco": {
+    "name": "aeonco",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "teamcoco": {
+    "name": "teamcoco",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "chzzk": {
+    "name": "chzzk:video",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ufctv": {
+    "name": "ufctv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kick": {
+    "name": "kick:clips",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "goodgame": {
+    "name": "goodgame:stream",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "yandexdisk": {
+    "name": "yandexdisk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "canalalpha": {
+    "name": "canalalpha",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "jixie": {
+    "name": "jixie",
+    "description": "API Reference:\n    https://jixie.atlassian.net/servicedesk/customer/portal/2/article/1339654214?src=-1456335525,\n    https://scripts.jixie.media/jxvideo.3.1.min.js",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hketv": {
+    "name": "hketv",
+    "description": "\u9999\u6e2f\u6559\u80b2\u5c40\u6559\u80b2\u96fb\u8996 (HKETV) Educational Television, Hong Kong Educational Bureau",
+    "countries": [
+      "HK"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "globalplayer": {
+    "name": "globalplayer",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "jamendo": {
+    "name": "jamendo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "periscope": {
+    "name": "periscope:user",
+    "description": "Periscope",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ondemandkorea": {
+    "name": "ondemandkorea",
+    "description": "",
+    "countries": [
+      "CA",
+      "US"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "amara": {
+    "name": "amara",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eplus": {
+    "name": "eplus",
+    "description": "e+ (\u30a4\u30fc\u30d7\u30e9\u30b9)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "skeb": {
+    "name": "skeb",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "appleconnect": {
+    "name": "apple:music:connect",
+    "description": "Apple Music Connect",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "viously": {
+    "name": "viously",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sonyliv": {
+    "name": "sonyliv",
+    "description": "",
+    "countries": [
+      "IN"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "truth": {
+    "name": "truth",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "abematv": {
+    "name": "abematv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nuum": {
+    "name": "nuum:media",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dropbox": {
+    "name": "dropbox",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rtrfm": {
+    "name": "rtrfm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zype": {
+    "name": "zype",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "skyit": {
+    "name": "video.sky.it:live",
+    "description": "TV8 Live",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mojvideo": {
+    "name": "mojvideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "trovo": {
+    "name": "trovo",
+    "description": "All VODs of a trovo.live channel; \"trovovod:\" prefix",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dlf": {
+    "name": "dlf:corpus",
+    "description": "DLF Multi-feed Archives",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "videoken": {
+    "name": "videoken",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "stanfordoc": {
+    "name": "stanfordoc",
+    "description": "Stanford Open ClassRoom",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "karaoketv": {
+    "name": "karaoketv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "khanacademy": {
+    "name": "khanacademy:unit",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "thestar": {
+    "name": "thestar",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "platzi": {
+    "name": "platzi",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "twentythreevideo": {
+    "name": "23video",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nerdcubed": {
+    "name": "nerdcubed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "snapchat": {
+    "name": "snapchat",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "webcamerapl": {
+    "name": "webcamerapl",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "uliza": {
+    "name": "uliza",
+    "description": "ulizaportal.jp",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "reverbnation": {
+    "name": "reverbnation",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "duboku": {
+    "name": "duboku:list",
+    "description": "www.duboku.io",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gdcvault": {
+    "name": "gdcvault",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "seznamzpravy": {
+    "name": "seznamzpravy",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "threeqsdn": {
+    "name": "3qsdn",
+    "description": "3Q SDN",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gamestar": {
+    "name": "gamestar",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ndr": {
+    "name": "ndr:embed:base",
+    "description": "NDR.de - Norddeutscher Rundfunk",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "huffpost": {
+    "name": "huffpost",
+    "description": "Huffington Post",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ruutu": {
+    "name": "ruutu",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "weverse": {
+    "name": "weverse",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "veo": {
+    "name": "veo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lrt": {
+    "name": "lrt",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vuclip": {
+    "name": "vuclip",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "voicy": {
+    "name": "voicy:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "drooble": {
+    "name": "drooble",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dctp": {
+    "name": "dctp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tenplay": {
+    "name": "10play:season",
+    "description": "",
+    "countries": [
+      "AU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "gotostage": {
+    "name": "gotostage",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lci": {
+    "name": "lci",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "volejtv": {
+    "name": "volejtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tvp": {
+    "name": "tvp:vod:series",
+    "description": "Telewizja Polska",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "agalega": {
+    "name": "agalega:videos",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "audiomack": {
+    "name": "audiomack:album",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bandlab": {
+    "name": "bandlab",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "soundcloud": {
+    "name": "soundcloud:user:permalink",
+    "description": "Information extractor for soundcloud.com\nTo access the media, the uid of the song and a stream token\nmust be extracted from the page source and the script must make\na request to media.soundcloud.com/crossdomain.xml. Then\nthe media can be grabbed by requesting from an url composed\nof the stream token and uid",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bild": {
+    "name": "bild",
+    "description": "Bild.de",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nuevo": {
+    "name": "nuevo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "camdemy": {
+    "name": "camdemy",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kicker": {
+    "name": "kicker",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "axs": {
+    "name": "axs.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "shahid": {
+    "name": "shahid",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "motorsport": {
+    "name": "motorsport",
+    "description": "motorsport.com",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "patreon": {
+    "name": "patreon:campaign",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "presstv": {
+    "name": "presstv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "anchorfm": {
+    "name": "anchorfm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "epoch": {
+    "name": "epoch",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "curiositystream": {
+    "name": "curiositystream:collections",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "redgifs": {
+    "name": "redgifs",
+    "description": "Redgifs search",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "medialaan": {
+    "name": "medialaan",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "startrek": {
+    "name": "startrek",
+    "description": "STAR TREK",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "espn": {
+    "name": "espn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "twitter": {
+    "name": "twitter:broadcast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cultureunplugged": {
+    "name": "cultureunplugged",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "btvplus": {
+    "name": "btvplus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ixigua": {
+    "name": "ixigua",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "corus": {
+    "name": "corus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "s4c": {
+    "name": "s4c",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gmanetwork": {
+    "name": "gmanetwork",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lecturio": {
+    "name": "lecturio",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "loom": {
+    "name": "loom:folder",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "ilpost": {
+    "name": "ilpost",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "walla": {
+    "name": "walla",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "elpais": {
+    "name": "elpais",
+    "description": "El Pa\u00eds",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ccma": {
+    "name": "ccma",
+    "description": "3Cat, TV3 and Catalunya R\u00e0dio",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "trueid": {
+    "name": "trueid",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "liputan6": {
+    "name": "liputan6",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "younow": {
+    "name": "younow",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "airtv": {
+    "name": "airtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "playplustv": {
+    "name": "playplustv",
+    "description": "",
+    "countries": [
+      "BR"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "radiode": {
+    "name": "radio.de",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "lefigaro": {
+    "name": "lefigaro",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mocha": {
+    "name": "mocha",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lcp": {
+    "name": "lcp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "youporn": {
+    "name": "youporn",
+    "description": "YouPorn category, with sorting, filtering and pagination",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "lsm": {
+    "name": "lsm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "reuters": {
+    "name": "reuters",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "internetvideoarchive": {
+    "name": "internetvideoarchive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "thehighwire": {
+    "name": "thehighwire",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nrk": {
+    "name": "nrk",
+    "description": "NRK TV and NRK Radio",
+    "countries": [
+      "NO"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "rtvslo": {
+    "name": "rtvslo.si:show",
+    "description": "",
+    "countries": [
+      "SI"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "francetv": {
+    "name": "francetvinfo.fr",
+    "description": "",
+    "countries": [
+      "FR"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "raywenderlich": {
+    "name": "raywenderlich",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ctsnews": {
+    "name": "ctsnews",
+    "description": "\u83ef\u8996\u65b0\u805e",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "radiocanada": {
+    "name": "radiocanada:audiovideo",
+    "description": "",
+    "countries": [
+      "CA"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "bilibili": {
+    "name": "Bilibili category extractor",
+    "description": "Bilibili video search",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gamedevtv": {
+    "name": "gamedevtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "plvideo": {
+    "name": "plvideo",
+    "description": "\u041f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0430",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dw": {
+    "name": "dw:article",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "cozytv": {
+    "name": "cozytv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vbox7": {
+    "name": "vbox7",
+    "description": "",
+    "countries": [
+      "BG"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "footyroom": {
+    "name": "footyroom",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "beeg": {
+    "name": "beeg",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "streetvoice": {
+    "name": "streetvoice",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nhl": {
+    "name": "nhl.com",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cbs": {
+    "name": "cbs",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "br": {
+    "name": "br",
+    "description": "Bayerischer Rundfunk",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "sharepoint": {
+    "name": "sharepoint",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "npo": {
+    "name": "npo.nl:radio:fragment",
+    "description": "npo.nl, ntr.nl, omroepwnl.nl, zapp.nl and npo3.nl",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "atresplayer": {
+    "name": "atresplayer",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pyvideo": {
+    "name": "pyvideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "olympics": {
+    "name": "olympics",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xstream": {
+    "name": "xstream",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "fox9": {
+    "name": "fox9",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "prx": {
+    "name": "prxstories:search",
+    "description": "PRX Stories Search",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "graspop": {
+    "name": "graspop",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "digitalconcerthall": {
+    "name": "digitalconcerthall",
+    "description": "DigitalConcertHall extractor",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "theguardian": {
+    "name": "theguardian",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tvanouvelles": {
+    "name": "tvanouvelles",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sovietscloset": {
+    "name": "sovietscloset",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "commonprotocols": {
+    "name": "commonprotocols",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "southpark": {
+    "name": "southpark.cc.com:espa\u00f1ol",
+    "description": "",
+    "countries": [
+      "DE",
+      "DK",
+      "MX",
+      "UK",
+      "BR"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "rtl2": {
+    "name": "rtl2",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xnxx": {
+    "name": "xnxx",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "radlive": {
+    "name": "radlive:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "krasview": {
+    "name": "krasview",
+    "description": "\u041a\u0440\u0430\u0441\u0432\u044c\u044e",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "urplay": {
+    "name": "urplay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "txxx": {
+    "name": "txxx",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hse": {
+    "name": "hse",
+    "description": "",
+    "countries": [
+      "DE"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "epidemicsound": {
+    "name": "epidemicsound",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "subsplash": {
+    "name": "subsplash:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telebruxelles": {
+    "name": "telebruxelles",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mojevideo": {
+    "name": "mojevideo",
+    "description": "mojevideo.sk",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ertgr": {
+    "name": "ertflix:codename",
+    "description": "ERTFLIX videos by codename",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "coub": {
+    "name": "coub",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rottentomatoes": {
+    "name": "rottentomatoes",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "behindkink": {
+    "name": "behindkink",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "nonktube": {
+    "name": "nonktube",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rozhlas": {
+    "name": "rozhlas",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "freesound": {
+    "name": "freesound",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "iwara": {
+    "name": "iwara:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "storyfire": {
+    "name": "storyfire",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "googlepodcasts": {
+    "name": "google:podcasts:feed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "idagio": {
+    "name": "idagio",
+    "description": "Subclasses must set _API_URL_TMPL and define _parse_playlist_metadata",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aparat": {
+    "name": "aparat",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "videa": {
+    "name": "videa",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eighttracks": {
+    "name": "8tracks",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "libsyn": {
+    "name": "libsyn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mixcloud": {
+    "name": "mixcloud:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telewebion": {
+    "name": "telewebion",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "tencent": {
+    "name": "iflix:episode",
+    "description": "Subclasses must set _API_URL, _APP_VERSION, _PLATFORM, _HOST, _REFERER",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "libraryofcongress": {
+    "name": "loc",
+    "description": "Library of Congress",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "toutiao": {
+    "name": "toutiao",
+    "description": "\u4eca\u65e5\u5934\u6761",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "go": {
+    "name": "go",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "anvato": {
+    "name": "anvato",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vevo": {
+    "name": "vevo",
+    "description": "Accepts urls from vevo.com or in the format 'vevo:{id}'\n(currently used by MTVIE and MySpaceIE)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tweakers": {
+    "name": "tweakers",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "roosterteeth": {
+    "name": "roosterteeth",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "prankcast": {
+    "name": "prankcast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "microsoftembed": {
+    "name": "microsoftembed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rmcdecouverte": {
+    "name": "rmcdecouverte",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lnk": {
+    "name": "lnk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "jeuxvideo": {
+    "name": "jeuxvideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "nowcanal": {
+    "name": "nowcanal",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cgtn": {
+    "name": "cgtn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cam4": {
+    "name": "cam4",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "streamcz": {
+    "name": "streamcz",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lemonde": {
+    "name": "lemonde",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gronkh": {
+    "name": "gronkh:feed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ciscowebex": {
+    "name": "ciscowebex",
+    "description": "Cisco Webex",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "twentymin": {
+    "name": "20min",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "screencastomatic": {
+    "name": "screencastomatic",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "skynewsau": {
+    "name": "skynewsau",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zhihu": {
+    "name": "zhihu",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "weyyak": {
+    "name": "weyyak",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "puhutv": {
+    "name": "puhutv:serie",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "viewlift": {
+    "name": "viewlift:embed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "instagram": {
+    "name": "instagram:story",
+    "description": "IOS instagram:// URL",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "vidlii": {
+    "name": "vidlii",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "whowatch": {
+    "name": "whowatch",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "linkedin": {
+    "name": "linkedin:learning:course",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tiktok": {
+    "name": "tiktok:collection",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "tvopengr": {
+    "name": "tvopengr:watch",
+    "description": "tvopen.gr (and ethnos.gr) videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "viu": {
+    "name": "viu:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ninaprotocol": {
+    "name": "ninaprotocol",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gedidigital": {
+    "name": "gedidigital",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "funker530": {
+    "name": "funker530",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "thisamericanlife": {
+    "name": "thisamericanlife",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "maariv": {
+    "name": "maariv.co.il",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dailymotion": {
+    "name": "dailymotion:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "theplatform": {
+    "name": "theplatform",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "loco": {
+    "name": "loco",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "teachingchannel": {
+    "name": "teachingchannel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "vvvvid": {
+    "name": "vvvvid",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cnbc": {
+    "name": "cnbc",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "formula1": {
+    "name": "formula1",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "faz": {
+    "name": "faz.net",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hytale": {
+    "name": "hytale",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "huya": {
+    "name": "huya:video",
+    "description": "\u864e\u7259\u76f4\u64ad",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mediastream": {
+    "name": "mediastream",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tennistv": {
+    "name": "tennistv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lego": {
+    "name": "lego",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bostonglobe": {
+    "name": "bostonglobe",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wistia": {
+    "name": "wistia",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wimbledon": {
+    "name": "wimbledon",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "iheart": {
+    "name": "iheartradio:podcast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nzz": {
+    "name": "nzz",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "crowdbunker": {
+    "name": "crowdbunker",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "foxsports": {
+    "name": "foxsports",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "niconico": {
+    "name": "niconico:playlist",
+    "description": "\u30cb\u30b3\u30cb\u30b3\u52d5\u753b",
+    "countries": [
+      "JP"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "jove": {
+    "name": "jove",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nobelprize": {
+    "name": "nobelprize",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "theintercept": {
+    "name": "theintercept",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "camfm": {
+    "name": "camfm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "trunews": {
+    "name": "trunews",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cda": {
+    "name": "cda",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "audioboom": {
+    "name": "audioboom",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "caffeinetv": {
+    "name": "caffeinetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bluesky": {
+    "name": "bluesky",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "puls4": {
+    "name": "puls4",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ninegag": {
+    "name": "9gag",
+    "description": "9GAG",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "popcorntv": {
+    "name": "popcorntv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "jtbc": {
+    "name": "JTBC:program",
+    "description": "jtbc.co.kr",
+    "countries": [
+      "KR"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "sportbox": {
+    "name": "sportbox",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "vh1": {
+    "name": "vh1.com",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "onefootball": {
+    "name": "onefootball",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hrti": {
+    "name": "hrti",
+    "description": "Base Information Extractor for Croatian Radiotelevision\nvideo on demand site https://hrti.hrt.hr\nReverse engineered from the JavaScript app in app.min.js",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "gbnews": {
+    "name": "gbnews",
+    "description": "GB News clips, features and live streams",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "r7": {
+    "name": "r7",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "koo": {
+    "name": "koo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "turner": {
+    "name": "turner",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hotnewhiphop": {
+    "name": "hotnewhiphop",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "oktoberfesttv": {
+    "name": "oktoberfesttv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "odkmedia": {
+    "name": "odkmedia",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "trtworld": {
+    "name": "trtworld",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kth": {
+    "name": "kth",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dacast": {
+    "name": "dacast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "drtv": {
+    "name": "drtv:season",
+    "description": "",
+    "countries": [
+      "DK"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "dropout": {
+    "name": "dropout",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "playerfm": {
+    "name": "playerfm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "itv": {
+    "name": "itv",
+    "description": "",
+    "countries": [
+      "GB"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "drtuber": {
+    "name": "drtuber",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "xiaohongshu": {
+    "name": "xiaohongshu",
+    "description": "\u5c0f\u7ea2\u4e66",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "businessinsider": {
+    "name": "businessinsider",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "iprima": {
+    "name": "iprima",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zee5": {
+    "name": "zee5:series",
+    "description": "",
+    "countries": [
+      "IN"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "packtpub": {
+    "name": "packtpub",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eitb": {
+    "name": "eitb.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sproutvideo": {
+    "name": "sproutvideo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "youku": {
+    "name": "youku:show",
+    "description": "\u4f18\u9177",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "eroprofile": {
+    "name": "EroProfile:album",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nzherald": {
+    "name": "nzherald",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "art19": {
+    "name": "art19",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "canalsurmas": {
+    "name": "canalsurmas",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "germanupa": {
+    "name": "germanupa",
+    "description": "germanupa.de",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hbo": {
+    "name": "hbo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "motherless": {
+    "name": "motherless",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "parler": {
+    "name": "parler",
+    "description": "Posts on parler.com",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nba": {
+    "name": "nba:watch:collection",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "goplay": {
+    "name": "play.tv",
+    "description": "PLAY (formerly goplay.be)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kommunetv": {
+    "name": "kommunetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "israelnationalnews": {
+    "name": "israelnationalnews",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "alibaba": {
+    "name": "alibaba",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hellporno": {
+    "name": "hellporno",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "simplecast": {
+    "name": "simplecast:episode",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "livestream": {
+    "name": "livestream:shortener",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hungama": {
+    "name": "hungama",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "stitcher": {
+    "name": "stitcher",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "testurl": {
+    "name": "testurl",
+    "description": "Allows addressing of the test cases as test:yout.*be_1 ",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pialive": {
+    "name": "pialive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "thisvid": {
+    "name": "thisvid",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hearthisat": {
+    "name": "hearthisat",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nitter": {
+    "name": "nitter",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "francaisfacile": {
+    "name": "francaisfacile",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "taptap": {
+    "name": "taptap",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "phoenix": {
+    "name": "phoenix.de",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "whyp": {
+    "name": "whyp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "litv": {
+    "name": "litv",
+    "description": "",
+    "countries": [
+      "TW"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "scte": {
+    "name": "scte",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "closertotruth": {
+    "name": "closertotruth",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "holodex": {
+    "name": "holodex",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "breitbart": {
+    "name": "breitbart",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "arte": {
+    "name": "arte",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "wimtv": {
+    "name": "wimtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "beacon": {
+    "name": "beacon",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "beatport": {
+    "name": "beatport",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "amazonminitv": {
+    "name": "amazonminitv:season",
+    "description": "Amazon MiniTV Season, \"minitv:season:\" prefix",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ivoox": {
+    "name": "ivoox",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "baidu": {
+    "name": "baidu",
+    "description": "\u767e\u5ea6\u89c6\u9891",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "netzkino": {
+    "name": "netzkino",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "trtcocuk": {
+    "name": "trtcocuk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mangomolo": {
+    "name": "mangomolo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "amadeustv": {
+    "name": "amadeustv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "museai": {
+    "name": "museai",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rtp": {
+    "name": "rtp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "reddit": {
+    "name": "reddit",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "atvat": {
+    "name": "atvat",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "urort": {
+    "name": "urort",
+    "description": "NRK P3 Ur\u00f8rt",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "ustream": {
+    "name": "ustream:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "n1": {
+    "name": "N1Info:article",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "embedly": {
+    "name": "embedly",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "uktvplay": {
+    "name": "uktvplay",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "joj": {
+    "name": "joj",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tv2dk": {
+    "name": "tv2dk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sharevideos": {
+    "name": "sharevideos",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "frontendmasters": {
+    "name": "frontendmasters",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rutube": {
+    "name": "rutube:playlist",
+    "description": "Rutube videos",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ukcolumn": {
+    "name": "ukcolumn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "deuxm": {
+    "name": "deuxm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "charlierose": {
+    "name": "charlierose",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "acast": {
+    "name": "acast:channel",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "hypergryph": {
+    "name": "monstersiren",
+    "description": "\u585e\u58ec\u5531\u7247",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "picarto": {
+    "name": "picarto:vod",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dhm": {
+    "name": "dhm",
+    "description": "Filmarchiv - Deutsches Historisches Museum",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "wwe": {
+    "name": "wwe",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "radiozet": {
+    "name": "radiozet",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ora": {
+    "name": "ora",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "utreon": {
+    "name": "playeur",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "americastestkitchen": {
+    "name": "americastestkitchen",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cpac": {
+    "name": "cpac:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "noz": {
+    "name": "noz",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "hypem": {
+    "name": "hypem",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "redbee": {
+    "name": "parliamentlive.tv",
+    "description": "UK parliament videos",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "appletrailers": {
+    "name": "appletrailers:section",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sunporno": {
+    "name": "sunporno",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "tvc": {
+    "name": "tvc",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "callin": {
+    "name": "callin",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nubilesporn": {
+    "name": "nubilesporn",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "jstream": {
+    "name": "jstream",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mxplayer": {
+    "name": "mxplayer",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ndtv": {
+    "name": "ndtv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "nick": {
+    "name": "nick.com",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "twitch": {
+    "name": "twitch:videos:collections",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sendtonews": {
+    "name": "sendtonews",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "syvdk": {
+    "name": "syvdk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "imgur": {
+    "name": "imgur:gallery",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "yfanefa": {
+    "name": "yfanefa",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "varzesh3": {
+    "name": "varzesh3",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "icareus": {
+    "name": "icareus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mirrativ": {
+    "name": "mirrativ:user",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "chilloutzone": {
+    "name": "chilloutzone",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tf1": {
+    "name": "tf1",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "googlesearch": {
+    "name": "video.google:search",
+    "description": "Google Video search",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "c56": {
+    "name": "56.com",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "buzzfeed": {
+    "name": "buzzfeed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "err": {
+    "name": "err",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ntvde": {
+    "name": "n-tv.de",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "svt": {
+    "name": "svt:play:series",
+    "description": "SVT Play and \u00d6ppet arkiv",
+    "countries": [
+      "SE"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "tver": {
+    "name": "tver",
+    "description": "",
+    "countries": [
+      "JP"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "fptplay": {
+    "name": "fptplay",
+    "description": "fptplay.vn",
+    "countries": [
+      "VN"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "zaiko": {
+    "name": "zaiko",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "youjizz": {
+    "name": "youjizz",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telemb": {
+    "name": "telemb",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "cineverse": {
+    "name": "cineverse",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "videocampus_sachsen": {
+    "name": "ViMP:Playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "huajiao": {
+    "name": "huajiao",
+    "description": "\u82b1\u6912\u76f4\u64ad",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tv2hu": {
+    "name": "tv2playseries.hu",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vocaroo": {
+    "name": "vocaroo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "abcotvs": {
+    "name": "abcotvs:clips",
+    "description": "ABC Owned Television Stations",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cellebrite": {
+    "name": "cellebrite",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "steam": {
+    "name": "steam",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mx3": {
+    "name": "mx3",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pr0gramm": {
+    "name": "pr0gramm",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rumble": {
+    "name": "rumble",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "kinja": {
+    "name": "kinja:embed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "expressen": {
+    "name": "expressen",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tv4": {
+    "name": "tv4",
+    "description": "tv4.se and tv4play.se",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "camsoda": {
+    "name": "camsoda",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "viqeo": {
+    "name": "viqeo",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "meipai": {
+    "name": "meipai",
+    "description": "\u7f8e\u62cd",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sexu": {
+    "name": "sexu",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": false
+  },
+  "muenchentv": {
+    "name": "muenchentv",
+    "description": "m\u00fcnchen.tv",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "zapiks": {
+    "name": "zapiks",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "traileraddict": {
+    "name": "traileraddict",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "alura": {
+    "name": "alura",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "screen9": {
+    "name": "screen9",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lbry": {
+    "name": "lbry:playlist",
+    "description": "odysee.com",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "safari": {
+    "name": "safari:course",
+    "description": "safaribooksonline.com online video",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sportdeutschland": {
+    "name": "sporteurope",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nova": {
+    "name": "nova",
+    "description": "TN.cz, Pr\u00e1sk.tv, Nova.cz, Novaplus.cz, FANDA.tv, Kr\u00e1sn\u00e1.cz and Doma.cz",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mir24tv": {
+    "name": "mir24.tv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "peloton": {
+    "name": "peloton:live",
+    "description": "Peloton Live",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "qqmusic": {
+    "name": "qqmusic:playlist",
+    "description": "QQ\u97f3\u4e50",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "plyr": {
+    "name": "plyr",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "telecaribe": {
+    "name": "telecaribe",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "laracasts": {
+    "name": "laracasts:series",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "mediaklikk": {
+    "name": "mediaklikk",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "godtube": {
+    "name": "godtube",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "videomore": {
+    "name": "videomore:season",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "byutv": {
+    "name": "byutv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "musicdex": {
+    "name": "musicdex",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "saitosan": {
+    "name": "Saitosan",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "lifenews": {
+    "name": "life:embed",
+    "description": "Life.ru",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "onsen": {
+    "name": "onsen",
+    "description": "\u30a4\u30f3\u30bf\u30fc\u30cd\u30c3\u30c8\u30e9\u30b8\u30aa\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3\uff1c\u97f3\u6cc9\uff1e",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ntvcojp": {
+    "name": "cu.ntv.co.jp",
+    "description": "\u65e5\u30c6\u30ec\u7121\u6599TADA!",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tvplay": {
+    "name": "mtg",
+    "description": "MTG services",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "radiofrance": {
+    "name": "radiofrance",
+    "description": "Subclasses must set _METADATA_KEY",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "aliexpress": {
+    "name": "aliexpress",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "digiteka": {
+    "name": "digiteka",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cbssports": {
+    "name": "cbssports:embed",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "hitrecord": {
+    "name": "hitrecord",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ign": {
+    "name": "ign.com",
+    "description": "Extractor for some of the IGN sites, like www.ign.com, es.ign.com de.ign.com.\nSome videos of it.ign.com are also supported",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bfmtv": {
+    "name": "bfmtv:article",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "lazy_extractors": {
+    "name": "NiconicoChannelPlus:channel:videos",
+    "description": "ABC Owned Television Stations",
+    "countries": [],
+    "is_adult": true,
+    "working": false
+  },
+  "amazon": {
+    "name": "amazon",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "ivideon": {
+    "name": "ivideon",
+    "description": "Ivideon TV",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rai": {
+    "name": "rai",
+    "description": "",
+    "countries": [
+      "IT"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "premiershiprugby": {
+    "name": "premiershiprugby",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "magentamusik": {
+    "name": "magentamusik",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "srgssr": {
+    "name": "srgssr",
+    "description": "srf.ch, rts.ch, rsi.ch, rtr.ch and swissinfo.ch play sites",
+    "countries": [
+      "CH"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "livejournal": {
+    "name": "livejournal",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "zenporn": {
+    "name": "zenporn",
+    "description": "",
+    "countries": [],
+    "is_adult": true,
+    "working": true
+  },
+  "piapro": {
+    "name": "piapro",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "pbs": {
+    "name": "pbs",
+    "description": "",
+    "countries": [
+      "US"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "sevenplus": {
+    "name": "7plus",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "clyp": {
+    "name": "clyp",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "nebula": {
+    "name": "nebula:subscriptions",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "twitcasting": {
+    "name": "twitcasting",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "euscreen": {
+    "name": "euscreen",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tube8": {
+    "name": "tube8",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "mainstreaming": {
+    "name": "mainstreaming",
+    "description": "MainStreaming Player",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tonline": {
+    "name": "t-online.de",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "viidea": {
+    "name": "viidea",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "jiosaavn": {
+    "name": "jiosaavn:show:playlist",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "bunnycdn": {
+    "name": "bunnycdn",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "cbsnews": {
+    "name": "cbsnews:livevideo",
+    "description": "CBS News",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "flextv": {
+    "name": "ttinglive",
+    "description": "\ub775\ub77c\uc774\ube0c (formerly FlexTV)",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "harpodeon": {
+    "name": "harpodeon",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "zetland": {
+    "name": "zetland",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "sztvhu": {
+    "name": "sztvhu",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "planetmarathi": {
+    "name": "planetmarathi",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "abc": {
+    "name": "abc.net.au:iview:showseries",
+    "description": "",
+    "countries": [
+      "AU"
+    ],
+    "is_adult": false,
+    "working": true
+  },
+  "kompas": {
+    "name": "kompas",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "rtnews": {
+    "name": "rtnews",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "audiodraft": {
+    "name": "Audiodraft:generic",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "berufetv": {
+    "name": "berufetv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "slideslive": {
+    "name": "slideslive",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "erocast": {
+    "name": "erocast",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "radiokapital": {
+    "name": "radiokapital:show",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "vice": {
+    "name": "vice:article",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "yappy": {
+    "name": "yappy",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": false
+  },
+  "xhamster": {
+    "name": "xhamster",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "dailywire": {
+    "name": "dailywire",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "magellantv": {
+    "name": "magellantv",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  },
+  "tv5unis": {
+    "name": "tv5unis:video",
+    "description": "",
+    "countries": [
+      "CA"
+    ],
+    "is_adult": false,
+    "working": false
+  },
+  "tele13": {
+    "name": "tele13",
+    "description": "",
+    "countries": [],
+    "is_adult": false,
+    "working": true
+  }
+}

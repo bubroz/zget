@@ -30,6 +30,11 @@ CREATE TABLE IF NOT EXISTS schema_version (
 -- VIDEOS TABLE
 -- ============================================================================
 
+CREATE TABLE IF NOT EXISTS meta (
+    key TEXT PRIMARY KEY,
+    value TEXT
+);
+
 CREATE TABLE IF NOT EXISTS videos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     
@@ -251,6 +256,18 @@ class VideoStore:
             raise
         finally:
             conn.close()
+
+    def get_metadata(self, key: str, default: Optional[str] = None) -> Optional[str]:
+        """Get a metadata value by key."""
+        with self._connect() as conn:
+            row = conn.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
+            return row["value"] if row else default
+
+    def set_metadata(self, key: str, value: str) -> None:
+        """Set a metadata value."""
+        with self._connect() as conn:
+            conn.execute("INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)", (key, value))
+            conn.commit()
 
     # ========================================================================
     # VIDEO OPERATIONS
