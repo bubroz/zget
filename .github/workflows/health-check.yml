@@ -44,8 +44,9 @@ jobs:
           NORD_PASS: ${{ secrets.NORD_SOCKS_PASS }}
           LOCATION: ${{ matrix.location }}
         run: |
-          # Build proxy string based on location
+          # Build proxy string and mask it in logs for safety
           PROXY="socks5://$NORD_USER:$NORD_PASS@$LOCATION.socks.nordhold.net:1080"
+          echo "::add-mask::$PROXY"
           
           # Run verification with unbuffered output for better logs
           python -u -m zget --health --location $LOCATION --proxy "$PROXY"
