@@ -17,7 +17,7 @@ from textual.widgets import (
     Static,
 )
 
-from ...health import SiteHealth
+from ...health import SiteHealth, COUNTRY_CODES
 from ...db.store import VideoStore
 
 
@@ -36,7 +36,7 @@ class RegistryScreen(Screen):
         self.health = SiteHealth(store)
         self._all_sites: list[dict] = []
         self._filtered_sites: list[dict] = []
-        self._sort_cols = ["name", "working", "country", "category"]
+        self._sort_cols = ["name", "country", "category"]
         self._sort_index = 0
 
     def compose(self) -> ComposeResult:
@@ -62,17 +62,19 @@ class RegistryScreen(Screen):
                         yield Label("", id="site-confidence")
                         yield Label("", id="site-health-status")
                         yield Label("", id="site-health-verified")
+                        yield Label("ARCHIVE.ORG", id="archive-header")
+                        yield Label("", id="site-archive-snapshot")
+                        yield Label("", id="site-archive-link")
 
         yield Footer()
 
     async def on_mount(self) -> None:
         """Initialize the site list."""
         table = self.query_one("#registry-table", DataTable)
-        table.add_column("Site Name", width=25)
-        table.add_column("Health", width=8)
-        table.add_column("Category", width=20)
-        table.add_column("Status", width=12)
-        table.add_column("Region", width=8)
+        table.add_column("Site Name", width=40)
+        table.add_column("Health", width=6)
+        table.add_column("Category", width=25)
+        table.add_column("Country", width=20)
         table.zebra_stripes = True
 
         await self._load_data()
@@ -113,15 +115,15 @@ class RegistryScreen(Screen):
             else:
                 health_icon = "⚪"  # Never verified
 
-            # Status text from yt-dlp matrix
-            status_text = "Working" if site_info.get("working", True) else "Broken"
+            # Country full name
+            country_code = site_info.get("country", "Unknown")
+            country_name = COUNTRY_CODES.get(country_code, country_code)
 
             table.add_row(
                 site_info["name"],
                 health_icon,
                 site_info.get("category", "Uncategorized"),
-                status_text,
-                site_info.get("country", "??"),
+                country_name,
                 key=site_info["name"],
             )
 
@@ -156,17 +158,18 @@ class RegistryScreen(Screen):
                     for s in self._all_sites
                     if query in s["name"].lower()
                     or query in s.get("category", "").lower()
+                    or query in COUNTRY_CODES.get(s.get("country", ""), "").lower()
                     or query in s.get("country", "").lower()
                 ]
             self._populate_table()
 
     def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted) -> None:
         """Update details pane when navigating the table."""
-        if event.row_key:
-            site_name = str(event.row_key)
-            site_info = next((s for s in self._filtered_sites if s["name"] == site_name), None)
-            if site_info:
-                self._update_details(site_info)
+        # Use simple coordinate-based indexing for 100% reliability
+        row_idx = event.cursor_row
+        if 0 <= row_idx < len(self._filtered_sites):
+            site_info = self._filtered_sites[row_idx]
+            self.run_worker(self._update_details(site_info))
 
     def _update_details(self, site_info: dict) -> None:
         """Update the side detail panel."""
@@ -177,8 +180,10 @@ class RegistryScreen(Screen):
         self.query_one("#site-desc", Static).update(desc)
 
         # Country
+        country_code = site_info.get("country", "Unknown")
+        country_name = COUNTRY_CODES.get(country_code, country_code)
         self.query_one("#site-country", Label).update(
-            f"[bold]Region:[/bold] {site_info.get('country', 'Unknown')}"
+            f"[bold]Country:[/bold] {country_name} ({country_code})"
         )
 
         # Category
@@ -245,8 +250,28 @@ class RegistryScreen(Screen):
             )
         else:
             self.query_one("#site-health-verified", Label).update(
-                f"[bold]Smokescreen:[/bold] [dim]Never verified[/dim]"
+                f"[bold]Smokescreen:[/bold] [dim]Not yet verified[/dim]"
             )
+
+        # Archive.org Lookup
+        archive_snap = self.query_one("#site-archive-snapshot", Label)
+        archive_link = self.query_one("#site-archive-link", Label)
+
+        archive_snap.update("[dim]Checking Archive.org...[/dim]")
+        archive_link.update("")
+
+        # Fetch archive info
+        domain = site_info.get("domain", site_info["name"])
+        snapshot = await self.health.get_archive_snapshot(domain)
+
+        if snapshot:
+            archive_snap.update(f"[bold]Latest Snapshot:[/bold] {snapshot['date']}")
+            archive_link.update(
+                f"[bold]Historical Link:[/bold] [blue underline]{snapshot['url']}[/blue underline]"
+            )
+        else:
+            archive_snap.update("[bold]Archive.org:[/bold] [dim]No snapshots found[/dim]")
+            archive_link.update("")
 
     def action_focus_search(self) -> None:
         self.query_one("#registry-search", Input).focus()
