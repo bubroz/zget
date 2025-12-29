@@ -45,27 +45,24 @@ jobs:
           LOCATION: ${{ matrix.location }}
         run: |
           # Build proxy string based on location
-          # Servers: us.socks.nordhold.net, nl.socks.nordhold.net, se.socks.nordhold.net
           PROXY="socks5://$NORD_USER:$NORD_PASS@$LOCATION.socks.nordhold.net:1080"
           
-          # Run verification (TOP_SITES + rotating sample)
-          # We run directly via zget cli
-          python -m zget --health --location $LOCATION --proxy "$PROXY"
+          # Run verification with unbuffered output for better logs
+          python -u -m zget --health --location $LOCATION --proxy "$PROXY"
 
       - name: Commit and Push Results
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Pull latest to avoid conflicts with other matrix runs
-          git pull origin main --rebase
-          
           git add data/health_log.json
           
-          # Only commit if something changed
-          if git diff --staged --quiet; then
-            echo "No changes to health_log.json"
+          # Check if data/health_log.json actually changed
+          if git diff --cached --quiet data/health_log.json; then
+            echo "No changes detected in health results."
           else
-            git commit -m "Smokescreen Health Engine: Update results from $LOCATION"
+            # Rebase to handle parallel job completion
+            git pull origin main --rebase
+            git commit -m "Smokescreen Health Engine: Update results from $LOCATION [skip ci]"
             git push origin main
           fi
