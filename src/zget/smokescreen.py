@@ -271,12 +271,35 @@ def save_health_log(results: List[HealthResult], path: Path) -> None:
 
 
 def load_health_log(path: Path) -> Dict[str, dict]:
-    """Load health log from JSON file."""
+    """Load health log from JSON file, with auto-migration for legacy list format."""
     if not path.exists():
         return {}
     try:
         with open(path) as f:
-            return json.load(f)
+            data = json.load(f)
+
+        # Handle legacy list format: [{site: '...', ...}, ...]
+        if isinstance(data, list):
+            migrated = {}
+            for item in data:
+                site = item.get("site")
+                if site:
+                    # Convert legacy fields if necessary
+                    # Older versions used 'timestamp' instead of 'verified_at'
+                    # and 'latency' (seconds) instead of 'latency_ms'
+                    result = {
+                        "site": site,
+                        "status": item.get("status", "unknown").lower(),
+                        "latency_ms": item.get("latency_ms") or int(item.get("latency", 0) * 1000),
+                        "error": item.get("error"),
+                        "verified_at": item.get("verified_at") or item.get("timestamp"),
+                        "test_url": item.get("test_url"),
+                        "tested_from": item.get("tested_from", "local"),
+                    }
+                    migrated[site.lower()] = result
+            return migrated
+
+        return data
     except (json.JSONDecodeError, IOError):
         return {}
 
