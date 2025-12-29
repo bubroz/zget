@@ -166,9 +166,11 @@ async def handle_health(args):
     table.add_column("Latency")
     table.add_column("Details")
 
+    all_results = []
     with Live(table, console=console, refresh_per_second=4):
 
         def on_result(r):
+            all_results.append(r)
             status_color = (
                 "green" if r.status == "ok" else "yellow" if r.status == "geo_blocked" else "red"
             )
@@ -181,6 +183,13 @@ async def handle_health(args):
 
         await health.run_smokescreen(
             sites=sites, proxy=args.proxy, tested_from=args.location, on_result=on_result
+        )
+
+    # Persist results after verification
+    if all_results:
+        health.save_health_log(all_results)
+        console.print(
+            f"\n[bold green]✓[/bold green] Saved {len(all_results)} verification results."
         )
 
 
