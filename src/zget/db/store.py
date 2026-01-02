@@ -278,7 +278,7 @@ class VideoStore:
         with self._connect() as conn:
             cursor = conn.execute(
                 """
-                INSERT INTO videos (
+                INSERT OR IGNORE INTO videos (
                     url, platform, video_id, title, description,
                     uploader, uploader_id, upload_date, duration_seconds,
                     view_count, like_count, comment_count,

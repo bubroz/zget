@@ -145,6 +145,15 @@ PLATFORM_PATTERNS = {
     ],
 }
 
+PLATFORM_DISPLAY = {
+    "youtube": "YouTube",
+    "tiktok": "TikTok",
+    "instagram": "Instagram",
+    "twitter": "X",
+    "reddit": "Reddit",
+    "twitch": "Twitch",
+}
+
 
 def detect_platform(url: str) -> str:
     """Detect the platform from a URL."""

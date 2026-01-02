@@ -27,7 +27,7 @@ class Video(BaseModel):
     uploader: str
     uploader_id: Optional[str] = None
     upload_date: Optional[datetime] = None
-    duration_seconds: Optional[int] = None
+    duration_seconds: Optional[float] = None
 
     # Engagement metrics
     view_count: Optional[int] = None
@@ -121,7 +121,7 @@ class DownloadTask(BaseModel):
     # Optional pre-fetched info
     title: Optional[str] = None
     uploader: Optional[str] = None
-    duration_seconds: Optional[int] = None
+    duration_seconds: Optional[float] = None
     thumbnail_url: Optional[str] = None
 
     # Download options
@@ -162,7 +162,7 @@ class ExportedVideo(BaseModel):
     uploader: str
     uploader_id: Optional[str] = None
     upload_date: Optional[str] = None  # ISO format string
-    duration_seconds: Optional[int] = None
+    duration_seconds: Optional[float] = None
     view_count: Optional[int] = None
     like_count: Optional[int] = None
     resolution: Optional[str] = None

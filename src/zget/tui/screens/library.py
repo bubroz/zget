@@ -22,6 +22,7 @@ from textual.widgets import (
 )
 
 from ...db import Video
+from ...config import PLATFORM_DISPLAY
 
 
 class VideoDetailsModal(ModalScreen):
@@ -117,7 +118,7 @@ class VideoDetailsModal(ModalScreen):
 
         # Format duration
         if video.duration_seconds:
-            hours, remainder = divmod(video.duration_seconds, 3600)
+            hours, remainder = divmod(int(video.duration_seconds), 3600)
             minutes, seconds = divmod(remainder, 60)
             if hours:
                 duration = f"{hours}:{minutes:02d}:{seconds:02d}"
@@ -285,13 +286,13 @@ class LibraryScreen(Screen):
 
         if self._compact_mode:
             # Compact: just the essentials
-            table.add_column("Uploader", width=16)
+            table.add_column("Uploader", width=20)
             table.add_column("Title")  # Flexible
             table.add_column("Duration", width=9)
         else:
             # Full: all columns
             table.add_column("Platform", width=10)
-            table.add_column("Uploader", width=14)
+            table.add_column("Uploader", width=20)
             table.add_column("Title")  # Flexible
             table.add_column("Duration", width=8)
             table.add_column("Size", width=8)
@@ -577,7 +578,7 @@ class LibraryScreen(Screen):
 
         for video in self._videos:
             # Normalize for display: strip emojis and truncate
-            uploader = self._normalize_for_display(video.uploader or "Unknown", max_len=16)
+            uploader = self._normalize_for_display(video.uploader or "Unknown", max_len=20)
             title = self._normalize_for_display(video.title or "Untitled", max_len=70)
             duration = self._format_duration(video.duration_seconds)
 
@@ -629,23 +630,15 @@ class LibraryScreen(Screen):
             info_label.update(f"{count} video{'s' if count != 1 else ''} | {total_size}{rate_info}")
 
     def _format_platform(self, platform: str) -> str:
-        """Format platform name for display - full names."""
-        names = {
-            "youtube": "YouTube",
-            "tiktok": "TikTok",
-            "instagram": "Instagram",
-            "twitter": "X",  # X is the new name
-            "reddit": "Reddit",
-            "twitch": "Twitch",
-        }
-        return names.get(platform, platform.capitalize())
+        """Format platform name for display using centralized mapping."""
+        return PLATFORM_DISPLAY.get(platform, platform.capitalize())
 
-    def _format_duration(self, seconds: int | None) -> str:
+    def _format_duration(self, seconds: float | None) -> str:
         """Format duration in MM:SS or HH:MM:SS."""
         if not seconds:
             return "--:--"
 
-        minutes, secs = divmod(seconds, 60)
+        minutes, secs = divmod(int(seconds), 60)
         if minutes >= 60:
             hours, minutes = divmod(minutes, 60)
             return f"{hours}:{minutes:02d}:{secs:02d}"
