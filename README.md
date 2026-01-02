@@ -84,9 +84,50 @@ src/zget/
 ├── db/             # SQLite database layer
 ├── library/        # Media library management
 ├── queue/          # Background download queue
+├── mcp/            # MCP server for agent integration
+│   ├── server.py   # JSON-RPC over stdio
+│   └── tools.py    # Tool implementations
 └── tui/            # Textual-based TUI
     ├── app.py      # Main application
     └── screens/    # Screen components
+```
+
+## MCP Server (Agent Integration)
+
+zget includes an MCP (Model Context Protocol) server that allows AI agents to access the video library programmatically.
+
+### Start the MCP Server
+
+```bash
+zget-mcp
+```
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `zget_download` | Download a video to the library |
+| `zget_search` | Full-text search across library |
+| `zget_get_video` | Get full video metadata by ID |
+| `zget_get_local_path` | Get file path for a video |
+| `zget_extract_info` | Extract metadata without downloading |
+| `zget_list_formats` | List available formats |
+| `zget_check_url` | Check if URL already exists |
+| `zget_get_recent` | Get recently downloaded videos |
+| `zget_get_by_uploader` | Get videos by uploader |
+
+### Use with Antigravity
+
+Add to your MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "zget": {
+      "command": "zget-mcp"
+    }
+  }
+}
 ```
 
 ## Acknowledgments
