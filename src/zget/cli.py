@@ -365,7 +365,7 @@ def handle_list_formats(args):
 def handle_search(query: str):
     """Search library and print results."""
     from zget.db import VideoStore
-    from zget.config import DB_PATH, ensure_directories
+    from zget.config import DB_PATH, ensure_directories, PLATFORM_DISPLAY
     from rich.table import Table
 
     ensure_directories()
@@ -386,11 +386,12 @@ def handle_search(query: str):
     for v in videos:
         duration = ""
         if v.duration_seconds:
-            mins, secs = divmod(v.duration_seconds, 60)
+            mins, secs = divmod(int(v.duration_seconds), 60)
             duration = f"{mins}:{secs:02d}"
 
+        platform_name = PLATFORM_DISPLAY.get(v.platform, v.platform.capitalize())
         table.add_row(
-            v.platform,
+            platform_name,
             v.uploader[:15] if v.uploader else "?",
             v.title[:40] if v.title else "?",
             duration,
@@ -403,7 +404,13 @@ def handle_search(query: str):
 def handle_stats():
     """Show library statistics."""
     from zget.db import VideoStore
-    from zget.config import DB_PATH, VIDEOS_DIR, THUMBNAILS_DIR, ensure_directories
+    from zget.config import (
+        DB_PATH,
+        VIDEOS_DIR,
+        THUMBNAILS_DIR,
+        ensure_directories,
+        PLATFORM_DISPLAY,
+    )
     from rich.panel import Panel
     from rich.table import Table
 
@@ -427,7 +434,8 @@ def handle_stats():
     table.add_column("Count", justify="right")
 
     for platform, count in stats["platforms"].items():
-        table.add_row(f"  {platform}", str(count))
+        platform_name = PLATFORM_DISPLAY.get(platform, platform.capitalize())
+        table.add_row(f"  {platform_name}", str(count))
 
     console.print(
         Panel(

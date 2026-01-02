@@ -13,6 +13,7 @@ from typing import Callable, Optional
 import yt_dlp
 
 from .config import (
+    BROWSER_PROFILE,
     DEFAULT_COOKIE_BROWSER,
     FILENAME_TEMPLATE_SAFE,
     detect_platform,
@@ -70,9 +71,6 @@ def download(
         "restrictfilenames": False,  # Allow unicode in filenames
         "windowsfilenames": True,  # But sanitize for safety
         "ffmpeg_location": "/opt/homebrew/bin/",  # Homebrew ffmpeg on Apple Silicon
-        # Enable EJS remote components for YouTube JS challenge solver
-        # This is required to get video formats on YouTube
-        "enable_ejs_remote_components": "github",
         # IMPORTANT: Only download single video, not entire playlist
         "noplaylist": True,
     }
@@ -120,7 +118,10 @@ def download(
         # Use platform-specific default browser for cookies
         default_browser = get_cookie_browser(platform)
         if default_browser:
-            opts["cookiesfrombrowser"] = (default_browser,)
+            if BROWSER_PROFILE:
+                opts["cookiesfrombrowser"] = (default_browser, BROWSER_PROFILE)
+            else:
+                opts["cookiesfrombrowser"] = (default_browser,)
 
     # Progress callback
     downloaded_filepath = None
@@ -159,16 +160,28 @@ def download(
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
 
-        # Get the final filename (may differ from prepared filename due to merging)
+        # Get the final filename
+        # requested_downloads is the most reliable source for the final merged file path
+        requested = info.get("requested_downloads")
+        if requested and len(requested) > 0:
+            downloaded_filepath = requested[0].get("filepath")
+
+        # Fallback to prepare_filename if hook didn't catch it or requested_downloads is missing
         if downloaded_filepath is None:
             downloaded_filepath = ydl.prepare_filename(info)
 
-        # Handle merged output format
+        # Handle merged output format (backup check)
         if opts.get("merge_output_format"):
-            base = Path(downloaded_filepath)
-            merged_path = base.with_suffix(f".{opts['merge_output_format']}")
-            if merged_path.exists():
-                downloaded_filepath = str(merged_path)
+            # Check if ydl.prepare_filename(info) already has the right extension
+            path = Path(downloaded_filepath)
+            expected_ext = f".{opts['merge_output_format']}"
+            if path.suffix != expected_ext:
+                merged_path = path.with_suffix(expected_ext)
+                if merged_path.exists():
+                    downloaded_filepath = str(merged_path)
+
+    # Sanitize metadata for database (remove non-JSON-serializable objects)
+    info = _sanitize_info(info)
 
     # Add our metadata
     info["_zget_filepath"] = downloaded_filepath
@@ -208,10 +221,16 @@ def extract_info(
     else:
         default_browser = get_cookie_browser(platform)
         if default_browser:
-            opts["cookiesfrombrowser"] = (default_browser,)
+            if BROWSER_PROFILE:
+                opts["cookiesfrombrowser"] = (default_browser, BROWSER_PROFILE)
+            else:
+                opts["cookiesfrombrowser"] = (default_browser,)
 
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=False)
+
+    # Sanitize metadata
+    info = _sanitize_info(info)
 
     info["_zget_platform"] = platform
     return info
@@ -403,3 +422,27 @@ def get_recent_videos_from_channel(
         )
 
     return videos
+
+
+def _sanitize_info(info: dict) -> dict:
+    """
+    Recursively sanitize yt-dlp info_dict for JSON serialization.
+
+    Removes non-serializable objects like post-processors or logger objects.
+    """
+    serializable_types = (str, int, float, bool, type(None))
+
+    if isinstance(info, dict):
+        return {
+            str(k): _sanitize_info(v)
+            for k, v in info.items()
+            if not str(k).startswith("_")
+            or k in ("_zget_filepath", "_zget_platform", "_zget_downloaded_at")
+        }
+    elif isinstance(info, list):
+        return [_sanitize_info(i) for i in info]
+    elif isinstance(info, serializable_types):
+        return info
+    else:
+        # Convert everything else to string representation
+        return str(info)

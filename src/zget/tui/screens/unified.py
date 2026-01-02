@@ -22,7 +22,7 @@ from textual.widgets import (
     Static,
 )
 
-from ...config import detect_platform
+from ...config import detect_platform, PLATFORM_DISPLAY
 from ...db import Video
 from ...queue import DownloadQueue, QueueItem, QueueStatus
 
@@ -101,7 +101,7 @@ class VideoDetailsModal(ModalScreen):
 
         duration = "Unknown"
         if video.duration_seconds:
-            hours, remainder = divmod(video.duration_seconds, 3600)
+            hours, remainder = divmod(int(video.duration_seconds), 3600)
             minutes, seconds = divmod(remainder, 60)
             if hours:
                 duration = f"{hours}:{minutes:02d}:{seconds:02d}"
@@ -258,12 +258,12 @@ class UnifiedScreen(Screen):
         table.zebra_stripes = True
 
         if self._compact_mode:
-            table.add_column("Uploader", width=14)
+            table.add_column("Uploader", width=20)
             table.add_column("Title")
             table.add_column("Duration", width=8)
         else:
             table.add_column("Platform", width=10)
-            table.add_column("Uploader", width=14)
+            table.add_column("Uploader", width=20)
             table.add_column("Title")
             table.add_column("Duration", width=8)
             table.add_column("Size", width=8)
@@ -316,20 +316,13 @@ class UnifiedScreen(Screen):
         return cleaned
 
     def _format_platform(self, platform: str) -> str:
-        names = {
-            "youtube": "YouTube",
-            "tiktok": "TikTok",
-            "instagram": "Instagram",
-            "twitter": "X",
-            "reddit": "Reddit",
-            "twitch": "Twitch",
-        }
-        return names.get(platform, platform.capitalize())
+        """Format platform name for display using centralized mapping."""
+        return PLATFORM_DISPLAY.get(platform, platform.capitalize())
 
-    def _format_duration(self, seconds: int | None) -> str:
+    def _format_duration(self, seconds: float | None) -> str:
         if not seconds:
             return "--:--"
-        minutes, secs = divmod(seconds, 60)
+        minutes, secs = divmod(int(seconds), 60)
         if minutes >= 60:
             hours, minutes = divmod(minutes, 60)
             return f"{hours}:{minutes:02d}:{secs:02d}"
@@ -486,19 +479,25 @@ class UnifiedScreen(Screen):
             pass
 
     def _on_progress(self, item: QueueItem) -> None:
-        self._update_queue_row(item)
-        self._update_stats()
+        """Handle progress updates (called from async context)."""
+        # Use call_later since we're in the same event loop, not a different thread
+        self.app.call_later(self._update_queue_row, item)
+        self.app.call_later(self._update_stats)
 
     def _on_complete(self, item: QueueItem) -> None:
-        self._update_queue_row(item)
-        self._update_stats()
-        self._load_videos()  # Refresh library
-        self.notify(f"Complete: {item.title or 'Video'}", timeout=3)
+        """Handle download completion (called from async context)."""
+        self.app.call_later(self._update_queue_row, item)
+        self.app.call_later(self._update_stats)
+        self.app.call_later(self._load_videos)
+        self.app.call_later(self.notify, f"Complete: {item.title or 'Video'}", timeout=3)
 
     def _on_error(self, item: QueueItem, error: Exception) -> None:
-        self._update_queue_row(item)
-        self._update_stats()
-        self.notify(f"Failed: {item.title or item.url[:30]}", severity="error", timeout=5)
+        """Handle download errors (called from async context)."""
+        self.app.call_later(self._update_queue_row, item)
+        self.app.call_later(self._update_stats)
+        self.app.call_later(
+            self.notify, f"Failed: {item.title or item.url[:30]}", severity="error", timeout=5
+        )
 
     def _is_valid_url(self, url: str) -> bool:
         return bool(url) and url.startswith(("http://", "https://", "www."))

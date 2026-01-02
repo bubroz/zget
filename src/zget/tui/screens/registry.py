@@ -171,7 +171,7 @@ class RegistryScreen(Screen):
             site_info = self._filtered_sites[row_idx]
             self.run_worker(self._update_details(site_info))
 
-    def _update_details(self, site_info: dict) -> None:
+    async def _update_details(self, site_info: dict) -> None:
         """Update the side detail panel."""
         # Description
         desc = site_info.get("description", "")
