@@ -9,7 +9,6 @@ These instructions are for AI assistants working in this project.
 
 ## Critical Guidelines
 
-- **No TUI**: The terminal UI has been retired. Focus on the FastAPI/PWA core (`src/zget/server/`) and the MCP server (`src/zget/mcp/`).
 - **The Triad**:
   - **The Archivist**: Orchestrates ingestion and format standards (H.264/AAC for universal compatibility).
   - **The Vault**: SQLite-backed local storage for high-fidelity archival.
