@@ -59,13 +59,13 @@ src/zget/
 
 | Tool | Action |
 |------|--------|
-| `zget_download` | Command the archivist to ingestion a URL |
+| `zget_download` | Command the archivist to ingest a URL |
 | `zget_search` | Query the vault |
-| `zget_get_local_path` | Handoff file paths to other agents (e.g., Librarian) |
+| `zget_get_local_path` | Handoff file paths to other agents |
 
 ## Credits & Acknowledgments
 
-`zget` is built on the shoulders of giants:
+`zget` is built on the shoulders of others:
 
 - **[yt-dlp](https://github.com/yt-dlp/yt-dlp)**: The unparalleled extraction engine that powers The Archivist's 1,899+ site capacity.
 - **[FastAPI](https://fastapi.tiat.io/)**: The high-performance server framework driving The Archivist.
