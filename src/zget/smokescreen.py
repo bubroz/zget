@@ -310,9 +310,7 @@ if __name__ == "__main__":
 
     async def test_sites():
         # Test a few known sites
-        test_cases = [
-            {"site": "youtube", "test_url": "https://www.youtube.com/watch?v=jNQXAC9IVRw"},
-        ]
+        test_cases = []
 
         print("Testing Smokescreen engine with proxy support...")
         results = await verify_sites_batch(

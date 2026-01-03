@@ -3,7 +3,7 @@
 
 These instructions are for AI assistants working in this project.
 
-## Mission: The Museum Pro Archival Engine
+## Mission: The Archival Engine
 
 `zget` is a high-fidelity media archival system built for the Digital Intelligence Ecosystem. It operates as **"The Archivist"**, managing **"The Vault"** (local persistence) and providing **"The Portal"** (PWA discovery).
 
