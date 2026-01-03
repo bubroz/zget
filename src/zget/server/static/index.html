@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>zget | Webport</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0A0612;
+            /* StoryTime void */
+            --surface: #16121e;
+            --accent: #FFD54F;
+            /* StoryTime gold */
+            --accent-amber: #FFAB40;
+            --accent-glow: rgba(255, 213, 79, 0.3);
+            --text-main: #FFF8E1;
+            /* StoryTime cream */
+            --text-dim: rgba(255, 248, 225, 0.6);
+            --glass: rgba(22, 18, 30, 0.85);
+            --border: rgba(255, 213, 79, 0.15);
+            --crt-scanline: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.05) 2px, rgba(0, 0, 0, 0.05) 4px);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(255, 213, 79, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(255, 171, 64, 0.05) 0%, transparent 40%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--crt-scanline);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-top: 10px;
+        }
+
+        .logo {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8), 0 0 10px var(--accent-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .logo span {
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0.6;
+        }
+
+        /* Input Area */
+        .search-container {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            padding: 12px 15px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        button.action-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 14px;
+            padding: 0 24px;
+            color: var(--bg);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(255, 213, 79, 0.2);
+        }
+
+        button.action-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* Sections */
+        h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        /* Download Cards */
+        .download-item {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .download-item:active {
+            transform: scale(0.98);
+        }
+
+        .download-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .download-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
+        }
+
+        .download-status {
+            font-size: 0.6rem;
+            font-family: 'Press Start 2P', cursive;
+            color: var(--accent-amber);
+            text-transform: uppercase;
+        }
+
+        .progress-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .download-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* Library List */
+        .library-item {
+            display: flex;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .video-thumb {
+            width: 100px;
+            height: 56px;
+            background: var(--surface);
+            border-radius: 8px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .video-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .video-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* Floating Stats bar */
+        .stats-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 30px;
+            display: flex;
+            gap: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .stats-bar {
+                width: 90%;
+                gap: 15px;
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">zget<span>webport</span></div>
+            <div id="status-dot"
+                style="width: 8px; height: 8px; border-radius: 50%; background: #4caf50; box-shadow: 0 0 10px #4caf50;">
+            </div>
+        </header>
+
+        <section class="section">
+            <div class="search-container">
+                <input type="text" id="url-input" placeholder="Paste video URL here..." autocomplete="off">
+                <button class="action-btn" id="archive-btn">ARCHIVE</button>
+            </div>
+        </section>
+
+        <section class="section" id="active-downloads" style="display: none;">
+            <h2>Downloading</h2>
+            <div id="queue-list">
+                <!-- Downloads will be injected here -->
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Library</h2>
+            <div id="library-list">
+                <!-- Library items will be injected here -->
+                <div style="text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.9rem;">
+                    Syncing database...
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat">
+            <span class="stat-value" id="stat-count">--</span>
+            <span class="stat-label">Videos</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value" id="stat-size">--</span>
+            <span class="stat-label">Storage</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value" id="stat-queue">0</span>
+            <span class="stat-label">Active</span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        const urlInput = document.getElementById('url-input');
+        const archiveBtn = document.getElementById('archive-btn');
+        const queueList = document.getElementById('queue-list');
+        const activeSection = document.getElementById('active-downloads');
+        const libraryList = document.getElementById('library-list');
+
+        // Initial Data Fetch
+        async function fetchInitial() {
+            try {
+                const lib = await fetch(`${API_BASE}/library`).then(r => r.json());
+                renderLibrary(lib);
+                updateStats(lib);
+            } catch (e) {
+                console.error('Fetch error:', e);
+            }
+        }
+
+        function renderLibrary(videos) {
+            if (!videos.length) {
+                libraryList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-dim);">Library is empty</div>';
+                return;
+            }
+
+            libraryList.innerHTML = videos.map(v => `
+                <a href="${API_BASE}/downloads/${v.video_id}" class="library-item" onclick="return false;">
+                    <div class="video-thumb">
+                        <img src="/thumbnails/${v.video_id}.jpg" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='">
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${v.title || 'Untitled'}</div>
+                        <div class="video-meta">${v.uploader} • ${formatSize(v.file_size_bytes)}</div>
+                        <div style="margin-top: 8px;">
+                            <a href="/api/media/${v.video_id}" download class="action-btn" style="padding: 4px 12px; font-size: 0.7rem; text-decoration: none; display: inline-block;">DOWNLOAD</a>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function formatSize(bytes) {
+            if (!bytes) return '0 B';
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let i = 0;
+            while (bytes >= 1024 && i < units.length - 1) {
+                bytes /= 1024;
+                i++;
+            }
+            return `${bytes.toFixed(1)} ${units[i]}`;
+        }
+
+        function updateStats(videos) {
+            document.getElementById('stat-count').textContent = videos.length;
+            const totalSize = videos.reduce((acc, v) => acc + (v.file_size_bytes || 0), 0);
+            document.getElementById('stat-size').textContent = formatSize(totalSize);
+        }
+
+        // Archive Action
+        archiveBtn.onclick = async () => {
+            const url = urlInput.value.trim();
+            if (!url) return;
+
+            try {
+                archiveBtn.disabled = true;
+                archiveBtn.textContent = '...';
+
+                const res = await fetch(`${API_BASE}/downloads`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                }).then(r => r.json());
+
+                urlInput.value = '';
+                archiveBtn.textContent = 'ARCHIVE';
+                archiveBtn.disabled = false;
+
+                // Jump to active section
+                pollQueue();
+            } catch (e) {
+                alert('Archive failed: ' + e);
+                archiveBtn.textContent = 'ARCHIVE';
+                archiveBtn.disabled = false;
+            }
+        };
+
+        // Queue Polling
+        async function pollQueue() {
+            try {
+                const queue = await fetch(`${API_BASE}/downloads`).then(r => r.json());
+                const active = queue.filter(q => q.status !== 'complete' && q.status !== 'failed');
+
+                document.getElementById('stat-queue').textContent = active.length;
+
+                if (queue.length > 0) {
+                    activeSection.style.display = 'block';
+                    queueList.innerHTML = queue.map(item => `
+                        <div class="download-item">
+                            <div class="download-info">
+                                <div class="download-title">${item.title || item.url}</div>
+                                <div class="download-status">${item.status}</div>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: ${item.progress || 0}%"></div>
+                            </div>
+                            <div class="download-meta">
+                                <span>${item.progress || 0}%</span>
+                                <span>${item.speed || ''}</span>
+                                <span>${item.eta || ''}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    activeSection.style.display = 'none';
+                }
+
+                // If something finished, refresh library
+                const finished = queue.some(q => q.status === 'complete');
+                if (finished) {
+                    // Cleanup complete items from view after a bit? Or just rely on server.
+                    // For now, refresh library.
+                    fetchInitial();
+                }
+
+            } catch (e) {
+                console.error('Queue poll error:', e);
+            }
+        }
+
+        // Handle URL from share sheet
+        const params = new URLSearchParams(window.location.search);
+        const shareUrl = params.get('url') || params.get('text');
+        if (shareUrl) {
+            const match = shareUrl.match(/https?:\/\/[^\s]+/);
+            if (match) {
+                urlInput.value = match[0];
+            }
+        }
+
+        // Intervals
+        fetchInitial();
+        setInterval(pollQueue, 2000);
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+
+    </script>
+</body>
+
+</html>

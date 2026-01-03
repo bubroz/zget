@@ -1,3 +1,0 @@
-"""
-zget TUI widgets package.
-"""
