@@ -207,6 +207,7 @@ class DownloadQueue:
 
     async def start(self):
         """Start processing the queue."""
+
         if self._running:
             return
 
@@ -230,6 +231,7 @@ class DownloadQueue:
 
     async def _process_queue(self):
         """Main queue processing loop."""
+
         while self._running:
             try:
                 # Wait for an item with timeout
@@ -243,6 +245,7 @@ class DownloadQueue:
                     continue
 
                 # Acquire semaphore for concurrency control
+
                 await self._semaphore.acquire()
 
                 # Start download task
@@ -257,6 +260,7 @@ class DownloadQueue:
 
     async def _download_item(self, item: QueueItem):
         """Download a single queue item."""
+
         try:
             item.status = QueueStatus.DOWNLOADING
             item.started_at = datetime.now()

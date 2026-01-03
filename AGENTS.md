@@ -1,27 +1,17 @@
 <!-- OPENSPEC:START -->
-# OpenSpec Instructions
+# OpenSpec Instructions: zget
 
 These instructions are for AI assistants working in this project.
 
-## Project Quick Stats
+## Mission: The Archival Intelligence Engine
 
-- **1,899 extractors** with 100% high-confidence metadata
-- SQLite-backed library with FTS5 search
-- Textual TUI with modern vintage aesthetic
+`zget` is a headless archival engine and Webport (PWA) designed for high-fidelity media preservation. It operates as "The Archivist" in the Digital Intelligence Ecosystem.
 
-Always open `@/openspec/AGENTS.md` when the request:
+## Critical Guidelines
 
-- Mentions planning or proposals (words like proposal, spec, change, plan)
-- Introduces new capabilities, breaking changes, architecture shifts
-- Sounds ambiguous and you need the authoritative spec before coding
+- **No TUI**: The terminal UI has been retired. Focus on the FastAPI/PWA core and MCP server.
+- **Mobile First**: All UI changes in `src/zget/server/static/index.html` must be mobile-responsive and share-sheet compatible.
+- **Agent Integration**: The MCP server (`src/zget/mcp/`) is the primary interface for other agents (Librarian, etc.).
 
-Use `@/openspec/AGENTS.md` to learn:
-
-- How to create and apply change proposals
-- Spec format and conventions
-- Project structure and guidelines
-- Registry schema and enrichment pipeline
-
-Keep this managed block so 'openspec update' can refresh the instructions.
-
+Always refer to `openspec/project.md` for full architectural specs.
 <!-- OPENSPEC:END -->
