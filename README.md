@@ -63,6 +63,15 @@ src/zget/
 | `zget_search` | Query the vault |
 | `zget_get_local_path` | Handoff file paths to other agents (e.g., Librarian) |
 
+## Credits & Acknowledgments
+
+`zget` is built on the shoulders of giants:
+
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)**: The unparalleled extraction engine that powers The Archivist's 1,899+ site capacity.
+- **[FastAPI](https://fastapi.tiat.io/)**: The high-performance server framework driving The Archivist.
+- **[SQLite](https://www.sqlite.org/)**: The robust engine behind the persistence layer (The Vault).
+- **[Vanilla JS/CSS](https://developer.mozilla.org/)**: Powering the high-fidelity, glassmorphism Portal experience without dependency bloat.
+
 ## License
 
 MIT
