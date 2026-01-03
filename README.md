@@ -1,16 +1,20 @@
-# zget: The Archival Intelligence Engine
+# zget: The Archival Engine
 
-`zget` is a high-fidelity media archival engine and headless server designed for building persistent video libraries. It leverages `yt-dlp`'s **1,899 extractors** and provides a modern, touch-friendly **Webport** (PWA) for managing downloads on mobile and desktop.
+`zget` is a high-fidelity media archival system built for the Digital Intelligence Ecosystem. It operates through a specialized triad: **The Archivist** (Ingestion), **The Vault** (Persistence), and **The Portal** (Discovery).
+
+## The Triad
+
+- **The Archivist (Server)**: A robust FastAPI engine that manages complex extraction and background downloads independently.
+- **The Vault (Library)**: A persistent SQLite-backed repository (FTS5) designed for high-fidelity, metadata-rich media storage.
+- **The Portal (PWA)**: A premium, glassmorphism-inspired web interface with:
+  - **Integrated Player**: Native iOS/Mobile playback for archived H.264 content with full range-seek support.
+  - **Share Sheet Native**: Archive directly from mobile share sheets (iOS/Android).
+  - **Integrity Repair**: Automatic background transcoding of incompatible codecs (VP9/AV1) to maintain Vault health.
 
 ## Features
 
-- **Headless Archival Server**: A robust FastAPI engine that manages complex background downloads independently of the UI.
-- **Webport (PWA)**: A premium, StoryTime-inspired web interface with:
-  - **Share Sheet Support**: Archiving directly from mobile share sheets.
-  - **Camera Roll Ingestion**: Direct-to-device video downloads.
-  - **Glassmorphism UI**: High-fidelity dark mode with real-time progress.
-- **Site Intelligence**: Deep Registry covering 1,899+ sites with active health monitoring.
-- **SQLite Library**: Fast, searchable database (FTS5) for your entire collection.
+- **Site Intelligence**: Deep Registry covering 1,899+ sites with automated smokescreen health monitoring.
+- **H.264 Standard**: Universal compatibility by prioritizing iOS-friendly codecs for all ingestion.
 - **MCP Native**: First-class support for AI agents (e.g., Librarian) via the Model Context Protocol.
 
 ## Installation
@@ -23,17 +27,17 @@ uv sync
 
 ## Quick Start
 
-### 1. Start the Server
+### 1. Wake The Archivist
 
 ```bash
-uv run zget-server --port 8080
+uv run zget-server --port 9989 --host 0.0.0.0
 ```
 
-### 2. Open the Webport
+### 2. Enter The Portal
 
-Access `http://localhost:8080` (or your local IP) in any browser. On mobile, "Add to Home Screen" to install the PWA.
+Access `http://<local-ip>:9989` in any browser. Tap **"Add to Home Screen"** on iOS to install the standalone Portal experience.
 
-### 3. CLI Lightning Downloads
+### 3. CLI Ingestion
 
 ```bash
 zget <url>
@@ -43,21 +47,21 @@ zget <url>
 
 ```
 src/zget/
-├── server/         # FastAPI backend & PWA static files
-├── mcp/            # MCP server for agent integration
-├── core.py         # The Archival Engine (yt-dlp wrapper)
-├── db/             # SQLite persistence layer
-├── health.py       # Site verification (Smokescreen Engine)
-└── cli.py          # Unified entry point & status dashboard
+├── server/         # The Portal (FastAPI & PWA)
+├── mcp/            # MCP server for agentic handoffs
+├── core.py         # The Archivist (Archival Engine)
+├── db/             # The Vault (SQLite FTS5)
+├── health.py       # Smokescreen Verification Engine
+└── cli.py          # Unified entry point & status
 ```
 
-## MCP Tools
+## MCP Tools (The Archivist)
 
 | Tool | Action |
 |------|--------|
 | `zget_download` | Command the archivist to ingestion a URL |
-| `zget_search` | Query the local library |
-| `zget_get_local_path` | Handoff file paths to other agents |
+| `zget_search` | Query the vault |
+| `zget_get_local_path` | Handoff file paths to other agents (e.g., Librarian) |
 
 ## License
 

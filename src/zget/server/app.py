@@ -1,4 +1,5 @@
 import os
+import json
 from pathlib import Path
 from typing import Optional
 
@@ -9,7 +10,7 @@ from pydantic import BaseModel
 
 from fastapi.responses import FileResponse
 
-from ..config import DB_PATH, THUMBNAILS_DIR, ensure_directories, PLATFORM_DISPLAY
+from ..config import DB_PATH, THUMBNAILS_DIR, VIDEOS_DIR, ensure_directories, PLATFORM_DISPLAY
 from ..db import VideoStore
 from ..queue import DownloadQueue, QueueStatus
 
@@ -41,34 +42,99 @@ async def shutdown_event():
     await queue.stop()
 
 
-# Models
 class DownloadRequest(BaseModel):
     url: str
     collection: Optional[str] = None
     tags: Optional[list[str]] = None
 
 
+class SettingsUpdate(BaseModel):
+    zget_home: str
+
+
 # Routes
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "version": "0.3.0"}
+    return {"status": "ok", "version": "0.4.0 (2026 Preview)"}
+
+
+@app.get("/api/settings")
+def get_settings():
+    from ..config import ZGET_HOME, CONFIG_FILE
+    import socket
+
+    local_ip = "localhost"
+    try:
+        # Get local IP for network access info
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+    except:
+        pass
+
+    return {
+        "zget_home": str(ZGET_HOME),
+        "config_file": str(CONFIG_FILE),
+        "local_ip": local_ip,
+        "version": "0.4.0",
+    }
+
+
+@app.post("/api/settings")
+def update_settings(update: SettingsUpdate):
+    from ..config import CONFIG_DIR, CONFIG_FILE
+
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(CONFIG_FILE, "w") as f:
+        json.dump({"zget_home": update.zget_home}, f)
+    return {"status": "ok", "message": "Settings saved. Restart server to apply."}
+
+
+@app.post("/api/repair")
+async def repair_assets(background_tasks: BackgroundTasks):
+    background_tasks.add_task(run_repair)
+    return {"status": "started", "message": "Repairing thumbnails in background"}
+
+
+async def run_repair():
+    from ..library.thumbnails import get_thumbnail_path
+
+    videos = store.get_recent(limit=5000)
+    for v in videos:
+        if not v.thumbnail_path or not Path(v.thumbnail_path).exists():
+            # Try to redownload thumbnail only
+            print(f"Repairing thumbnail for {v.id} ({v.platform})")
+            from ..core import extract_info
+
+            try:
+                info = extract_info(v.url)
+                if info.get("thumbnail"):
+                    import httpx
+
+                    thumb_path = THUMBNAILS_DIR / f"{v.platform}_{v.video_id}.jpg"
+                    async with httpx.AsyncClient() as client:
+                        resp = await client.get(info["thumbnail"])
+                        if resp.status_code == 200:
+                            with open(thumb_path, "wb") as f:
+                                f.write(resp.content)
+                            v.thumbnail_path = str(thumb_path)
+                            store.update_video(v)
+            except Exception as e:
+                print(f"Failed repair for {v.id}: {e}")
 
 
 @app.get("/api/media/{video_id}")
+@app.head("/api/media/{video_id}")
 async def get_media(video_id: str):
-    # Try to find by platform video_id (string) or internal ID (int)
     # Search in library
-    videos = store.get_recent(limit=1000)  # Simple search for now
-    video = next((v for v in videos if v.video_id == video_id), None)
+    video = None
+    if video_id.isdigit():
+        video = store.get_video(int(video_id))
 
     if not video:
-        # Try finding by internal ID
-        try:
-            v_id = int(video_id)
-            all_v = store.get_recent(limit=5000)
-            video = next((v for v in all_v if v.id == v_id), None)
-        except ValueError:
-            pass
+        all_v = store.get_recent(limit=1000)
+        video = next((v for v in all_v if v.video_id == video_id), None)
 
     if not video or not video.local_path:
         raise HTTPException(status_code=404, detail="Video file not found")
@@ -80,9 +146,142 @@ async def get_media(video_id: str):
     return FileResponse(
         path,
         media_type="video/mp4",
-        filename=path.name,
-        headers={"Content-Disposition": f'attachment; filename="{path.name}"'},
+        # Avoid filename argument to allow 'inline' disposition (better for iOS streaming)
     )
+
+
+@app.delete("/api/media/{id}")
+async def delete_media(id: int):
+    video = store.get_video(id)
+    if not video:
+        raise HTTPException(status_code=404, detail="Video not found")
+
+    # Delete file
+    if video.local_path:
+        path = Path(video.local_path)
+        if path.exists():
+            path.unlink()
+
+    # Delete thumbnail
+    from ..library.thumbnails import delete_thumbnail
+
+    await delete_thumbnail(video.video_id, video.platform, THUMBNAILS_DIR)
+
+    # Delete from DB
+    store.delete_video(id)
+    return {"status": "deleted"}
+
+
+@app.get("/api/thumbnails/{video_id}")
+async def get_thumbnail(video_id: str):
+    # Find video to get platform
+    video = None
+    if video_id.isdigit():
+        video = store.get_video(int(video_id))
+
+    if not video:
+        all_v = store.get_recent(limit=1000)
+        video = next((v for v in all_v if v.video_id == video_id), None)
+
+    if not video:
+        raise HTTPException(status_code=404, detail="Video not found")
+
+    from ..library.thumbnails import get_thumbnail_path
+
+    path = get_thumbnail_path(video.video_id, video.platform, THUMBNAILS_DIR)
+
+    if not path or not path.exists():
+        expected = f"{video.platform}_{video.video_id}.jpg"
+        raise HTTPException(
+            status_code=404, detail=f"Thumbnail missing: expected {expected} in {THUMBNAILS_DIR}"
+        )
+
+    return FileResponse(path)
+
+
+@app.get("/api/registry")
+def get_registry():
+    from ..config import PLATFORM_PATTERNS
+
+    return {"sites": list(PLATFORM_PATTERNS.keys()), "display": PLATFORM_DISPLAY}
+
+
+@app.post("/api/repair")
+async def repair_library(background_tasks: BackgroundTasks):
+    """Trigger a background repair of thumbnails and incompatible video codecs."""
+    background_tasks.add_task(run_library_repair)
+    return {"status": "Repair started in background"}
+
+
+async def run_library_repair():
+    """Background task to fix missing thumbnails and transcode incompatible codecs (VP9/AV1 on iOS)."""
+    import subprocess
+    from ..library.thumbnails import cache_thumbnail
+    from ..config import THUMBNAILS_DIR
+
+    videos = store.get_recent(limit=5000)
+    for v in videos:
+        # 1. Check/Repair Thumbnails
+        from ..library.thumbnails import get_thumbnail_path
+
+        path = get_thumbnail_path(v.video_id, v.platform, THUMBNAILS_DIR)
+        if not path or not path.exists():
+            if v.raw_metadata:
+                await cache_thumbnail(v.raw_metadata, THUMBNAILS_DIR)
+
+        # 2. Check/Repair Video Codec (iOS Compatibility)
+        if v.local_path and Path(v.local_path).exists():
+            path = Path(v.local_path)
+            if path.suffix.lower() == ".mp4":
+                try:
+                    # Check codec using ffprobe
+                    cmd = [
+                        "ffprobe",
+                        "-v",
+                        "error",
+                        "-select_streams",
+                        "v:0",
+                        "-show_entries",
+                        "stream=codec_name",
+                        "-of",
+                        "default=noprint_wrappers=1:nokey=1",
+                        str(path),
+                    ]
+                    result = subprocess.run(cmd, capture_output=True, text=True)
+                    codec = result.stdout.strip().lower()
+
+                    if codec in ("vp9", "av1"):
+                        # Transcode to H.264
+                        temp_path = path.with_suffix(".temp.mp4")
+                        transcode_cmd = [
+                            "ffmpeg",
+                            "-i",
+                            str(path),
+                            "-c:v",
+                            "libx264",
+                            "-profile:v",
+                            "main",
+                            "-level",
+                            "4.0",
+                            "-pix_fmt",
+                            "yuv420p",
+                            "-c:a",
+                            "copy",
+                            "-movflags",
+                            "+faststart",
+                            "-y",
+                            str(temp_path),
+                        ]
+                        subprocess.run(transcode_cmd, capture_output=True)
+
+                        if temp_path.exists():
+                            # Replace original
+                            path.unlink()
+                            temp_path.rename(path)
+                            # Simple way to update codec in DB if we had the method,
+                            # for now we just fix the file so it plays.
+                except Exception as e:
+                    print(f"Error repairing {v.id}: {e}")
 
 
 @app.get("/api/library")
@@ -109,6 +308,20 @@ async def start_download(request: DownloadRequest):
 
 @app.get("/api/downloads")
 def list_downloads():
+    from datetime import datetime, timedelta
+
+    # Auto-clear items completed/failed more than 5 minutes ago to keep memory clean
+    now = datetime.now()
+    to_delete = []
+    for item_id, item in queue._items.items():
+        if item.completed_at and (now - item.completed_at) > timedelta(minutes=5):
+            to_delete.append(item_id)
+
+    for item_id in to_delete:
+        del queue._items[item_id]
+
+    # Return items that are not complete, OR were completed within the last 60 seconds
+    # This ensures the user sees the 'Complete' state but it doesn't linger forever.
     return [
         {
             "id": item.id,
@@ -120,6 +333,8 @@ def list_downloads():
             "eta": item.eta_seconds,
         }
         for item in queue._items.values()
+        if item.status != QueueStatus.COMPLETE
+        or (item.completed_at and (now - item.completed_at) < timedelta(seconds=60))
     ]
 
 

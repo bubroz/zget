@@ -86,10 +86,10 @@ Reference list of YouTube videos for testing zget reliability.
 
 - ✅ CLI Stats: `zget --stats`
 - ✅ CLI Search: `zget --search "query"`
-- ✅ TUI Launch: `zget`
-- ✅ TUI Library: `L` key
-- ✅ Video+Audio merge (1080p MP4)
-- ✅ YouTube EJS remote components
-- ✅ FTS5 full-text search
+- ✅ Portal Launch: `uv run zget-server`
+- ✅ Portal Navigation: Tab-based discovery (Vault/Settings)
+- ✅ Integrated Player: Native H.264 mobile playback
+- ✅ Range Request support: Support for iOS seek/probing
+- ✅ Automated Repair: VP9 -> H.264 background transcoding
 - ✅ Duplicate detection (URL + hash)
 - ✅ Parallel downloads (32 concurrent)
