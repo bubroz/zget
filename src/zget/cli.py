@@ -201,9 +201,9 @@ def show_welcome():
     try:
         hostname = socket.gethostname()
         local_ip = socket.gethostbyname(hostname)
-        webport_url = f"http://{local_ip}:9989"
+        webport_url = f"http://{local_ip}:8000"
     except:
-        webport_url = "http://localhost:9989"
+        webport_url = "http://localhost:8000"
 
     console.print(
         Panel(
@@ -214,7 +214,7 @@ def show_welcome():
             f"To download a one-off video via CLI:\n"
             f"[dim]zget <url>[/dim]\n\n"
             f"To start the archival server:\n"
-            f"[dim]zget-server --port 9989[/dim]",
+            f"[dim]zget-server --port 8000[/dim]",
             title="Welcome",
             border_style="gold1",
         )

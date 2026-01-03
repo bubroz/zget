@@ -30,12 +30,12 @@ uv sync
 ### 1. Wake The Archivist
 
 ```bash
-uv run zget-server --port 9989 --host 0.0.0.0
+uv run zget-server --port 8000 --host 0.0.0.0
 ```
 
 ### 2. Enter The Portal
 
-Access `http://<local-ip>:9989` in any browser. Tap **"Add to Home Screen"** on iOS to install the standalone Portal experience.
+Access `http://<local-ip>:8000` in any browser. Tap **"Add to Home Screen"** on iOS to install the standalone Portal experience.
 
 ### 3. CLI Ingestion
 
@@ -62,6 +62,18 @@ src/zget/
 | `zget_download` | Command the archivist to ingest a URL |
 | `zget_search` | Query the vault |
 | `zget_get_local_path` | Handoff file paths to other agents |
+
+## Roadmap
+
+| Status | Feature | Description |
+|--------|---------|-------------|
+| 🔜 | **Subscription Feeds** | Auto-monitor channels/playlists for new uploads and archive automatically. |
+| 🔜 | **Watch Party Mode** | Sync playback across multiple devices on the LAN. |
+| 📋 | **iOS Shortcut Integration** | Deep linking via `zget://` URL scheme for one-tap archival. |
+| 📋 | **Transcript Extraction** | Archive subtitles using Whisper or native yt-dlp transcripts. |
+| 📋 | **IPTV Export** | Generate M3U playlists for The Vault (VLC/Plex compatible). |
+| 💡 | **Multi-Region Health Check** | Proxy-based verification for geo-blocked site health. |
+| 💡 | **Librarian Handoff v2** | Full multimodal indexing: frames, faces, and voiceprints. |
 
 ## Credits & Acknowledgments
 

@@ -499,7 +499,7 @@
                     devices on your home network:</p>
                 <div
                     style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--accent); display: flex; align-items: center; justify-content: space-between;">
-                    <span id="network-url">http://loading...:9989</span>
+                    <span id="network-url">http://loading...:8000</span>
                     <span style="font-size: 0.6rem; opacity: 0.5;">READY</span>
                 </div>
             </div>
@@ -703,7 +703,7 @@
                 const s = await fetch(`${API_BASE}/settings`).then(r => r.json());
                 document.getElementById('settings-home').textContent = s.zget_home;
                 document.getElementById('settings-home-input').value = s.zget_home;
-                document.getElementById('network-url').textContent = `http://${s.local_ip}:9989`;
+                document.getElementById('network-url').textContent = `http://${s.local_ip}:8000`;
             } catch (e) { console.error(e); }
         }
 
