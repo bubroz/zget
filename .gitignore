@@ -6,9 +6,15 @@ __pycache__/
 Downloads/
 .env
 .model_cache/
+*.log
 
 # Large directories (development only)
 libs/
 scripts/
+data/
+openspec/changes/archived/
 
-# Keep data/ tracked for registry
+# Icons and temp images
+src/zget/server/static/icon.png
+*.png
+!src/zget/server/static/*.png
