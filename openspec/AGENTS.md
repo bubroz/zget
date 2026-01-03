@@ -1,75 +1,53 @@
 # OpenSpec Agent Instructions
 
-These instructions explain how AI assistants should use OpenSpec in this project.
+These instructions explain how AI assistants should use OpenSpec in this project, operating within the **Archivist/Vault/Portal** architectural framework.
 
 ## Project Overview
 
-zget is a high-fidelity TUI and archival engine for video downloads with:
+zget is a high-fidelity media archival system built for the Digital Intelligence Ecosystem with:
 
-- **1,899 supported extractors** (100% high confidence)
-- SQLite-backed library with FTS5 search
-- Modern vintage terminal aesthetic
+- **1,899 supported extractors** via yt-dlp orchestration.
+- **The Vault**: SQLite-backed library with FTS5 search and H.264 standard enforcement.
+- **The Portal**: Premium glassmorphism PWA for discovery and native iOS playback.
 
 ## When to Use OpenSpec
 
 Use OpenSpec when:
 
-- Adding new platform support or extractor features
-- Changing the API (download function signature)
-- Adding new CLI options
-- Major refactoring of core components
-- Modifying the registry schema or enrichment pipeline
-
-Skip OpenSpec for:
-
-- Bug fixes and minor patches
-- Documentation updates
-- Enrichment batch operations
-- Small code improvements
+- Adding new platform support or extractor features.
+- Modifying the API (FastAPI routes in `app.py`).
+- Adding new background repair or maintenance tasks.
+- Major refactoring of core components (core, db, server).
 
 ## Directory Structure
 
 ```
-openspec/
-├── project.md      # Project context and conventions
-├── specs/          # Capability specifications (what zget does)
-└── changes/        # Change proposals (what we're adding/changing)
+src/zget/
+├── server/         # The Portal (FastAPI & PWA)
+├── mcp/            # MCP server for agentic handoffs
+├── core.py         # The Archivist (Archival Engine)
+├── db/             # The Vault (Persistence)
+├── health.py       # Smokescreen Verification Engine
+└── cli.py          # Unified entry point & status
 ```
 
 ## Key Components
 
 | Component | Purpose |
 |-----------|---------|
-| `core.py` | yt-dlp wrapper and download orchestration |
-| `health.py` | Site health monitoring using test URLs |
-| `tui/app.py` | Main Textual application |
-| `db/store.py` | SQLite operations and FTS5 search |
-| `data/enriched_registry.json` | Curated site metadata |
+| `core.py` | yt-dlp wrapper and download orchestration (The Archivist) |
+| `health.py` | Site health monitoring using smokescreen tests |
+| `server/app.py` | FastAPI application and API routes |
+| `db/store.py` | SQLite operations and FTS5 search (The Vault) |
+| `server/static/` | PWA Frontend and manifest (The Portal) |
 
 ## Creating a Change Proposal
 
 1. Create folder: `openspec/changes/add-<feature>/`
-2. Add `proposal.md` with Why/What/Impact
-3. Add `tasks.md` with checklist
-4. Implement the change
-5. Archive when done
-
-## Registry Schema
-
-Each entry in `enriched_registry.json`:
-
-```json
-{
-  "name": "youtube",
-  "description": "YouTube video sharing platform",
-  "category": "Social/Community",
-  "country": "US",
-  "source": "osaurus_search",
-  "confidence": "high",
-  "test_url": "https://youtube.com/watch?v=...",
-  "domain": "youtube.com"
-}
-```
+2. Add `proposal.md` with Why/What/Impact.
+3. Add `tasks.md` with checklist.
+4. Implement the change.
+5. Archive when done.
 
 ## Quick Reference
 
@@ -77,6 +55,6 @@ Each entry in `enriched_registry.json`:
 # Validate specs and changes
 npx openspec validate
 
-# Create a new change
-mkdir openspec/changes/add-my-feature
+# Start the full stack
+uv run zget-server --port 9989 --host 0.0.0.0
 ```

@@ -54,6 +54,10 @@ class QueueItem:
     error_message: Optional[str] = None
     local_path: Optional[str] = None
 
+    # Metadata preservation
+    collection: Optional[str] = None
+    tags: list[str] = field(default_factory=list)
+
     # Timestamps
     created_at: datetime = field(default_factory=datetime.now)
     started_at: Optional[datetime] = None
@@ -129,6 +133,8 @@ class DownloadQueue:
         format_id: str | None = None,
         output_dir: str | None = None,
         cookies_browser: str | None = None,
+        collection: str | None = None,
+        tags: list[str] | None = None,
     ) -> QueueItem:
         """
         Add a URL to the download queue.
@@ -158,6 +164,8 @@ class DownloadQueue:
             format_id=format_id,
             output_dir=output_dir,
             cookies_browser=cookies_browser,
+            collection=collection,
+            tags=tags or [],
         )
 
         self._items[item.id] = item
@@ -294,6 +302,8 @@ class DownloadQueue:
                 output_dir=item.output_dir,
                 format_id=item.format_id,
                 cookies_from=item.cookies_browser,
+                collection=item.collection,
+                tags=item.tags,
                 on_progress=progress_callback,
             )
 

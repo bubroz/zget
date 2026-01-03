@@ -10,8 +10,32 @@ from pathlib import Path
 # PATHS
 # ============================================================================
 
-# All zget data lives here (in ~/Downloads, visible folder)
-ZGET_HOME = Path.home() / "Downloads" / "zget"
+import os
+import json
+
+# Standard config location
+CONFIG_DIR = Path.home() / ".config" / "zget"
+CONFIG_FILE = CONFIG_DIR / "config.json"
+
+
+def load_persistent_config():
+    if CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+
+PERSISTENT_CONFIG = load_persistent_config()
+
+# All zget data lives here (in ~/Downloads, visible folder by default)
+ZGET_HOME = Path(
+    os.getenv(
+        "ZGET_HOME", PERSISTENT_CONFIG.get("zget_home", str(Path.home() / "Downloads" / "zget"))
+    )
+)
 
 # Database
 DB_PATH = ZGET_HOME / "library.db"

@@ -96,13 +96,15 @@ def download(
             opts["merge_output_format"] = "mp4"
         else:
             # Best available video+audio, merged to mp4
-            # Use 'bv*+ba' format which means "best video + best audio"
-            opts["format"] = "bv*[ext=mp4]+ba[ext=m4a]/bv*+ba/b"
+            # Force/Prefer H.264 (avc1) for maximum iOS/PWA compatibility
+            # This avoids the 'VP9 in MP4' issue that causes black screens on Safari
+            opts["format"] = "bv*[ext=mp4][vcodec^=avc]+ba[ext=m4a]/bv*[ext=mp4]+ba[ext=m4a]/b"
             opts["merge_output_format"] = "mp4"
     else:
-        # Constrain to max height
+        # Constrain to max height, still prioritizing compatible codecs
         opts["format"] = (
-            f"bv*[height<={max_quality}][ext=mp4]+ba[ext=m4a]"
+            f"bv*[height<={max_quality}][ext=mp4][vcodec^=avc]+ba[ext=m4a]"
+            f"/bv*[height<={max_quality}][ext=mp4]+ba[ext=m4a]"
             f"/bv*[height<={max_quality}]+ba"
             f"/b[height<={max_quality}]"
             "/b"
