@@ -1,7 +1,7 @@
 """
 Command-line interface for zget.
 
-Routes to TUI when no args, or direct download when URL provided.
+Routes to direct download when URL provided, or shows Webport info.
 """
 
 import argparse
@@ -34,7 +34,7 @@ def main():
         "url",
         nargs="?",
         default=None,
-        help="Video URL to download (if omitted, launches TUI)",
+        help="Video URL to download (if omitted, shows Webport info)",
     )
     parser.add_argument(
         "-o",
@@ -129,9 +129,9 @@ def main():
         handle_stats()
         return
 
-    # No URL provided - launch TUI
+    # No URL provided - show welcome info
     if args.url is None:
-        launch_tui()
+        show_welcome()
         return
 
     # List formats mode
@@ -193,16 +193,31 @@ async def handle_health(args):
         )
 
 
-def launch_tui():
-    """Launch the TUI application."""
-    try:
-        from zget.tui.app import ZgetApp
+def show_welcome():
+    """Show welcome information and Webport status."""
+    import socket
 
-        app = ZgetApp()
-        app.run()
-    except Exception as e:
-        console.print(f"[red]Failed to launch TUI: {e}[/red]")
-        sys.exit(1)
+    try:
+        hostname = socket.gethostname()
+        local_ip = socket.gethostbyname(hostname)
+        webport_url = f"http://{local_ip}:8080"
+    except:
+        webport_url = "http://localhost:8080"
+
+    console.print(
+        Panel(
+            f"[bold gold1]zget v0.3.0[/bold gold1]\n\n"
+            f"The interactive TUI has been retired in favor of the [bold]Webport[/bold].\n\n"
+            f"📱 [bold]Mobile Access:[/bold] [link={webport_url}]{webport_url}[/link]\n"
+            f"🌐 [bold]PWA Status:[/bold] Production Ready\n\n"
+            f"To download a one-off video via CLI:\n"
+            f"[dim]zget <url>[/dim]\n\n"
+            f"To start the archival server:\n"
+            f"[dim]zget-server --port 8080[/dim]",
+            title="Welcome",
+            border_style="gold1",
+        )
+    )
 
 
 def handle_download(args):
