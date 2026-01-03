@@ -56,5 +56,5 @@ src/zget/
 npx openspec validate
 
 # Start the full stack
-uv run zget-server --port 9989 --host 0.0.0.0
+uv run zget-server --port 8000 --host 0.0.0.0
 ```
