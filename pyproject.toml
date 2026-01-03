@@ -1,7 +1,7 @@
 [project]
 name = "zget"
 version = "0.3.0"
-description = "The Archivist's Terminal - A modern TUI and SQLite-backed archival engine for video downloads"
+description = "The Archival Engine - A high-fidelity media archival system featuring The Archivist, The Vault, and The Portal"
 authors = [{ name = "Zac Forristall" }]
 license = { text = "MIT" }
 readme = "README.md"
