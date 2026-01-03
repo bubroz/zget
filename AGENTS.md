@@ -1,17 +1,20 @@
 <!-- OPENSPEC:START -->
-# OpenSpec Instructions: zget
+# OpenSpec Instructions: zget (The Archivist)
 
 These instructions are for AI assistants working in this project.
 
-## Mission: The Archival Intelligence Engine
+## Mission: The Museum Pro Archival Engine
 
-`zget` is a headless archival engine and Webport (PWA) designed for high-fidelity media preservation. It operates as "The Archivist" in the Digital Intelligence Ecosystem.
+`zget` is a high-fidelity media archival system built for the Digital Intelligence Ecosystem. It operates as **"The Archivist"**, managing **"The Vault"** (local persistence) and providing **"The Portal"** (PWA discovery).
 
 ## Critical Guidelines
 
-- **No TUI**: The terminal UI has been retired. Focus on the FastAPI/PWA core and MCP server.
-- **Mobile First**: All UI changes in `src/zget/server/static/index.html` must be mobile-responsive and share-sheet compatible.
-- **Agent Integration**: The MCP server (`src/zget/mcp/`) is the primary interface for other agents (Librarian, etc.).
+- **No TUI**: The terminal UI has been retired. Focus on the FastAPI/PWA core (`src/zget/server/`) and the MCP server (`src/zget/mcp/`).
+- **The Triad**:
+  - **The Archivist**: Orchestrates ingestion and format standards (H.264/AAC for universal compatibility).
+  - **The Vault**: SQLite-backed local storage for high-fidelity archival.
+  - **The Portal**: Premium, glassmorphism-inspired web interface with integrated media playback.
+- **Agent Handoff**: `zget` is the primary ingestion pipeline for the ecosystem. Use the MCP `zget_get_local_path` tool to hand off files from **The Vault** to agents like **Librarian**.
 
 Always refer to `openspec/project.md` for full architectural specs.
 <!-- OPENSPEC:END -->
