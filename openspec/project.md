@@ -7,7 +7,7 @@
 ## Tech Stack
 
 - **FastAPI**: Core server infrastructure (The Archivist).
-- **yt-dlp**: Extraction engine (1,899 extractors).
+- **yt-dlp**: Extraction engine (625+ verified, 1,800+ ecosystem).
 - **Vanilla CSS/JS**: Premium glassmorphism PWA (The Portal).
 - **SQLite (FTS5)**: Persistence logic (The Vault).
 - **MCP**: Model Context Protocol for agentic handoffs.

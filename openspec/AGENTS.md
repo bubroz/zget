@@ -6,7 +6,7 @@ These instructions explain how AI assistants should use OpenSpec in this project
 
 zget is a high-fidelity media archival system built for the Digital Intelligence Ecosystem with:
 
-- **1,899 supported extractors** via yt-dlp orchestration.
+- **625+ verified extractors** via yt-dlp orchestration (1,800+ in ecosystem).
 - **The Vault**: SQLite-backed library with FTS5 search and H.264 standard enforcement.
 - **The Portal**: Premium glassmorphism PWA for discovery and native iOS playback.
 
