@@ -13,9 +13,24 @@
 
 ## Features
 
-- **Site Intelligence**: Deep Registry covering 1,899+ sites with automated smokescreen health monitoring.
+- **Site Intelligence**: 625+ verified extractors with automated smokescreen health monitoring. Powered by yt-dlp's 1,800+ extractor ecosystem.
 - **H.264 Standard**: Universal compatibility by prioritizing iOS-friendly codecs for all ingestion.
 - **MCP Native**: First-class support for AI agents (e.g., Librarian) via the Model Context Protocol.
+
+## Verified Platforms
+
+Extensively tested and verified working:
+
+| Platform | Status |
+|----------|--------|
+| YouTube | ✅ Verified |
+| Instagram | ✅ Verified |
+| X (Twitter) | ✅ Verified |
+| TikTok | ✅ Verified |
+| Reddit | ✅ Verified |
+| Twitch | ✅ Verified |
+
+> **Note**: The Archivist leverages yt-dlp's full extractor ecosystem. While 625+ extractors are verified working, platform availability may vary based on region, authentication, and upstream changes.
 
 ## Installation
 
@@ -79,7 +94,7 @@ src/zget/
 
 `zget` is built on the shoulders of others:
 
-- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)**: The unparalleled extraction engine that powers The Archivist's 1,899+ site capacity.
+- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)**: The unparalleled extraction engine powering The Archivist.
 - **[FastAPI](https://fastapi.tiat.io/)**: The high-performance server framework driving The Archivist.
 - **[SQLite](https://www.sqlite.org/)**: The robust engine behind the persistence layer (The Vault).
 - **[Vanilla JS/CSS](https://developer.mozilla.org/)**: Powering the high-fidelity, glassmorphism Portal experience without dependency bloat.
