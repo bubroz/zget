@@ -11,7 +11,10 @@ Downloads/
 # Large directories (development only)
 libs/
 scripts/
-data/
+data/*
+!data/registry_base.json
+!data/enriched_registry.json
+!data/failed_sites.txt
 openspec/changes/archived/
 
 # Icons and temp images
