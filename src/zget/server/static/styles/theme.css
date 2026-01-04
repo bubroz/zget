@@ -1,0 +1,49 @@
+/* zget Theme Variables
+   Central source of truth for the design system. 
+   Glassmorphism + Dark Mode aesthetic. */
+
+:root {
+    /* Core Colors */
+    --bg: #0A0612;          /* Deepest Space Black */
+    --surface: #16121e;     /* Slightly lighter surface */
+    --primary: #FFD54F;     /* Amber Accent */
+    --secondary: #9E9EFF;   /* Periwinkle Secondary */
+    --danger: #ff5252;      /* Red/Danger */
+    --success: #69f0ae;     /* Green/Success */
+
+    /* Text Colors */
+    --text-main: #FFF8E1;
+    --text-dim: rgba(255, 248, 225, 0.6);
+    --text-mute: rgba(255, 248, 225, 0.3);
+
+    /* Borders & Glass */
+    --border: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(22, 18, 30, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-round: 50px;
+
+    /* Animations */
+    --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Base Reset */
+* { box-sizing: border-box; }
+body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-family: 'Outfit', -apple-system, system-ui, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
