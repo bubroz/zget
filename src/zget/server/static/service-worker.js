@@ -2,7 +2,7 @@
 // Provides offline support and intelligent caching for the Portal PWA
 
 const CACHE_VERSION = 'zget-v1';
-const APP_SHELL_CACHE = 'app-shell-v1';
+const APP_SHELL_CACHE = 'app-shell-v2';
 const THUMBNAILS_CACHE = 'thumbnails-v1';
 const API_CACHE = 'api-cache-v1';
 

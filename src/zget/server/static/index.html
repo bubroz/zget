@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>zget | Portal</title>
-    
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>zget</title>
+
     <!-- PWA -->
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,26 +17,37 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Preload Critical CSS -->
     <link rel="stylesheet" href="/styles/theme.css">
 </head>
+
 <body>
     <!-- App Shell -->
     <zget-app></zget-app>
 
     <!-- Module Loader -->
-    <script type="module" src="/components/app.js"></script>
+    <script type="module" src="/components/app.js?v=2026.1"></script>
 
-    <!-- Service Worker Registration -->
+    <!-- Service Worker KILLER (Iterative Development Mode) -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('[PWA] SW Registered'))
-                    .catch(err => console.error('[PWA] SW Fail', err));
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                for (let reg of regs) reg.unregister();
             });
+        }
+        // Force nuke the Cache Storage as well
+        if (window.caches) {
+            caches.keys().then(names => {
+                for (let name of names) caches.delete(name);
+            });
+        }
+        // Force reload if we find a stubborn SW
+        if (localStorage.getItem('sw_killed_v2') !== 'true') {
+            localStorage.setItem('sw_killed_v2', 'true');
+            location.reload();
         }
     </script>
 </body>
+
 </html>
