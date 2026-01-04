@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zget | Offline</title>
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg: #0A0612;
+            --surface: #16121e;
+            --accent: #FFD54F;
+            --text-main: #FFF8E1;
+            --text-dim: rgba(255, 248, 225, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .offline-container {
+            max-width: 400px;
+            padding: 40px;
+        }
+
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin: 0 0 10px;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin: 0 0 30px;
+        }
+
+        .retry-btn {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .retry-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .retry-btn:active {
+            transform: scale(0.95);
+        }
+
+        .tip {
+            margin-top: 40px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📡</div>
+        <h1>You're Offline</h1>
+        <p>
+            The Archivist can't reach the network right now.
+            Check your connection and try again.
+        </p>
+        <button class="retry-btn" onclick="location.reload()">
+            Try Again
+        </button>
+        <div class="tip">
+            Your previously viewed videos may still be available in the browser cache.
+        </div>
+    </div>
+</body>
+
+</html>
