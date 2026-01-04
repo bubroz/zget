@@ -2,23 +2,34 @@
 __pycache__/
 .venv/
 .DS_Store
+.gemini/
+.agent/
+.env
+
+# Storage
 *.db
 Downloads/
-.env
 .model_cache/
+
+# Logs & Temporary
 *.log
+data/failed_sites.txt
+data/health_log.json
 
 # Large directories (development only)
 libs/
 scripts/
+
+# PWA Assets
+src/zget/server/static/icon.png
+*.png
+!src/zget/server/static/*.png
+
+# Data Registry (Baseline only)
 data/*
 !data/registry_base.json
 !data/enriched_registry.json
 !data/regions.json
-!data/failed_sites.txt
-openspec/changes/archived/
 
-# Icons and temp images
-src/zget/server/static/icon.png
-*.png
-!src/zget/server/static/*.png
+# Specs
+openspec/changes/archived/

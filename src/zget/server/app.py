@@ -19,15 +19,17 @@ import unicodedata
 
 
 def sanitize_filename(name: str) -> str:
-    """Sanitize a string to be a safe filename for mobile/phones."""
+    """Sanitize a string to be a safe, URL-friendly filename (slug style)."""
     # Convert to NFKD (separate characters from accents)
     name = unicodedata.normalize("NFKD", name)
     # Remove non-ascii characters (emojis, etc)
     name = name.encode("ascii", "ignore").decode("ascii")
-    # Replace anything not alphanumeric, space, dot, or hyphen with space
-    name = re.sub(r"[^\w\s\.-]", "", name)
-    # Strip leading/trailing whitespace and limit length
-    return name.strip()[:100]
+    # Replace anything not alphanumeric or hyphen with space
+    name = re.sub(r"[^\w-]", " ", name)
+    # Replace multiple spaces/underscores/dots with single underscore, lowercase
+    name = re.sub(r"[\s_.-]+", "_", name).strip("_").lower()
+    # Limit length
+    return name[:100]
 
 
 # Initialize app
@@ -66,6 +68,8 @@ class DownloadRequest(BaseModel):
 
 class SettingsUpdate(BaseModel):
     zget_home: str
+    host: Optional[str] = "0.0.0.0"
+    port: Optional[int] = 8000
 
 
 # Routes
@@ -116,39 +120,51 @@ def health_status():
 
 @app.get("/api/settings")
 def get_settings():
-    from ..config import ZGET_HOME, CONFIG_FILE
-    import socket
-
+    host_setting = PERSISTENT_CONFIG.get("host", "0.0.0.0")
     local_ip = "localhost"
-    try:
-        # Get local IP for network access info
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        local_ip = s.getsockname()[0]
-        s.close()
-    except:
-        pass
+
+    if host_setting == "127.0.0.1":
+        local_ip = "127.0.0.1"
+    else:
+        try:
+            # Get local IP for network access info
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+            s.close()
+        except:
+            local_ip = "127.0.0.1" if host_setting == "127.0.0.1" else "localhost"
 
     return {
         "zget_home": str(ZGET_HOME),
         "config_file": str(CONFIG_FILE),
         "local_ip": local_ip,
+        "host": host_setting,
+        "port": PERSISTENT_CONFIG.get("port", 8000),
         "version": "0.4.0",
     }
 
 
 @app.post("/api/settings")
 def update_settings(update: SettingsUpdate):
-    from ..config import CONFIG_DIR, CONFIG_FILE
+    from ..config import CONFIG_DIR, CONFIG_FILE, load_persistent_config
+
+    old_config = load_persistent_config()
+    new_config = {
+        **old_config,
+        "zget_home": update.zget_home,
+        "host": update.host,
+        "port": update.port,
+    }
 
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     with open(CONFIG_FILE, "w") as f:
-        json.dump({"zget_home": update.zget_home}, f)
+        json.dump(new_config, f, indent=4)
     return {"status": "ok", "message": "Settings saved. Restart server to apply."}
 
 
-@app.post("/api/repair")
-async def repair_assets(background_tasks: BackgroundTasks):
+@app.post("/api/repair/thumbnails")
+async def repair_thumbnails(background_tasks: BackgroundTasks):
     background_tasks.add_task(run_repair)
     return {"status": "started", "message": "Repairing thumbnails in background"}
 
@@ -182,11 +198,14 @@ async def run_repair():
 
 @app.get("/api/media/{video_id}")
 @app.head("/api/media/{video_id}")
-async def get_media(video_id: str):
+async def get_media(video_id: str, download: bool = False):
     # Search in library
     video = None
-    if video_id.isdigit():
-        video = store.get_video(int(video_id))
+    try:
+        if video_id.isdigit():
+            video = store.get_video(int(video_id))
+    except:
+        pass
 
     if not video:
         all_v = store.get_recent(limit=1000)
@@ -199,11 +218,15 @@ async def get_media(video_id: str):
     if not path.exists():
         raise HTTPException(status_code=404, detail="File missing on disk")
 
-    return FileResponse(
-        path,
-        media_type="video/mp4",
-        filename=f"{sanitize_filename(video.title)}.mp4" if video.title else f"{video.id}.mp4",
-    )
+    if download:
+        filename = f"{sanitize_filename(video.title)}.mp4" if video.title else f"{video_id}.mp4"
+        return FileResponse(
+            path,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+
+    return FileResponse(path, media_type="video/mp4")
 
 
 @app.delete("/api/media/{id}")
@@ -257,9 +280,39 @@ async def get_thumbnail(video_id: str):
 
 @app.get("/api/registry")
 def get_registry():
-    from ..config import PLATFORM_PATTERNS
+    """Return the full global site registry with detailed metadata and health."""
+    from ..regions import load_regions, get_sites_for_region, get_popularity_weights
 
-    return {"sites": list(PLATFORM_PATTERNS.keys()), "display": PLATFORM_DISPLAY}
+    regions = load_regions()
+    weights = get_popularity_weights(store)
+
+    all_sites = []
+    seen = set()
+    categories = set()
+
+    for rid in regions:
+        sites = get_sites_for_region(rid, weights=weights)
+        for s in sites:
+            if s.name not in seen:
+                all_sites.append(
+                    {
+                        "name": s.name,
+                        "category": s.category,
+                        "description": s.description,
+                        "status": s.status,
+                        "working": s.status == "working",
+                        "weight": weights.get(s.name.lower(), 0) / 1000.0,  # Normalize
+                        "categories": [s.category] if s.category else [],
+                    }
+                )
+                seen.add(s.name)
+                if s.category:
+                    categories.add(s.category)
+
+    # Sort by prominence (normalized weight)
+    all_sites.sort(key=lambda x: x["weight"], reverse=True)
+
+    return {"sites": all_sites, "categories": sorted(list(categories))}
 
 
 @app.get("/api/regions")
@@ -285,16 +338,26 @@ def list_regions():
 
 @app.get("/api/regions/{region_id}")
 def get_region_sites(region_id: str):
-    """Return all sites in a region with health status."""
-    from ..regions import load_regions, get_sites_for_region, get_region_summary
+    """Return all sites in a region with health status and popularity sorting."""
+    from ..regions import (
+        load_regions,
+        get_sites_for_region,
+        get_region_summary,
+        get_popularity_weights,
+    )
 
     regions = load_regions()
     if region_id not in regions:
         raise HTTPException(status_code=404, detail=f"Region '{region_id}' not found")
 
     region = regions[region_id]
-    sites = get_sites_for_region(region_id)
+    # Calculate popularity weights from local DB
+    weights = get_popularity_weights(store)
+    sites = get_sites_for_region(region_id, weights=weights)
     summary = get_region_summary(region_id)
+
+    # Extract unique categories
+    categories = sorted(list(set(s.category for s in sites if s.category)))
 
     return {
         "region": {
@@ -309,6 +372,7 @@ def get_region_sites(region_id: str):
             "failed": summary.failed if summary else 0,
             "untested": summary.untested if summary else 0,
         },
+        "categories": categories,
         "sites": [
             {
                 "name": s.name,
@@ -324,7 +388,24 @@ def get_region_sites(region_id: str):
     }
 
 
-@app.post("/api/repair")
+@app.get("/api/video/{id}")
+async def get_video_details(id: int):
+    """Get detailed video metadata by ID."""
+    video = store.get_video(id)
+    if not video:
+        raise HTTPException(status_code=404, detail="Video not found")
+
+    v_dict = video.__dict__.copy()
+    v_dict["platform_display"] = PLATFORM_DISPLAY.get(video.platform, video.platform.capitalize())
+    if video.raw_metadata:
+        v_dict["uploader_url"] = video.raw_metadata.get("uploader_url")
+        v_dict["channel"] = video.raw_metadata.get("channel")
+        v_dict["channel_url"] = video.raw_metadata.get("channel_url")
+
+    return v_dict
+
+
+@app.post("/api/repair/library")
 async def repair_library(background_tasks: BackgroundTasks):
     """Trigger a background repair of thumbnails and incompatible video codecs."""
     background_tasks.add_task(run_library_repair)
@@ -517,5 +598,19 @@ app.mount("/thumbnails", StaticFiles(directory=str(THUMBNAILS_DIR)), name="thumb
 
 # Serve static files (PWA)
 static_dir = Path(__file__).parent / "static"
+
+
+@app.middleware("http")
+async def add_no_cache_headers(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/api/") or any(
+        request.url.path.endswith(ext) for ext in [".js", ".css", ".html", ".json"]
+    ):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
+
 if static_dir.exists():
     app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")

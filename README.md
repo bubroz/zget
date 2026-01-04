@@ -1,20 +1,29 @@
 # zget: The Archival Engine
 
-`zget` is a high-fidelity media archival system built for the Digital Intelligence Ecosystem. It operates through a specialized triad: **The Archivist** (Ingestion), **The Vault** (Persistence), and **The Portal** (Discovery).
+`zget` is a high-fidelity media archival system built for personal high-fidelity preservation. It operates through a specialized triad: **The Archivist** (Ingestion), **The Vault** (Persistence), and **The Portal** (Discovery).
 
 ## The Triad
 
 - **The Archivist (Server)**: A robust FastAPI engine that manages complex extraction and background downloads independently.
 - **The Vault (Library)**: A persistent SQLite-backed repository (FTS5) designed for high-fidelity, metadata-rich media storage.
-- **The Portal (PWA)**: A premium, glassmorphism-inspired web interface with:
-  - **Integrated Player**: Native iOS/Mobile playback for archived H.264 content with full range-seek support.
+- **The Portal (PWA)**: A premium **Minimalist Portal** built with **Native Web Components**.
+  - **Zero Build**: No bundlers, no npm, no transpilation. 100% native browser standards.
+  - **Minimalist Aesthetics**: Zero-clutter mobile experience with a premium, app-native feel.
+  - **Rich Player**: High-density technical metadata (Resolution, Codec, Views) with aggressive mobile download support.
+  - **Natural Feed**: Dynamic aspect ratios for Vault cards—supporting landscape YouTube and vertical Reels natively.
+  - **Regions & Registry**: Interactive explorer for 625+ verified sites, sorted by **Local Popularity**.
   - **Share Sheet Native**: Archive directly from mobile share sheets (iOS/Android).
-  - **Integrity Repair**: Automatic background transcoding of incompatible codecs (VP9/AV1) to maintain Vault health.
+
+## Acknowledgments
+
+`zget` is made possible by the incredible work of the **yt-dlp** community and was refined with the assistance of the **Gemini** and **Antigravity** teams at Google DeepMind.
 
 ## Features
 
-- **Site Intelligence**: 625+ verified extractors with automated smokescreen health monitoring. Powered by yt-dlp's 1,800+ extractor ecosystem.
-- **H.264 Standard**: Universal compatibility by prioritizing iOS-friendly codecs for all ingestion.
+- **Site Intelligence**: Extensive site registry with automated smokescreen health monitoring.
+- **Popularity-First Discovery**: Intelligent sorting that prioritizes your most-used platforms.
+- **Archive-Grade Filenames**: Reliable file downloads on mobile with slugified, human-readable titles.
+- **H.264 Standard**: Universal compatibility by prioritizing iOS-friendly codecs (automatic transcoding).
 - **MCP Native**: First-class support for AI agents (e.g., Librarian) via the Model Context Protocol.
 
 ## Verified Platforms
@@ -30,39 +39,11 @@ Extensively tested and verified working:
 | Reddit | ✅ Verified |
 | Twitch | ✅ Verified |
 
-> **Note**: The Archivist leverages yt-dlp's full extractor ecosystem. While 625+ extractors are verified working, platform availability may vary based on region, authentication, and upstream changes.
-
-## Installation
-
-```bash
-git clone https://github.com/bubroz/zget.git
-cd zget
-uv sync
-```
-
-## Quick Start
-
-### 1. Wake The Archivist
-
-```bash
-uv run zget-server --port 8000 --host 0.0.0.0
-```
-
-### 2. Enter The Portal
-
-Access `http://<local-ip>:8000` in any browser. Tap **"Add to Home Screen"** on iOS to install the standalone Portal experience.
-
-### 3. CLI Ingestion
-
-```bash
-zget <url>
-```
-
 ## Architecture
 
 ```
 src/zget/
-├── server/         # The Portal (FastAPI & PWA)
+├── server/         # The Portal (FastAPI & Native Web Components)
 ├── mcp/            # MCP server for agentic handoffs
 ├── core.py         # The Archivist (Archival Engine)
 ├── db/             # The Vault (SQLite FTS5)
@@ -70,34 +51,28 @@ src/zget/
 └── cli.py          # Unified entry point & status
 ```
 
-## MCP Tools (The Archivist)
+## Quick Start
 
-| Tool | Action |
-|------|--------|
-| `zget_download` | Command the archivist to ingest a URL |
-| `zget_search` | Query the vault |
-| `zget_get_local_path` | Handoff file paths to other agents |
+### 1. Wake The Archivist
+
+```bash
+# Recommended: Use uv for high-speed execution
+uv run zget-server --port 8000 --host 0.0.0.0
+```
+
+### 2. Enter The Portal
+
+Access `http://localhost:8000` in any browser. Tap **"Add to Home Screen"** on iOS for the full experience.
 
 ## Roadmap
 
 | Status | Feature | Description |
 |--------|---------|-------------|
-| 🔜 | **Subscription Feeds** | Auto-monitor channels/playlists for new uploads and archive automatically. |
-| 🔜 | **Watch Party Mode** | Sync playback across multiple devices on the LAN. |
-| 📋 | **iOS Shortcut Integration** | Deep linking via `zget://` URL scheme for one-tap archival. |
-| 📋 | **Transcript Extraction** | Archive subtitles using Whisper or native yt-dlp transcripts. |
-| 📋 | **IPTV Export** | Generate M3U playlists for The Vault (VLC/Plex compatible). |
-| 💡 | **Multi-Region Health Check** | Proxy-based verification for geo-blocked site health. |
-| 💡 | **Librarian Handoff v2** | Full multimodal indexing: frames, faces, and voiceprints. |
-
-## Credits & Acknowledgments
-
-`zget` is built on the shoulders of others:
-
-- **[yt-dlp](https://github.com/yt-dlp/yt-dlp)**: The unparalleled extraction engine powering The Archivist.
-- **[FastAPI](https://fastapi.tiat.io/)**: The high-performance server framework driving The Archivist.
-- **[SQLite](https://www.sqlite.org/)**: The robust engine behind the persistence layer (The Vault).
-- **[Vanilla JS/CSS](https://developer.mozilla.org/)**: Powering the high-fidelity, glassmorphism Portal experience without dependency bloat.
+| 🔜 | **Subscription Feeds** | Auto-monitor channels/playlists for new archival. |
+| 🔜 | **Watch Party Mode** | Sync playback across LAN devices. |
+| 📋 | **iOS Shortcut Integration** | Deep linking via `zget://` URL scheme. |
+| 📋 | **Transcript Extraction** | Subtitle archival using Whisper or native tracks. |
+| 💡 | **Librarian Handoff v2** | Full multimodal indexing (frames, faces, voiceprints). |
 
 ## License
 

@@ -1,179 +1,304 @@
-import { ZgetBase } from './base.js';
+import './base.js';
 import './vault.js';
 import './player.js';
-import './regions.js';
+import './settings.js';
+import './activity.js';
+import './ingest.js';
 
-// Simple Router Shell
-export class ZgetApp extends ZgetBase {
-  constructor() {
-    super();
-    this.currentView = 'vault';
-  }
-
-  connectedCallback() {
-    this.loadStyles();
-    this.renderTemplate();
-    this.setupEventListeners();
-  }
-
-  setupEventListeners() {
-    // Listen for navigation events
-    this.shadowRoot.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.switchView(e.target.dataset.view);
-      });
-    });
-
-    // Listen for video open events from children
-    this.shadowRoot.addEventListener('open-video', (e) => {
-      this.openVideo(e.detail.id);
-    });
-  }
-
-  switchView(viewName) {
-    this.currentView = viewName;
-
-    // Update active nav state
-    this.shadowRoot.querySelectorAll('.nav-link').forEach(link => {
-      link.classList.toggle('active', link.dataset.view === viewName);
-    });
-
-    // Show/Hide views (simple v1 router)
-    const vault = this.shadowRoot.getElementById('view-vault');
-    const regions = this.shadowRoot.getElementById('view-regions');
-
-    if (viewName === 'vault') {
-      vault.style.display = 'block';
-      regions.style.display = 'none';
-      if (vault.updateList) vault.updateList(); // Refresh data
-    } else {
-      vault.style.display = 'none';
-      regions.style.display = 'block';
-
-      // Lazy init regions if needed, or just standard display toggle
-      if (!regions.querySelector('zget-regions')) {
-        regions.innerHTML = '<zget-regions></zget-regions>';
-      }
+export class ZgetApp extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
     }
-  }
 
-  async openVideo(id) {
-    try {
-      // In real app, api/video/id
-      // Hack: we'll just fetch specific video data from library list for now
-      const videoRes = await fetch(`/api/library`);
-      const videos = await videoRes.json();
-      const video = videos.find(v => v.id === id);
-
-      const player = this.shadowRoot.querySelector('zget-player');
-      if (video) player.open(video);
-    } catch (e) {
-      console.error(e);
+    connectedCallback() {
+        this.render();
+        this.setupListeners();
     }
-  }
 
-  renderTemplate() {
-    this.shadowRoot.innerHTML = `
-      <link rel="stylesheet" href="/styles/theme.css">
-      <link rel="stylesheet" href="/styles/shared.css">
-      <style>
-        :host { display: block; min-height: 100vh; background: var(--bg); }
-        
-        /* App Header */
-        header {
-          position: sticky;
-          top: 0;
-          z-index: 100;
-          background: rgba(10, 6, 18, 0.8);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid var(--border);
-          padding: 16px 24px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
+    render() {
+        this.shadowRoot.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    min-height: 100vh;
+                    background-color: var(--bg-color);
+                    color: var(--text-color);
+                    font-family: var(--font-family);
+                }
 
-        .brand {
-          font-weight: 700;
-          font-size: 1.2rem;
-          color: var(--primary);
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
+                /* Header with Glassmorphism */
+                .app-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: var(--spacing-md) var(--spacing-lg);
+                    background: var(--glass-bg);
+                    backdrop-filter: blur(var(--glass-blur));
+                    border-bottom: 1px solid var(--glass-border);
+                    position: sticky;
+                    top: 0;
+                    z-index: 100;
+                    height: 70px;
+                }
 
-        .brand span { color: var(--text-main); font-weight: 400; }
+                .brand {
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    color: white;
+                    letter-spacing: 0.02em;
+                }
 
-        .nav-links {
-          display: flex;
-          gap: 8px;
-          background: rgba(255,255,255,0.05);
-          padding: 4px;
-          border-radius: var(--radius-round);
-        }
+                .brand img {
+                    width: 20px;
+                    height: 20px;
+                    filter: drop-shadow(0 0 8px var(--primary-color));
+                }
 
-        .nav-link {
-          padding: 6px 16px;
-          border-radius: var(--radius-round);
-          color: var(--text-dim);
-          text-decoration: none;
-          font-size: 0.9rem;
-          font-weight: 500;
-          transition: all 0.2s;
-          cursor: pointer;
-        }
+                .header-nav {
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+                }
 
-        .nav-link:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
-        .nav-link.active {
-          background: var(--surface);
-          color: var(--primary);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
+                .nav-link {
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    cursor: pointer;
+                    color: var(--text-muted);
+                    transition: color 0.2s;
+                }
 
-        .status-bar {
-          display: flex;
-          gap: 16px;
-          font-size: 0.8rem;
-          color: var(--text-dim);
-        }
+                .nav-link.active {
+                    color: var(--primary-color);
+                }
 
-        /* Main Content */
-        main {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 24px;
-        }
-      </style>
+                .nav-link.disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
 
-      <header>
-        <div class="brand">
-          ⚡ zget <span>Portal</span>
-        </div>
+                .command-center {
+                    flex: 1;
+                    max-width: 600px;
+                    margin: 0 40px;
+                }
 
-        <nav class="nav-links">
-          <a class="nav-link active" data-view="vault">Vault</a>
-          <a class="nav-link" data-view="regions">Regions</a>
-        </nav>
+                .settings-toggle {
+                    background: transparent;
+                    border: none;
+                    color: var(--text-muted);
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-left: 10px;
+                }
 
-        <div class="status-bar">
-          <span>Ready</span>
-          <span style="color: var(--success)">● Online</span>
-        </div>
-      </header>
+                .settings-toggle:hover {
+                    color: var(--text-color);
+                }
 
-      <main>
-        <div id="view-vault">
-          <zget-vault></zget-vault>
-        </div>
-        <div id="view-regions" style="display: none;">
-          <!-- Regions comp loaded here -->
-        </div>
-      </main>
+                /* Active Downloads Banner Area */
+                .activity-area {
+                    max-width: 1400px;
+                    margin: 0 auto;
+                }
 
-      <zget-player></zget-player>
-    `;
-  }
+                /* Main Content Area (Vault) */
+                .main-content {
+                    max-width: 1300px;
+                    margin: 0 auto;
+                    padding: 40px 20px;
+                }
+
+                /* Settings Modal Container */
+                .settings-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    z-index: 1000;
+                    align-items: center;
+                    justify-content: center;
+                    backdrop-filter: blur(4px);
+                    opacity: 0;
+                    transition: opacity 0.2s;
+                }
+
+                .settings-overlay.open {
+                    display: flex;
+                    opacity: 1;
+                }
+
+                .settings-container {
+                    background: var(--bg-color);
+                    border: 1px solid var(--border-color);
+                    border-radius: var(--radius-lg);
+                    padding: 32px;
+                    width: 90%;
+                    max-width: 800px;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                    position: relative;
+                    transform: translateY(10px);
+                    transition: transform 0.2s;
+                }
+
+                .settings-overlay.open .settings-container {
+                    transform: translateY(0);
+                }
+
+                .close-settings {
+                    position: absolute;
+                    top: var(--spacing-md);
+                    right: var(--spacing-md);
+                    background: none;
+                    border: none;
+                    color: var(--text-muted);
+                    cursor: pointer;
+                    font-size: 1.1rem;
+                    padding: 8px;
+                    border-radius: var(--radius-sm);
+                    line-height: 1;
+                }
+                
+                .close-settings:hover {
+                    background: rgba(255,255,255,0.1);
+                    color: var(--text-color);
+                }
+
+                /* Mobile Responsive */
+                @media (max-width: 768px) {
+                    .app-header {
+                        flex-direction: column;
+                        align-items: center;
+                        height: auto;
+                        padding: 16px;
+                        gap: 16px;
+                        position: relative;
+                    }
+
+                    .brand {
+                        font-size: 1rem;
+                        justify-content: center;
+                    }
+
+                    .brand img {
+                        width: 18px;
+                        height: 18px;
+                    }
+
+                    .command-center {
+                        margin: 0;
+                        max-width: 100%;
+                        width: 100%;
+                        order: 2;
+                    }
+
+                    .header-nav {
+                        position: absolute;
+                        top: 12px;
+                        right: 16px;
+                    }
+
+                    .header-nav .nav-link {
+                        display: none;
+                    }
+
+                    .settings-container {
+                        width: 95%;
+                        max-width: 95%;
+                        padding: 20px;
+                        max-height: 85vh;
+                        overflow-y: auto;
+                    }
+
+                    .main-content {
+                        padding: 16px;
+                    }
+                }
+            </style>
+
+            <header class="app-header">
+                <div class="brand">
+                    <img src="/components/icon.png" alt="⚡" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>'">
+                    <span>zget</span>
+                </div>
+                
+                <div class="command-center">
+                    <zget-ingest></zget-ingest>
+                </div>
+
+                <div class="header-nav">
+                    <span class="nav-link active">Vault</span>
+                    <button class="settings-toggle" title="Settings">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="activity-area">
+                <zget-activity mode="banner"></zget-activity>
+            </div>
+
+            <main class="main-content">
+                <zget-vault></zget-vault>
+            </main>
+
+            <div class="settings-overlay">
+                <div class="settings-container">
+                    <button class="close-settings" title="Close">✕</button>
+                    <zget-settings mode="modal"></zget-settings>
+                </div>
+            </div>
+
+            <zget-player></zget-player>
+        `;
+    }
+
+    setupListeners() {
+        const vault = this.shadowRoot.querySelector('zget-vault');
+        const player = this.shadowRoot.querySelector('zget-player');
+        const overlay = this.shadowRoot.querySelector('.settings-overlay');
+        const settingsBtn = this.shadowRoot.querySelector('.settings-toggle');
+        const closeSettingsBtn = this.shadowRoot.querySelector('.close-settings');
+
+        vault.addEventListener('open-video', (e) => {
+            player.open(e.detail);
+        });
+
+        this.shadowRoot.addEventListener('video-deleted', () => {
+            vault.loadVideos();
+        });
+
+        settingsBtn.addEventListener('click', () => {
+            overlay.classList.add('open');
+        });
+
+        const closeSettings = () => {
+            overlay.classList.remove('open');
+            // Refresh settings in case they changed things that affect other components?
+        };
+
+        closeSettingsBtn.addEventListener('click', closeSettings);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeSettings();
+            }
+        });
+    }
 }
 
 customElements.define('zget-app', ZgetApp);

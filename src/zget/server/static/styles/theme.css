@@ -1,49 +1,94 @@
-/* zget Theme Variables
-   Central source of truth for the design system. 
-   Glassmorphism + Dark Mode aesthetic. */
-
 :root {
-    /* Core Colors */
-    --bg: #0A0612;          /* Deepest Space Black */
-    --surface: #16121e;     /* Slightly lighter surface */
-    --primary: #FFD54F;     /* Amber Accent */
-    --secondary: #9E9EFF;   /* Periwinkle Secondary */
-    --danger: #ff5252;      /* Red/Danger */
-    --success: #69f0ae;     /* Green/Success */
+  /* Librarian Reference Palette */
 
-    /* Text Colors */
-    --text-main: #FFF8E1;
-    --text-dim: rgba(255, 248, 225, 0.6);
-    --text-mute: rgba(255, 248, 225, 0.3);
+  /* HSL Values */
+  --bg-hsl: 222, 47%, 4%;
+  /* #05070A - Deepest possible */
+  --card-hsl: 222, 47%, 6%;
+  /* #06090F - Card Background */
+  --primary-hsl: 38, 92%, 50%;
+  /* #f59e0b (Amber/Gold) */
+  --border-hsl: 215, 25%, 12%;
+  /* Deeper borders */
+  /* Core Colors */
+  --bg-color: hsl(var(--bg-hsl));
+  --bg-card: hsl(var(--card-hsl));
+  --surface: var(--bg-card);
 
-    /* Borders & Glass */
-    --border: rgba(255, 255, 255, 0.08);
-    --glass-bg: rgba(22, 18, 30, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    
-    /* Spacing */
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 40px;
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
 
-    /* Radius */
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
-    --radius-round: 50px;
+  --primary-color: hsl(var(--primary-hsl));
+  --primary-fg: #ffffff;
 
-    /* Animations */
-    --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --border-color: hsl(var(--border-hsl));
+
+  /* Status Colors */
+  --status-success: var(--primary-color);
+  --status-error: #ef4444;
+  --status-warning: #f59e0b;
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Menlo', monospace;
+
+  /* Spacing & Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* Effects */
+  --glass-bg: rgba(6, 9, 15, 0.8);
+  /* Matches bg-color but transparent */
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-blur: 16px;
+
+  /* Aliases */
+  --primary: var(--primary-color);
+  --bg: var(--bg-color);
+  --text-main: var(--text-color);
+  --text-dim: var(--text-muted);
+  --border: var(--border-color);
+  --surface-hover: rgba(255, 255, 255, 0.03);
 }
 
-/* Base Reset */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
 body {
-    background-color: var(--bg);
-    color: var(--text-main);
-    font-family: 'Outfit', -apple-system, system-ui, sans-serif;
-    margin: 0;
-    min-height: 100vh;
+  margin: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Button Overrides for "Librarian" Look */
+.btn.primary {
+  background: var(--primary-color);
+  color: white;
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.btn.primary:hover {
+  background: hsl(38, 92%, 45%);
+  border-color: hsl(38, 92%, 45%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+/* Clean Input Styles */
+input[type="text"] {
+  background: #0F1218;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+input[type="text"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color);
 }

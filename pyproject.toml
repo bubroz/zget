@@ -1,7 +1,7 @@
 [project]
 name = "zget"
-version = "0.3.0"
-description = "The Archival Engine - A high-fidelity media archival system featuring The Archivist, The Vault, and The Portal"
+version = "0.4.0"
+description = "The Archival Engine - A high-fidelity media archival system with a modular native Web Component Portal"
 authors = [{ name = "Zac Forristall" }]
 license = { text = "MIT" }
 readme = "README.md"
