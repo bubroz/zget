@@ -1,0 +1,170 @@
+{
+    "usa": {
+        "name": "United States",
+        "emoji": "🇺🇸",
+        "countries": [
+            "US"
+        ],
+        "notes": null
+    },
+    "germany": {
+        "name": "Germany & DACH",
+        "emoji": "🇩🇪",
+        "countries": [
+            "DE",
+            "AT",
+            "CH"
+        ],
+        "notes": "German-language region including Austria and Switzerland"
+    },
+    "china": {
+        "name": "China",
+        "emoji": "🇨🇳",
+        "countries": [
+            "CN"
+        ],
+        "notes": "May require VPN or Chinese IP for access"
+    },
+    "russia": {
+        "name": "Russia & CIS",
+        "emoji": "🇷🇺",
+        "countries": [
+            "RU",
+            "BY",
+            "KZ",
+            "UZ"
+        ],
+        "notes": "May require VPN outside region"
+    },
+    "japan": {
+        "name": "Japan",
+        "emoji": "🎌",
+        "countries": [
+            "JP"
+        ],
+        "notes": "Some services geo-blocked outside Japan"
+    },
+    "uk": {
+        "name": "United Kingdom",
+        "emoji": "🇬🇧",
+        "countries": [
+            "GB",
+            "UK"
+        ],
+        "notes": "BBC/ITV may require UK IP"
+    },
+    "france": {
+        "name": "France",
+        "emoji": "🇫🇷",
+        "countries": [
+            "FR"
+        ],
+        "notes": null
+    },
+    "india": {
+        "name": "India",
+        "emoji": "🇮🇳",
+        "countries": [
+            "IN"
+        ],
+        "notes": "Regional language content available"
+    },
+    "poland": {
+        "name": "Poland",
+        "emoji": "🇵🇱",
+        "countries": [
+            "PL"
+        ],
+        "notes": null
+    },
+    "korea": {
+        "name": "South Korea",
+        "emoji": "🇰🇷",
+        "countries": [
+            "KR"
+        ],
+        "notes": "K-drama and K-pop platforms"
+    },
+    "australia": {
+        "name": "Australia & NZ",
+        "emoji": "🇦🇺",
+        "countries": [
+            "AU",
+            "NZ"
+        ],
+        "notes": "Some services geo-blocked"
+    },
+    "brazil": {
+        "name": "Brazil",
+        "emoji": "🇧🇷",
+        "countries": [
+            "BR"
+        ],
+        "notes": "Portuguese language content"
+    },
+    "latam": {
+        "name": "Latin America",
+        "emoji": "🌎",
+        "countries": [
+            "AR",
+            "MX",
+            "CL",
+            "CO",
+            "PE",
+            "VE"
+        ],
+        "notes": "Spanish-language platforms (Brazil separate)"
+    },
+    "mena": {
+        "name": "Middle East & North Africa",
+        "emoji": "🌍",
+        "countries": [
+            "AE",
+            "SA",
+            "EG",
+            "QA",
+            "KW",
+            "BH",
+            "OM",
+            "JO",
+            "LB",
+            "DZ",
+            "MA",
+            "TN"
+        ],
+        "notes": "Arabic-language platforms"
+    },
+    "sea": {
+        "name": "Southeast Asia",
+        "emoji": "🌏",
+        "countries": [
+            "ID",
+            "VN",
+            "TH",
+            "MY",
+            "PH",
+            "SG"
+        ],
+        "notes": "Multi-language region"
+    },
+    "nordics": {
+        "name": "Nordic Countries",
+        "emoji": "❄️",
+        "countries": [
+            "SE",
+            "NO",
+            "DK",
+            "FI",
+            "IS"
+        ],
+        "notes": "Scandinavian platforms"
+    },
+    "global": {
+        "name": "Global / Unknown",
+        "emoji": "🌐",
+        "countries": [
+            "Unknown"
+        ],
+        "notes": "Sites without specific country attribution"
+    }
+}
