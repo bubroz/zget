@@ -14,6 +14,7 @@ scripts/
 data/*
 !data/registry_base.json
 !data/enriched_registry.json
+!data/regions.json
 !data/failed_sites.txt
 openspec/changes/archived/
 
