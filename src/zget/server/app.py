@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from fastapi.responses import FileResponse
 
 from ..config import DB_PATH, THUMBNAILS_DIR, VIDEOS_DIR, ensure_directories, PLATFORM_DISPLAY
-from ..db import VideoStore
+from ..db import VideoStore, AsyncVideoStore, get_db_dependency
 from ..queue import DownloadQueue, QueueStatus
 
 import re
@@ -403,28 +403,34 @@ async def run_library_repair():
 
 
 @app.get("/api/library")
-def get_library(q: Optional[str] = None, uploader: Optional[str] = None, limit: int = 50):
+async def get_library(
+    q: Optional[str] = None,
+    uploader: Optional[str] = None,
+    limit: int = 50,
+    async_store: AsyncVideoStore = Depends(get_db_dependency),
+):
+    """Get library videos with optional search/filter - now async!"""
     if q:
-        videos = store.search(q, limit=limit)
+        videos = await async_store.search(q, limit=limit)
     elif uploader:
-        videos = store.get_by_uploader(uploader, limit=limit)
+        videos = await async_store.get_by_uploader(uploader, limit=limit)
     else:
-        videos = store.get_recent(limit=limit)
+        videos = await async_store.get_recent(limit=limit)
 
-        # Enrich with display names and uploader links
-        results = []
-        for v in videos:
-            v_dict = v.__dict__.copy()
-            v_dict["platform_display"] = PLATFORM_DISPLAY.get(v.platform, v.platform.capitalize())
+    # Enrich with display names and uploader links
+    results = []
+    for v in videos:
+        v_dict = v.__dict__.copy()
+        v_dict["platform_display"] = PLATFORM_DISPLAY.get(v.platform, v.platform.capitalize())
 
-            # Extract expanded metadata from raw_metadata if available
-            if v.raw_metadata:
-                v_dict["uploader_url"] = v.raw_metadata.get("uploader_url")
-                v_dict["channel"] = v.raw_metadata.get("channel")
-                v_dict["channel_url"] = v.raw_metadata.get("channel_url")
+        # Extract expanded metadata from raw_metadata if available
+        if v.raw_metadata:
+            v_dict["uploader_url"] = v.raw_metadata.get("uploader_url")
+            v_dict["channel"] = v.raw_metadata.get("channel")
+            v_dict["channel_url"] = v.raw_metadata.get("channel_url")
 
-            results.append(v_dict)
-        return results
+        results.append(v_dict)
+    return results
 
 
 @app.get("/api/uploaders")

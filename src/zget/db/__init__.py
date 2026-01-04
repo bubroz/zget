@@ -12,12 +12,15 @@ from .models import (
     WatchedAccount,
 )
 from .store import VideoStore
+from .async_store import AsyncVideoStore, get_db_dependency
 
 __all__ = [
+    "AsyncVideoStore",
     "DownloadTask",
     "ExportedVideo",
     "MonitorRun",
     "Video",
     "VideoStore",
     "WatchedAccount",
+    "get_db_dependency",
 ]
