@@ -1,7 +1,7 @@
 """
 Command-line interface for zget.
 
-Routes to direct download when URL provided, or shows Webport info.
+Routes to direct download when URL provided, or shows information about The Portal.
 """
 
 import argparse
@@ -35,7 +35,7 @@ def main():
         "url",
         nargs="?",
         default=None,
-        help="Video URL to download (if omitted, shows Webport info)",
+        help="Video URL to download (if omitted, shows Portal info)",
     )
     parser.add_argument(
         "-o",
@@ -207,8 +207,8 @@ def show_welcome():
 
     console.print(
         Panel(
-            f"[bold gold1]zget v0.3.0[/bold gold1]\n\n"
-            f"The interactive TUI has been retired in favor of the [bold]Webport[/bold].\n\n"
+            f"[bold gold1]zget v0.4.0[/bold gold1]\n\n"
+            f"The interactive TUI has been retired in favor of [bold]The Portal[/bold].\n\n"
             f"📱 [bold]Mobile Access:[/bold] [link={webport_url}]{webport_url}[/link]\n"
             f"🌐 [bold]PWA Status:[/bold] Production Ready\n\n"
             f"To download a one-off video via CLI:\n"

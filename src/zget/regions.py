@@ -92,8 +92,41 @@ def load_health_log() -> dict:
         return json.load(f)
 
 
-def get_sites_for_region(region_id: str) -> list[SiteInfo]:
-    """Get all sites belonging to a region with their health status."""
+def get_popularity_weights(store) -> dict[str, int]:
+    """Calculate popularity weights based on local counts + global sentiment."""
+    # Global sentiment scores for major platforms
+    weights = {
+        "youtube": 1000,
+        "instagram": 500,
+        "tiktok": 500,
+        "twitter": 400,
+        "twitch": 400,
+        "vimeo": 300,
+        "reddit": 300,
+    }
+
+    # Add local counts (weighted)
+    # This expects a VideoStore or similar with local database access
+    try:
+        with store._connect() as conn:
+            rows = conn.execute(
+                "SELECT platform, COUNT(*) as count FROM videos GROUP BY platform"
+            ).fetchall()
+            for row in rows:
+                platform = row["platform"].lower()
+                count = row["count"]
+                weights[platform] = weights.get(platform, 0) + (count * 10)
+    except Exception:
+        # Fallback if DB is unavailable or schema mismatch during migration
+        pass
+
+    return weights
+
+
+def get_sites_for_region(
+    region_id: str, weights: Optional[dict[str, int]] = None
+) -> list[SiteInfo]:
+    """Get all sites belonging to a region with their health status and popularity sorting."""
     regions = load_regions()
     if region_id not in regions:
         return []
@@ -101,6 +134,7 @@ def get_sites_for_region(region_id: str) -> list[SiteInfo]:
     region = regions[region_id]
     registry = load_registry()
     health_log = load_health_log()
+    weights = weights or {}
 
     sites = []
     for site_name, site_data in registry.items():
@@ -134,9 +168,15 @@ def get_sites_for_region(region_id: str) -> list[SiteInfo]:
                 )
             )
 
-    # Sort: working first, then by name
+    # Sort: working first, then by popularity weight, then by name
     status_order = {"working": 0, "failed": 1, "geo-blocked": 1, "untested": 2}
-    sites.sort(key=lambda s: (status_order.get(s.status, 2), s.name.lower()))
+
+    def sort_key(s: SiteInfo):
+        # Weight site by name (case-insensitive)
+        weight = weights.get(s.name.lower(), 0)
+        return (status_order.get(s.status, 2), -weight, s.name.lower())
+
+    sites.sort(key=sort_key)
 
     return sites
 
