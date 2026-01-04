@@ -14,6 +14,22 @@ from ..config import DB_PATH, THUMBNAILS_DIR, VIDEOS_DIR, ensure_directories, PL
 from ..db import VideoStore
 from ..queue import DownloadQueue, QueueStatus
 
+import re
+import unicodedata
+
+
+def sanitize_filename(name: str) -> str:
+    """Sanitize a string to be a safe filename for mobile/phones."""
+    # Convert to NFKD (separate characters from accents)
+    name = unicodedata.normalize("NFKD", name)
+    # Remove non-ascii characters (emojis, etc)
+    name = name.encode("ascii", "ignore").decode("ascii")
+    # Replace anything not alphanumeric, space, dot, or hyphen with space
+    name = re.sub(r"[^\w\s\.-]", "", name)
+    # Strip leading/trailing whitespace and limit length
+    return name.strip()[:100]
+
+
 # Initialize app
 app = FastAPI(title="zget Server", version="0.3.0")
 
@@ -56,6 +72,46 @@ class SettingsUpdate(BaseModel):
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "version": "0.4.0 (2026 Preview)"}
+
+
+@app.get("/api/health/status")
+def health_status():
+    """Return smokescreen health check status and statistics."""
+    from pathlib import Path
+    from datetime import datetime
+
+    health_log_path = Path(__file__).parent.parent.parent.parent / "data" / "health_log.json"
+
+    if not health_log_path.exists():
+        return {"last_check": None, "total": 0, "working": 0, "broken": 0, "geo_blocked": 0}
+
+    with open(health_log_path) as f:
+        data = json.load(f)
+
+    # Get last check time from most recent entry
+    last_check = None
+    working = broken = geo_blocked = 0
+
+    for site, info in data.items():
+        status = info.get("status", "unknown")
+        if status == "ok":
+            working += 1
+        elif status == "broken":
+            broken += 1
+        elif status == "geo_blocked":
+            geo_blocked += 1
+
+        verified_at = info.get("verified_at")
+        if verified_at and (not last_check or verified_at > last_check):
+            last_check = verified_at
+
+    return {
+        "last_check": last_check,
+        "total": len(data),
+        "working": working,
+        "broken": broken,
+        "geo_blocked": geo_blocked,
+    }
 
 
 @app.get("/api/settings")
@@ -146,7 +202,7 @@ async def get_media(video_id: str):
     return FileResponse(
         path,
         media_type="video/mp4",
-        # Avoid filename argument to allow 'inline' disposition (better for iOS streaming)
+        filename=f"{sanitize_filename(video.title)}.mp4" if video.title else f"{video.id}.mp4",
     )
 
 
@@ -204,6 +260,68 @@ def get_registry():
     from ..config import PLATFORM_PATTERNS
 
     return {"sites": list(PLATFORM_PATTERNS.keys()), "display": PLATFORM_DISPLAY}
+
+
+@app.get("/api/regions")
+def list_regions():
+    """Return all regional collections with summary stats."""
+    from ..regions import list_all_regions
+
+    summaries = list_all_regions()
+    return [
+        {
+            "id": s.region.id,
+            "name": s.region.name,
+            "emoji": s.region.emoji,
+            "notes": s.region.notes,
+            "site_count": s.site_count,
+            "working": s.working,
+            "failed": s.failed,
+            "untested": s.untested,
+        }
+        for s in summaries
+    ]
+
+
+@app.get("/api/regions/{region_id}")
+def get_region_sites(region_id: str):
+    """Return all sites in a region with health status."""
+    from ..regions import load_regions, get_sites_for_region, get_region_summary
+
+    regions = load_regions()
+    if region_id not in regions:
+        raise HTTPException(status_code=404, detail=f"Region '{region_id}' not found")
+
+    region = regions[region_id]
+    sites = get_sites_for_region(region_id)
+    summary = get_region_summary(region_id)
+
+    return {
+        "region": {
+            "id": region.id,
+            "name": region.name,
+            "emoji": region.emoji,
+            "notes": region.notes,
+        },
+        "summary": {
+            "site_count": summary.site_count if summary else 0,
+            "working": summary.working if summary else 0,
+            "failed": summary.failed if summary else 0,
+            "untested": summary.untested if summary else 0,
+        },
+        "sites": [
+            {
+                "name": s.name,
+                "country": s.country,
+                "category": s.category,
+                "description": s.description,
+                "status": s.status,
+                "test_url": s.test_url,
+                "is_adult": s.is_adult,
+            }
+            for s in sites
+        ],
+    }
 
 
 @app.post("/api/repair")
@@ -285,19 +403,52 @@ async def run_library_repair():
 
 
 @app.get("/api/library")
-def get_library(q: Optional[str] = None, limit: int = 50):
+def get_library(q: Optional[str] = None, uploader: Optional[str] = None, limit: int = 50):
     if q:
         videos = store.search(q, limit=limit)
+    elif uploader:
+        videos = store.get_by_uploader(uploader, limit=limit)
     else:
         videos = store.get_recent(limit=limit)
 
-    # Enrich with display names
-    results = []
-    for v in videos:
-        v_dict = v.__dict__.copy()
-        v_dict["platform_display"] = PLATFORM_DISPLAY.get(v.platform, v.platform.capitalize())
-        results.append(v_dict)
-    return results
+        # Enrich with display names and uploader links
+        results = []
+        for v in videos:
+            v_dict = v.__dict__.copy()
+            v_dict["platform_display"] = PLATFORM_DISPLAY.get(v.platform, v.platform.capitalize())
+
+            # Extract expanded metadata from raw_metadata if available
+            if v.raw_metadata:
+                v_dict["uploader_url"] = v.raw_metadata.get("uploader_url")
+                v_dict["channel"] = v.raw_metadata.get("channel")
+                v_dict["channel_url"] = v.raw_metadata.get("channel_url")
+
+            results.append(v_dict)
+        return results
+
+
+@app.get("/api/uploaders")
+def list_uploaders():
+    """Return all uploaders with video counts."""
+    with store._connect() as conn:
+        rows = conn.execute(
+            """
+            SELECT uploader, platform, COUNT(*) as count 
+            FROM videos 
+            GROUP BY uploader, platform 
+            ORDER BY count DESC
+            """
+        ).fetchall()
+
+    return [
+        {
+            "name": row["uploader"],
+            "platform": row["platform"],
+            "platform_display": PLATFORM_DISPLAY.get(row["platform"], row["platform"].capitalize()),
+            "count": row["count"],
+        }
+        for row in rows
+    ]
 
 
 @app.post("/api/downloads")
