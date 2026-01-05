@@ -1,4 +1,4 @@
-# zget: The Archival Engine
+# <img src="src/zget/server/static/icon.png" width="48" height="48" align="center"> zget: The Archival Engine
 
 `zget` is a high-fidelity media archival system built for personal high-fidelity preservation. It operates through a specialized triad: **The Archivist** (Ingestion), **The Vault** (Persistence), and **The Portal** (Discovery).
 
