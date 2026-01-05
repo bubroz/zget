@@ -1,0 +1,95 @@
+# zget Frontend Modernization: The Native Component Architecture
+
+> **Philosophy**: Zero build steps. Zero frameworks. 100% Browser Standards.
+> **Date**: January 3, 2026
+
+## The Vision
+We aren't just cleaning code; we're building a **forward-looking, specification-compliant PWA** that runs directly in the browser. 
+
+No webpack, no vite, no node_modules hell. Just pure, unadulterated web standards.
+
+## Architecture Overview
+
+### 1. The Core (Lightweight Shell)
+[index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html) becomes a tiny semantic shell (< 100 lines). Its only job is to:
+1. Load critical CSS variables (Theme)
+2. Register the Service Worker
+3. Load the `AppRouter` component
+
+### 2. The Router (Client-Side)
+A custom `<zget-app>` component that handles:
+- URL routing (History API)
+- View switching (Lazy loading modules)
+- Global state container (Pub/Sub pattern)
+
+### 3. The Components (Shadow DOM)
+Each major feature becomes a self-contained module.
+
+| Component | File | Responsibility |
+|-----------|------|----------------|
+| `<zget-app>` | `components/app.js` | Router, State, Layout |
+| `<zget-vault>` | `components/vault.js` | Main library grid |
+| `<zget-regions>` | `components/regions.js` | Region status & grouping |
+| `<zget-player>` | `components/player.js` | Video playback & control |
+| `<zget-queue>` | `components/queue.js` | Download status & history |
+
+## Modern Features (2026 Standards)
+
+### 1. CSS Module Scripts
+We will use **Constructable Stylesheets** to share styles efficiently between Shadow DOM boundaries without duplication.
+
+```javascript
+import sharedStyles from '../styles/shared.css' with { type: 'css' };
+
+class ZgetComponent extends HTMLElement {
+  connectedCallback() {
+    const shadow = this.attachShadow({mode: 'open'});
+    shadow.adoptedStyleSheets = [sharedStyles];
+  }
+}
+```
+
+### 2. Reactive Attributes
+Components will observe their own attributes. Change `<zget-player src="...">` and it automatically re-renders.
+
+### 3. Event-Driven Communication
+- **Down**: Unidirectional data flow via properties
+- **Up**: Custom DOM Events bubbles for actions (`<zget-item @play-video="...">`)
+
+## Implementation Steps
+
+### Phase 1: The Foundation
+- [ ] Create `src/zget/server/static/styles/theme.css` (Variables)
+- [ ] Create `src/zget/server/static/styles/shared.css` (Common components)
+- [ ] Create `src/zget/server/static/components/base.js` (Base class helper)
+
+### Phase 2: The Core Components
+- [ ] Implement `<zget-app>` (Router)
+- [ ] Implement `<zget-vault>` (Library Grid)
+- [ ] Implement `<zget-player>` (Modal Player)
+
+### Phase 3: Migration & Cleanup
+- [ ] Switch [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html) to use `<zget-app>`
+- [ ] Delete legacy spaghetti code
+
+## Directory Structure
+
+```
+static/
+├── index.html            # The Entry Point
+├── service-worker.js     # The Offline Engine
+├── styles/
+│   ├── theme.css         # --primary: #FFD54F;
+│   └── shared.css        # Buttons, Inputs, Cards
+└── components/
+    ├── app.js            # The Orchestrator
+    ├── base.js           # The helper class
+    ├── vault.js          # The Library
+    ├── regions.js        # The Regions
+    └── player.js         # The Player
+```
+
+## Why This Rocks
+1.  **Performance**: Browser parses minimal initial HTML. Components hydrate typically in < 50ms.
+2.  **Maintenance**: Explicit imports. No global scope pollution.
+3.  **Future Proof**: This code will run in 2036. It relies on standards, not fads.

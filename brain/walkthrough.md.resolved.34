@@ -1,0 +1,75 @@
+# Walkthrough: Settings & Aesthetic Refinement
+
+I have completed the requested refinements to the zget application, focusing on network configurability and aesthetic restoration.
+
+## Improvements Made
+
+### 1. Network Configurability (Backend)
+
+- Updated the API to support configurable **Host** (Bind Address) and **Port**.
+- Settings are now persisted to `~/.config/zget/config.json`.
+- The server (`main.py`) uses these persistent settings as defaults, maintaining CLI override capability.
+
+### 2. Aesthetic Restoration & Refinement
+
+- **The "Vault" Look**: Reverted the UI to the preferred Amber/Gold palette with minimalist video cards and the "zget Portal" header.
+- **Settings Modal**: Increased the width to `800px` and redesigned the layout for better spacing and professional look.
+- **Ingest Input**: Removed the "black box" background artifact, making it completely transparent as requested.
+- **LAN Access Indicator**: Added a clear status box in Settings showing the current local network access URL.
+
+### 4. Minimalist Navigation & Input (Latest)
+
+- **Single-Line Ingest**: Replaced the "box/capsule" style ingest input with a sleek, single-line (underline) design for a more premium, minimalist feel.
+- **Header Cleanup**: Removed the "Registry" link entirely from the header, leaving only the essential "Vault" and Settings controls.
+- **Interactive Feedback**: The new ingest line features a dynamic transition that highlights the underline when focused.
+
+### 6. Mobile UX Refinement & Quick Download (Latest)
+
+- **Un-smooshed Player**: Redesigned the video player modal for mobile with a vertical flow. The title now has its own row, and buttons are stacked/wrapped for better usability.
+- **Quick Download**: Added a dedicated download button to every video card in the Vault. You can now download files directly without opening the player.
+- **Minimalist Player**: Refined the video player modal for a pro-grade "Archive" feel. 
+- **High-Density Metadata**: Replaced the cluttered description box with clean rows for **Views, Resolution, and Codec**, using professional separators.
+- **Natural Aspect Ratios**: Switched to variable aspect ratios for Vault cards—YouTube content stays horizontal while Reels/Shorts fill their natural vertical height.
+- **Pro-Grade Actions**: Sticky action buttons (Download, Source, Delete) remain pinned at the bottom for instant access.
+- **Uploader Branding**: Enhanced uploader names on Vault cards for better at-a-glance identification.
+
+## Visual Verification
+
+````carousel
+![Enhanced Player Modal](/Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/player_modal_collapsed_1767538714725.png)
+<!-- slide -->
+![Mobile Vault Cards](/Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/mobile_vault_cards_1767538268536.png)
+````
+
+## Technical Changes
+
+### Backend
+
+- **[app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)**: Added `host` and [port](file:///Users/base/Projects/zget/src/zget/db/models.py#154-205) to [SettingsUpdate](file:///Users/base/Projects/zget/src/zget/server/app.py#67-71) and handled persistence.
+- **[main.py](file:///Users/base/Projects/zget/src/zget/server/main.py)**: Loaded defaults from persistent config.
+- **[app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)**: Refined `/api/settings` to return a smarter, context-aware `local_ip`.
+- **[app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)**: Improved host/IP detection logic.
+
+### Frontend
+
+- **[index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html)**: Changed page title to "zget".
+- **[app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)**: Enlarged the Settings modal container.
+- **[app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)**: Changed brand to "zget" and added mobile media queries for header stacking.
+- **[settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)**: Redesigned the settings form with new network inputs.
+- **[settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)**: Added dynamic labeling for the Access URL (VPN vs LOCAL).
+- **[settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)**: Added responsive grid stacking for mobile.
+- **[ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)**: Styled the ingest input for transparency.
+- **[ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)**: Used high-specificity `!important` resets to nuke persistent theme borders on the input element.
+- **[ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)**: Redesigned as a single underline style with improved focus states.
+- **[ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)**: Redesigned as single underline style.
+- **[app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)**: Removed "Registry" nav item.
+- **[vault.js](file:///Users/base/Projects/zget/src/zget/server/static/components/vault.js)**: Added single-column grid and responsive header for mobile.
+
+## Verification Results
+
+- **Settings Persistence**: Confirmed that changes to Host/Port are correctly saved to `config.json`.
+- **UI Audit**: Verified the "Amber/Gold" theme and layout improvements via browser screenshots.
+- **Functionality**: Confirmed "Saved!" success state on committing changes.
+
+> [!IMPORTANT]
+> A server restart is required for changes to **Host** and **Port** to take effect.

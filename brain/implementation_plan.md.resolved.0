@@ -1,0 +1,214 @@
+# zget MCP Server: Implementation Plan
+
+## Executive Summary
+
+**Goal:** Create an MCP (Model Context Protocol) server for zget that enables other Antigravity agents (particularly Librarian) to programmatically access zget's media archival capabilities.
+
+## 1. Architectural Review (Outsider Perspective)
+
+### Current Architecture
+
+```
+zget/
+├── core.py         # yt-dlp wrapper - download(), extract_info(), list_formats()
+├── config.py       # Platform detection, cookie management, output paths
+├── db/
+│   ├── models.py   # Video, DownloadTask dataclasses
+│   └── store.py    # VideoStore - 40+ methods, SQLite/FTS5
+├── library/
+│   ├── ingest.py   # Full pipeline: download → hash → dedupe → DB
+│   ├── export.py   # JSON manifest generation
+│   └── thumbnails.py
+├── queue/
+│   └── manager.py  # Async download queue (32-slot concurrent)
+└── tui/            # Textual-based terminal interface
+```
+
+### Strengths (MCP-Ready)
+
+1. **Clean Separation of Concerns**: Core logic ([core.py](file:///Users/base/Projects/zget/src/zget/core.py), [library/ingest.py](file:///Users/base/Projects/zget/src/zget/library/ingest.py)) is decoupled from TUI
+2. **Sync + Async APIs**: [ingest_video()](file:///Users/base/Projects/zget/src/zget/library/ingest.py#32-200) (async) and [ingest_video_sync()](file:///Users/base/Projects/zget/src/zget/library/ingest.py#202-233) exist
+3. **Rich Metadata**: Full yt-dlp info_dict preserved, FTS5 searchable library
+4. **Platform Intelligence**: 1,899 extractors with curated metadata
+
+### Gaps for MCP Integration
+
+1. **No Headless Mode**: Currently TUI or CLI only
+2. **No Remote API**: Purely local execution
+3. **Progress Callbacks**: Designed for TUI, not structured messaging
+
+---
+
+## 2. Proposed MCP Tools
+
+The MCP server should expose these capabilities:
+
+### Core Tools
+
+| Tool Name | Description | Input | Output |
+|-----------|-------------|-------|--------|
+| `zget_download` | Download a video URL to local library | `{url, format_id?, collection?, tags?}` | `{video_id, title, local_path, duration}` |
+| `zget_extract_info` | Extract metadata without downloading | `{url}` | `{title, uploader, duration, formats[], thumbnail}` |
+| `zget_search` | Full-text search across library | `{query, limit?}` | `{videos: [{id, title, path, uploader}]}` |
+| `zget_get_video` | Get full video metadata by ID | `{video_id}` | `{Video object}` |
+| `zget_list_formats` | List available download formats | `{url}` | `{formats: [{id, resolution, ext, size}]}` |
+
+### Advanced Tools (Librarian Integration)
+
+| Tool Name | Description | Use Case |
+|-----------|-------------|----------|
+| `zget_get_local_path` | Resolve video ID to file path | Librarian needs the file for SAM3 analysis |
+| `zget_get_recent` | Get recently downloaded videos | "Analyze my latest downloads" |
+| `zget_get_by_uploader` | Filter by channel/creator | "Get all videos from Stanford Online" |
+| `zget_check_url` | Check if URL already downloaded | Avoid duplicate downloads |
+
+---
+
+## 3. Proposed Changes
+
+### [NEW] `src/zget/mcp/`
+
+New MCP server module:
+
+#### [NEW] `src/zget/mcp/__init__.py`
+- Package initialization
+
+#### [NEW] `src/zget/mcp/server.py`
+- MCP server implementation using `mcp` Python library
+- Tool handlers mapping to core functions
+- Structured response formatting
+
+#### [NEW] `src/zget/mcp/tools.py`
+- Individual tool implementations
+- Input validation (Pydantic models)
+- Error handling and response formatting
+
+---
+
+### [MODIFY] [src/zget/cli.py](file:///Users/base/Projects/zget/src/zget/cli.py)
+
+Add MCP server launch command:
+```python
+@app.command()
+def serve():
+    """Start the MCP server for agent integration."""
+    from .mcp.server import run_server
+    run_server()
+```
+
+---
+
+### [MODIFY] [pyproject.toml](file:///Users/base/Projects/zget/pyproject.toml)
+
+Add MCP dependency and entry point:
+```toml
+[project.optional-dependencies]
+mcp = ["mcp>=1.0.0"]
+
+[project.scripts]
+zget-mcp = "zget.mcp.server:main"
+```
+
+---
+
+## 4. Integration with Librarian
+
+### Workflow Example
+
+```
+┌─────────────┐     MCP Call      ┌──────────┐
+│  Librarian  │ ─────────────────►│   zget   │
+│   Agent     │  zget_download    │   MCP    │
+│             │◄─────────────────│  Server  │
+│             │   {local_path}    │          │
+└──────┬──────┘                   └──────────┘
+       │
+       │  SAM3 Analysis
+       ▼
+┌──────────────┐
+│  Modal GPU   │
+│  (A100-40GB) │
+└──────────────┘
+```
+
+**Use Cases:**
+
+1. **"Download and analyze this video"**
+   - Librarian calls `zget_download` → gets `local_path`
+   - Librarian sends file to SAM3 for person tracking
+
+2. **"Find videos from this speaker"**
+   - Librarian calls `zget_get_by_uploader("Stanford Online")`
+   - Gets list of paths for batch biometric analysis
+
+3. **"Check if I have this video"**
+   - Before downloading, Librarian calls `zget_check_url`
+   - Avoids duplicate downloads and processing
+
+---
+
+## 5. Verification Plan
+
+### Automated Tests
+
+Since zget doesn't currently have a test suite, we'll add minimal MCP-specific tests:
+
+```bash
+# Run from zget root
+uv run python -m pytest tests/test_mcp.py -v
+```
+
+#### [NEW] `tests/test_mcp.py`
+- Test tool input validation
+- Test response formatting
+- Mock yt-dlp for CI (avoid network calls)
+
+### Manual Verification
+
+1. **Start MCP Server**
+   ```bash
+   zget-mcp
+   # or: uv run python -m zget.mcp.server
+   ```
+
+2. **Test with MCP Inspector**
+   ```bash
+   npx @anthropic/mcp-inspector
+   ```
+   - Connect to `zget-mcp`
+   - Call `zget_search` with query "Stanford"
+   - Verify structured response
+
+3. **Integration Test with Antigravity**
+   - Configure zget MCP in Antigravity settings
+   - Ask Claude: "Search my zget library for TBPN videos"
+   - Verify tool call and response
+
+---
+
+## 6. Implementation Order
+
+1. **Phase 1: Core MCP Server** (Day 1)
+   - Create `mcp/` module structure
+   - Implement `zget_search`, `zget_get_video`
+   - Add `zget-mcp` entry point
+
+2. **Phase 2: Download Tools** (Day 1-2)
+   - Implement `zget_download` with sync wrapper
+   - Add progress reporting via MCP resources
+   - Implement `zget_extract_info`, `zget_list_formats`
+
+3. **Phase 3: Librarian Integration** (Day 2)
+   - Add `zget_get_local_path` for file handoff
+   - Document Librarian integration patterns
+   - Test end-to-end with real Librarian agent
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> Before implementing, please confirm:
+> 1. Is `mcp` the correct Python library to use? (vs a custom stdio implementation)
+> 2. Should downloads be sync (blocking) or async with status polling?
+> 3. Any specific Librarian workflows you want prioritized?

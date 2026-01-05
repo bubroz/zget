@@ -1,0 +1,43 @@
+# Walkthrough: Settings & Aesthetic Refinement
+
+I have completed the requested refinements to the zget application, focusing on network configurability and aesthetic restoration.
+
+## Improvements Made
+
+### 1. Network Configurability (Backend)
+- Updated the API to support configurable **Host** (Bind Address) and **Port**.
+- Settings are now persisted to `~/.config/zget/config.json`.
+- The server ([main.py](file:///Users/base/Projects/zget/src/zget/server/main.py)) uses these persistent settings as defaults, maintaining CLI override capability.
+
+### 2. Aesthetic Restoration & Refinement
+- **The "Vault" Look**: Reverted the UI to the preferred Amber/Gold palette with minimalist video cards and the "zget Portal" header.
+- **Settings Modal**: Increased the width to `800px` and redesigned the layout for better spacing and professional look.
+- **Ingest Input**: Removed the "black box" background artifact, making it completely transparent as requested.
+- **LAN Access Indicator**: Added a clear status box in Settings showing the current local network access URL.
+
+## Visual Verification
+
+````carousel
+![Main Page View](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/main_page_view_1767535600266.png)
+<!-- slide -->
+![Settings Modal View](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/settings_modal_view_1767535620349.png)
+````
+
+## Technical Changes
+
+### Backend
+- **[app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)**: Added `host` and `port` to `SettingsUpdate` and handled persistence.
+- **[main.py](file:///Users/base/Projects/zget/src/zget/server/main.py)**: Loaded defaults from persistent config.
+
+### Frontend
+- **[app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)**: Enlarged the Settings modal container.
+- **[settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)**: Redesigned the settings form with new network inputs.
+- **[ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)**: Styled the ingest input for transparency.
+
+## Verification Results
+- **Settings Persistence**: Confirmed that changes to Host/Port are correctly saved to `config.json`.
+- **UI Audit**: Verified the "Amber/Gold" theme and layout improvements via browser screenshots.
+- **Functionality**: Confirmed "Saved!" success state on committing changes.
+
+> [!IMPORTANT]
+> A server restart is required for changes to **Host** and **Port** to take effect.

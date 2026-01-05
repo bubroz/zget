@@ -1,0 +1,38 @@
+# Walkthrough: zget Branding & Sanitization Audit
+
+I have completed a comprehensive audit and update of the `zget` project to prepare it for its public social media launch. The project has been transformed from its legacy "Museum Pro/TUI" roots into a polished, high-fidelity **Archival Engine**.
+
+## Key Achievements
+
+### 1. Brand Unification: The Triad
+The project now consistently uses the **Archivist/Vault/Portal** branding across all documentation, source code, and project metadata.
+- **The Archivist**: The extraction and ingestion engine.
+- **The Vault**: The SQLite-backed persistence layer.
+- **The Portal**: The premium, glassmorphism-inspired PWA discovery interface.
+
+### 2. Deep Privacy Sanitization
+A surgical, file-by-file audit was conducted to remove all traces of:
+- **Local Machine Paths**: References like `/Users/base/...` were purged from logs and code.
+- **Internal Network IPs**: Accidentally committed local IPs were removed.
+- **Test Artifacts**: The `tests/` directory and its [test-videos.md](file:///Users/base/Projects/zget/tests/test-videos.md) list were deleted to keep private what was specifically archived.
+- **Source Code Cleanup**: Hardcoded test URLs in utility scripts were removed and replaced with generic logic.
+
+### 3. Professional Repository Polish
+- **Metadata Update**: [pyproject.toml](file:///Users/base/Projects/zget/pyproject.toml) and documentation were updated to reflect the premium "Archival Engine" mission.
+- **Credit & Acknowledgments**: Proper credit was given to foundational projects: `yt-dlp`, `FastAPI`, and `SQLite`.
+- **Hygiene**: [.gitignore](file:///Users/base/Projects/zget/.gitignore) was hardened to prevent any future metadata leaks, and legacy directories were purged.
+
+## Final Repository Structure
+The repository is now lean and professional:
+```
+AGENTS.md       # Standardized mission
+LICENSE         # MIT
+README.md       # High-fidelity overview & credits
+data/           # Curated site registry only
+openspec/       # Architectural specifications
+pyproject.toml  # Modernized metadata
+src/            # Core source (The Triad)
+uv.lock         # Synced dependencies
+```
+
+**The project is now fully sanitized, branded, and ready for public announcement.** 🚀

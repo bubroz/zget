@@ -1,0 +1,20 @@
+# zget MCP Server Implementation
+
+## Phase 1: Core MCP Server
+- [ ] Create `src/zget/mcp/` module structure
+- [ ] Implement MCP server with `zget_search`, `zget_get_video`
+- [ ] Add `zget-mcp` entry point to pyproject.toml
+
+## Phase 2: Download Tools
+- [ ] Implement `zget_download` with sync wrapper
+- [ ] Implement `zget_extract_info`, `zget_list_formats`
+- [ ] Add `zget_check_url` for duplicate detection
+
+## Phase 3: Librarian Integration Tools  
+- [ ] Add `zget_get_local_path` for file handoff
+- [ ] Add `zget_get_recent`, `zget_get_by_uploader`
+
+## Phase 4: Finalize
+- [ ] Update README with MCP documentation
+- [ ] Test with MCP inspector
+- [ ] Commit and push to GitHub

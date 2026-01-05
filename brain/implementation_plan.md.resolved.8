@@ -1,0 +1,43 @@
+# Documentation Audit and Unification
+
+Systematically update all project documentation to reflect the transition from a TUI-centric application to a headless server (Museum Pro) with PWA and Integrated Player features. Ensure consistency, eliminate outdated references, and update the GitHub profile.
+
+## User Review Required
+
+> [!IMPORTANT]
+> This plan involves rewriting major parts of the documentation to reflect the new "Museum Pro" / "Vault" branding and the retirement of the TUI.
+
+## Proposed Changes
+
+### [Documentation]
+
+#### [MODIFY] [README.md](file:///Users/base/Projects/zget/README.md)
+- Update intro to emphasize "Museum Pro" / "The Archivist" branding.
+- Add "Integrated Player" and "iOS/PWA Optimization" to the features list.
+- Update quick start to focus on the PWA installation.
+- Add section on the "Integrity Repair" system.
+
+#### [MODIFY] [AGENTS.md](file:///Users/base/Projects/zget/AGENTS.md)
+- Expand instructions for AI agents.
+- Clarify the "Museum Pro" architectural standard.
+- Detail the handoff process between `zget` and other agents (e.g., Librarian).
+
+#### [MODIFY] [project.md](file:///Users/base/Projects/zget/openspec/project.md)
+- Update tech stack to include PWA specificities (manifest, service workers).
+- Refine design principles to include "Museum Quality Content" (H.264 prioritization).
+
+#### [MODIFY] [AGENTS.md](file:///Users/base/Projects/zget/openspec/AGENTS.md)
+- **BIG REWRITE**: Remove all TUI references.
+- Remove mention of `tui/app.py`.
+- Update directory structure and component map to the headless server model.
+
+#### [MODIFY] [README.md](file:///Users/base/Projects/bubroz/README.md)
+- Update the `zget` description from "Archival TUI" to "Museum-grade Archival Server & PWA".
+- Highlight the 2026 "Museum Pro" features.
+
+## Verification Plan
+
+### Manual Verification
+- Review all modified [.md](file:///Users/base/Projects/zget/AGENTS.md) files for consistency and clarity.
+- Ensure no TUI or outdated path references remain.
+- verify that the GitHub profile update accurately represents the project's current state.

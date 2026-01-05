@@ -1,0 +1,79 @@
+# Implementation Plan: Mobile Optimization & Branding Fix
+
+This plan addresses the mobile display issues and simplifies the branding from "zget Portal" to "zget".
+
+## Mobile Audit Findings
+
+From the mobile inspection (375x667, iPhone SE):
+
+### Critical Issues
+
+1. **Header Completely Broken**
+   - All elements (logo, ingest input, archive button, vault link, settings) crammed on one line
+   - Ingest input squeezed to ~20% width, unusable
+   - Placeholder text severely clipped
+   - Zero padding between elements
+
+2. **Branding Incorrect**
+   - Header shows "zget Portal" instead of "zget"
+   - Page title is "zget | Portal" instead of "zget"
+
+3. **Settings Modal Not Responsive**
+   - 2-column grid doesn't stack on mobile
+   - Inputs cramped
+   - Button placement disconnected
+
+4. **Content Spacing**
+   - Search input awkwardly positioned
+   - Video card text lacks padding
+
+## Proposed Changes
+
+### [Component] App Header
+
+#### [MODIFY] [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+
+**Branding:**
+- Change "zget Portal" to "zget" in header
+
+**Mobile Responsive:**
+- Add media query for `@media (max-width: 768px)`
+- Stack header elements vertically on mobile
+- Move ingest input to its own row below the header
+- Increase ingest input to 100% width on mobile
+- Adjust spacing and padding for touch targets
+
+### [Component] Settings Modal
+
+#### [MODIFY] [settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)
+
+**Mobile Responsive:**
+- Change `.form-grid` to stack single column on mobile: `grid-template-columns: 1fr`
+- Increase modal max-width to 95% on mobile
+- Center the "Commit Changes" button
+- Stack LAN Access badge and URL vertically if needed
+
+### [Document] Page Title
+
+#### [MODIFY] [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html)
+
+- Change `<title>zget | Portal</title>` to `<title>zget</title>`
+
+### [Component] Vault Grid
+
+#### [MODIFY] [vault.js](file:///Users/base/Projects/zget/src/zget/server/static/components/vault.js)
+
+**Mobile Responsive:**
+- Ensure video cards have proper side padding on mobile
+- Stack search input below "The Vault" heading on mobile
+- Adjust grid columns to 1 column on mobile if not already
+
+## Verification Plan
+
+### Manual Verification (Browser)
+- Open Portal at mobile width (375px, 667px)
+- Verify header elements stack properly
+- Verify ingest input is full width and usable
+- Verify settings modal is readable and usable
+- Tap through all interactive elements
+- Take screenshots of fixed mobile layout

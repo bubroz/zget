@@ -1,0 +1,72 @@
+# zget UI Polish, Architectural Review & Service Worker
+
+## Summary
+
+Completed three major items:
+1. **Regions Tab UI Polish** — Fixed spacing and added hover effects
+2. **Architectural Review** — Identified three gaps and proposed solutions
+3. **Service Worker Implementation** — Enabled offline PWA support
+
+---
+
+## 1. Regions Tab UI Fix ✅
+
+### Problem
+Category chips lacked hover feedback and sections appeared "smooshed."
+
+### Solution
+- Added CSS classes for `.category-chip`, `.region-summary`, `.site-row`
+- Added 20px top padding to region content containers
+- Hover effects: lift + shadow on chips, slide + border on site rows
+
+---
+
+## 2. Architectural Review ✅
+
+### Identified Gaps
+1. **Missing Service Worker** — Incomplete PWA
+2. **Monolithic Frontend** — 1,281 lines in one file
+3. **Blocking Database** — Sync SQLite in async context
+
+### Proposed Solutions
+| Gap | Solution | Effort |
+|-----|----------|--------|
+| Service Worker | Workbox strategies | 4-6 hrs |
+| Modular Frontend | Web Components | 8-12 hrs |
+| Async Database | aiosqlite | 4-6 hrs |
+
+---
+
+## 3. Service Worker Implementation ✅
+
+### Files Created
+- [service-worker.js](file:///Users/base/Projects/zget/src/zget/server/static/service-worker.js) — 146 lines
+- [offline.html](file:///Users/base/Projects/zget/src/zget/server/static/offline.html) — 91 lines
+
+### Caching Strategies
+| Resource | Strategy | Cache Name |
+|----------|----------|------------|
+| Thumbnails | Cache-First | `thumbnails-v1` |
+| Library API | Stale-While-Revalidate | `api-cache-v1` |
+| Other APIs | Network-First | `api-cache-v1` |
+| App Shell | Precache | `app-shell-v1` |
+
+### Verification
+Browser JavaScript confirmed:
+- **Script URL**: `http://localhost:9989/service-worker.js`
+- **State**: `activated`
+- **Caches**: `app-shell-v1`, `api-cache-v1`
+
+![Service Worker Test Recording](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/service_worker_test_1767494811309.webp)
+
+---
+
+## Git Commits
+- `78fc63f` — fix(ui): add top padding to region sites container
+- `a4af2d2` — feat(pwa): add service worker for offline support and caching
+
+---
+
+## Next Steps
+1. **Async Database Migration** — Priority 2 from the plan
+2. **Web Components Refactor** — Priority 3 for maintainability

@@ -1,0 +1,59 @@
+# Portal UI Feature Hardening - Comprehensive Verification
+
+## Phase 1: Registry Fix ✅
+- [x] Rename `regions.js` → [registry.js](file:///Users/base/Projects/zget/src/zget/server/static/components/registry.js)
+- [x] Update [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js) imports and element references
+- [x] Bump Service Worker cache version
+- [x] Verify Site Registry grid populates
+
+## Phase 2: Comprehensive Feature Verification
+### Navigation & Shell
+- [ ] Sidebar renders with 4 nav icons (📀🚀🌐⚙️)
+- [ ] View switching works for all 4 views
+- [ ] Logo reload functionality
+- [ ] Tooltip hovers display correct labels
+
+### Vault (📀)
+- [ ] Videos load on initial render
+- [ ] Thumbnails display correctly
+- [ ] Duration badges format correctly
+- [ ] Search functionality (Enter key)
+- [ ] Click opens player modal
+
+### Site Registry (🌐)
+- [x] Grid populates with sites
+- [ ] Category filter ribbon works
+- [ ] Search filter works
+- [ ] Status dots show correct health
+- [ ] Prominence percentages display
+
+### Activity Monitor (🚀)
+- [ ] View renders without errors
+- [ ] `/api/downloads` endpoint responding
+- [ ] Active downloads display with progress
+- [ ] Cancel button functionality
+
+### Settings (⚙️)
+- [ ] View renders without errors
+- [ ] ZGET_HOME field displays current value
+- [ ] Settings save functionality
+- [ ] Library Repair trigger
+- [ ] Thumbnail Regeneration trigger
+
+### Player Modal
+- [ ] Opens on video click
+- [ ] Video playback works
+- [ ] Metadata displays (title, uploader, etc.)
+- [ ] Close button works
+- [ ] Delete button works
+- [ ] Delete triggers Vault refresh
+
+### Ingest (Command Center)
+- [ ] URL input renders in header
+- [ ] URL submission functionality
+- [ ] Progress/status feedback
+
+## Phase 3: Final Polish
+- [ ] Console error check
+- [ ] API endpoint audit
+- [ ] Update walkthrough with verification results

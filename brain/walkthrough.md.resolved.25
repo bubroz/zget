@@ -1,0 +1,53 @@
+# Portal Feature Audit & UI Hardening - Verification Complete
+
+All Portal features have been verified and are fully functional.
+
+## Verified Features
+
+### 1. Single Page Consolidation (The "Zero-UI" Pivot)
+The interface has been successfully consolidated into a single vertical feed, removing the sidebar and navigation complexity.
+
+![Single Page Layout](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/single_page_vault_view_1767529994448.png)
+
+- **Header**: Sticky Command Center & Logo.
+- **Activity Banner**: Auto-hides when inactive.
+- **Vault**: Always visible below the header.
+- **Removed**: Sidebar, Registry, Route Switching.
+
+### 2. Storage Archive (Vault)
+- **8 videos** displayed in responsive grid
+- Videos load from `yt-dlp` backend
+- Search filtering functional
+- Video cards emit `open-video` events
+
+### 3. Settings Modal
+The settings panel is now an overlay modal, keeping the main interface clean.
+
+![Settings Modal](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/single_page_settings_modal_1767530006756.png)
+
+- **Maintenance Tools**: Library Repair & Thumbnail Regeneration verified.
+- **Configuration**: Path settings persistence verified.
+- **Overlay**: Opens via gear icon, closes via 'X' button.
+
+### 4. Activity Monitor
+- **Banner Mode**: Only appears when downloads are active.
+- **Compact UI**: Shows title, progress bar, speed, and ETA.
+- **Polling**: Successfully polls `/api/downloads`.
+
+## API Endpoints Verified
+| Endpoint | Status | Purpose |
+|----------|--------|---------|
+| `/api/library` | ✅ | Video library data |
+| `/api/video/{id}` | ✅ | Single video metadata |
+| `/api/media/{id}` DELETE | ✅ | Video deletion |
+| `/api/downloads` | ✅ | Active download status |
+| `/api/settings` | ✅ | System configuration |
+| `/api/repair/library` | ✅ | Maintenance trigger |
+
+## Summary
+The "SAAS demonspawn" UI has been successfully eliminated. The Portal is now a streamlined, single-page utility.
+
+- ✅ **Removed**: Sidebar, Registry (`regions.js`).
+- ✅ **Consolidated**: Activity Monitor (Banner), Settings (Modal).
+- ✅ **Fixed**: `yt-dlp` dependency installed and verified working.
+- ✅ **Verified**: Full browser walkthrough confirmed clean, responsive layout.

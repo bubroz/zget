@@ -1,0 +1,49 @@
+# Documentation Audit and Unification
+
+Systematically update all project documentation to reflect the transition from a TUI-centric application to a headless server architecture. Unify branding under the triad: **The Archivist** (Server), **The Vault** (Library), and **The Portal** (PWA).
+
+## User Review Required
+
+> [!IMPORTANT]
+> This plan involves rewriting major parts of the documentation to reflect the new "Museum Pro" / "Vault" branding and the retirement of the TUI.
+
+## Proposed Changes
+
+### [Documentation]
+
+#### [MODIFY] [README.md](file:///Users/base/Projects/zget/README.md)
+
+- Update intro to emphasize **The Archivist**, **The Vault**, and **The Portal**.
+- Add "Integrated Player" and "iOS/PWA Optimization" to the features list.
+- Update quick start to focus on the PWA installation and server exposure.
+- Add section on the "Integrity Repair" system.
+
+#### [MODIFY] [AGENTS.md](file:///Users/base/Projects/zget/AGENTS.md)
+
+- Expand instructions for AI agents.
+- Clarify the architectural triad (Archivist/Vault/Portal).
+- Detail the handoff process between `zget` and other agents (e.g., Librarian).
+
+#### [MODIFY] [project.md](file:///Users/base/Projects/zget/openspec/project.md)
+
+- Update tech stack to include PWA specificities (manifest, service workers).
+- Refine design principles to include "Museum Quality Content" (H.264 prioritization).
+
+#### [MODIFY] [AGENTS.md](file:///Users/base/Projects/zget/openspec/AGENTS.md)
+
+- **BIG REWRITE**: Remove all TUI references.
+- Remove mention of `tui/app.py`.
+- Update directory structure and component map to the headless server model.
+
+#### [MODIFY] [README.md](file:///Users/base/Projects/bubroz/README.md)
+
+- Update the `zget` description from "Archival TUI" to "The Archival Engine (The Archivist, The Vault, The Portal)".
+- Highlight the 2026 high-fidelity PWA features.
+
+## Verification Plan
+
+### Manual Verification
+
+- Review all modified [.md](file:///Users/base/Projects/zget/README.md) files for consistency and clarity.
+- Ensure no TUI or outdated path references remain.
+- verify that the GitHub profile update accurately represents the project's current state.

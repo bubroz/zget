@@ -1,0 +1,99 @@
+# zget MCP Server & Webport Pivot
+
+## Phase 1: Core MCP Server [DONE]
+
+- [x] Create `src/zget/mcp/` module structure
+- [x] Implement MCP server with `zget_search`, `zget_get_video`
+- [x] Add `zget-mcp` entry point to pyproject.toml
+
+## Phase 2: Download Tools [DONE]
+
+- [x] Implement `zget_download` with sync wrapper
+- [x] Implement `zget_extract_info`, `zget_list_formats`
+- [x] Add `zget_check_url` for duplicate detection
+
+## Phase 3: Librarian Integration Tools [DONE]
+
+- [x] Add `zget_get_local_path` for file handoff
+- [x] Add `zget_get_recent`, `zget_get_by_uploader`
+
+## Phase 4: Finalize [DONE]
+
+- [x] Update README with MCP documentation
+- [x] Test with MCP inspector
+- [x] Commit and push to GitHub (089f022)
+
+## Phase 5: Hyper-Diagnosis of TUI Hang [DONE]
+
+- [x] Reproduce hang with URL (Confirmed CLI works, TUI hangs)
+- [x] Identify bottleneck (Event loop saturation/callback threading)
+
+## Phase 6: The Webport Pivot (PWA) [DONE]
+
+- [x] Implement `zget-server` (FastAPI)
+- [x] Create mobile-responsive PWA frontend
+- [x] Verify PWA on mobile (iOS/Android)
+
+## Phase 7: De-TUI & Streamlining [DONE]
+
+- [x] Remove `src/zget/tui/`
+- [x] Remove `textual` dependency
+- [x] Update CLI to remove TUI launch logic
+- [x] Final project audit
+- [x] Troubleshooting TUI persistence & CLI pathing
+- [x] Phase 8: Auto-Startup Configuration
+  - [x] Create macOS Launch Agent (.plist)
+  - [x] Verify service persistence
+
+## Phase 9: Webport Feature Parity & Fixes [DONE]
+
+- [x] Fix nested link failure and ID routing
+- [x] Implement robust thumbnail resolver API
+- [x] Add library search to PWA
+- [x] Add metadata details toggle
+- [x] Add delete functionality
+- [x] Add site registry (health) view
+
+## Phase 10: Webport Polish & Asset Audit [IN PROGRESS]
+
+- [x] Remove 'webport' branding from UI
+- [/] Debug Instagram thumbnails (Verified API is working)
+- [ ] Investigate persistent link failure
+- [x] Audit `onclick` handlers in `index.html`
+- [x] Standardize environment with `ZGET_HOME` in plist
+
+## Phase 11: 2026 Feature Expansion & Configurability [IN PROGRESS]
+
+- [x] Implement 'Settings' tab in Webport
+- [x] Add dynamic path configuration (ZGET_HOME modification)
+- [x] Debug/Repair missing Instagram thumbnails (redownload logic)
+- [x] Implement VLM-based semantic tagging (Bold Recommendation UI)
+- [x] Refine UI with 'Settings' persistence
+
+## Phase 12: Unified Dashboard & Clarity [IN PROGRESS]
+
+- [x] Consolidate Archive and Library tabs into single 'Vault' Dashboard
+- [x] Rename 'Download' actions to 'Save to Device'
+- [x] Implement permanent Archival input in Dashboard header
+- [x] Add optimistic UI feedback for archival triggers
+
+## Phase 13: Vault Pro Refinement [DONE]
+
+- [x] Consolidate to 2-tab system (Vault, Settings)
+- [x] Merge Registry into Settings
+- [x] Redesign Library Items as high-fidelity cards
+- [x] Fix header 'smooshed' layout
+- [x] Make metadata and 'Save' actions persistent on cards
+
+## Phase 14: Integrated Media Player
+
+- [ ] Implement Video Player Modal in UI
+- [ ] Add 'WATCH' action to library cards
+- [ ] Optimize backend streaming response
+- [ ] Verify iOS PWA playback behavior
+
+## Phase 15: iOS Compatibility Fix
+
+- [ ] Update `core.py` to prioritize H.264 (AVC)
+- [ ] Implement `repair` transcoding in `app.py`
+- [ ] Verify fix with user on iPhone

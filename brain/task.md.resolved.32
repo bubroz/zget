@@ -1,0 +1,18 @@
+# Documentation Audit & GitHub Update
+
+## Phase 1: Inventory & Review
+- [/] Identify all documentation files [/]
+- [ ] Review `README.md` for accuracy (UI refactor, features) [ ]
+- [ ] Review `AGENTS.md` for OpenSpec compliance [ ]
+- [ ] Review `pyproject.toml` metadata [ ]
+- [ ] Review internal docs (if any) [ ]
+
+## Phase 2: Refinement & Polishing
+- [ ] Update `README.md` with new Web Component architecture details [ ]
+- [ ] Ensure consistent branding (Archivist/Vault/Portal) [ ]
+- [ ] Improve reader-friendliness (formatting, alerts, diagrams) [ ]
+
+## Phase 3: Deployment & GitHub
+- [ ] Update GitHub repository description [ ]
+- [ ] Commit and push all documentation changes [ ]
+- [ ] Final verification of the repo state [ ]

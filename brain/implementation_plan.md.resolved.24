@@ -1,0 +1,39 @@
+# Portal Simplification & Unification
+
+The user has requested a significant pivot away from the dashboard/SAAS aesthetic back to a cohesive, single-page experience.
+
+## User Requirements
+- **One Page**: Everything in a single vertical flow or overlay.
+- **Remove Registry**: "Pointless", delete it.
+- **Remove Activity Tab**: "Nothing burger", integrate it better.
+- **Remove Sidebar**: "SAAS demonspawn", reverting to clean layout.
+
+## Proposed Changes
+
+### 1. Cleanup & Simplification
+- **[DELETE]** `src/zget/server/static/components/regions.js` (The Registry)
+- **[DELETE]** Sidebar navigation code in [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+
+### 2. Layout Unification ([app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js))
+- **Structure**:
+  - **Header**: Logo + Command Center (`<zget-ingest>`) + Settings Toggle
+  - **Active Area**: `<zget-activity>` (Only visible when downloads are active)
+  - **Main Content**: `<zget-vault>` (The video grid)
+- **Concept**: A simple, vertical feed. The "Portal" is the window into the archive.
+
+### 3. Component Refactors
+- **[activity.js](file:///Users/base/Projects/zget/src/zget/server/static/components/activity.js)**: Refactor from a full-page monitor to a "Live Status" banner/card.
+- **[settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)**: Wrap in a `<dialog>` or modal overlay triggered by a gear icon in the header, keeping the main UI clean.
+
+### 4. Backend
+- Ensure `yt-dlp` is correctly installed (addressing user's "not working" report).
+
+## Verification Plan
+### Automated
+- None (UI heavy).
+
+### Manual (Browser)
+1. **Load Page**: Verify no sidebar, just a clean header and grid.
+2. **Ingest**: Paste a URL, verify the "Activity" component appears/expands.
+3. **Vault**: Verify the grid is always visible below.
+4. **Settings**: Click gear icon, verify modal opens over the content.

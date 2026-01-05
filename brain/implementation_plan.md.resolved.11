@@ -1,0 +1,205 @@
+# zget Architectural Review & 2026 Modernization Plan
+
+> **Audit Date**: January 3, 2026
+> **Auditor**: Antigravity Agent
+
+---
+
+## Executive Summary
+
+The zget project is fundamentally sound but has significant opportunities for modernization. This review identifies UI issues, architectural gaps, and strategic recommendations based on the hottest 2026 technology trends.
+
+## Part 1: Immediate UI Fixes
+
+### Issue 1: Regions Tab - Smooshed Sections
+
+**Problem**: The category pills and site cards lack visual breathing room.
+
+**Fix**:
+- Add `margin-bottom: 12px` to the region summary line.
+- Add `gap: 12px` between category pills (currently 8px).
+- Add `padding: 20px` to the region content area (currently 15px).
+
+### Issue 2: Category Pills Not Clickable for Filtering
+
+**Status**: ✅ Already implemented! The [filterRegionByCategory()](file:///Users/base/Projects/zget/src/zget/server/static/index.html#791-801) function exists (line 791). The pills have [onclick](file:///Users/base/Projects/zget/src/zget/server/static/index.html#692-705) handlers (lines 837, 846).
+
+**Actual Issue**: The pills work, but clicking them doesn't provide visual feedback. The `cursor: pointer` style is applied inline, but the hover state lacks distinction.
+
+**Fix**: Add a `:hover` effect to the category chips via CSS class.
+
+---
+
+## Part 2: Architectural Assessment
+
+### Strengths 💪
+
+| Area | Assessment |
+|------|------------|
+| **Tech Stack** | FastAPI + SQLite + Vanilla JS is lean and performant |
+| **MCP Integration** | First-class agentic support is forward-thinking |
+| **PWA Structure** | Apple PWA meta tags and manifest are correctly configured |
+| **H.264 Standard** | iOS compatibility focus is smart |
+| **Smokescreen Engine** | Proactive health monitoring is unique |
+
+### Weaknesses 🔍
+
+| Area | Issue | Impact |
+|------|-------|--------|
+| **Monolithic Frontend** | Single 1,281-line [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html) | Hard to maintain, no component reuse |
+| **No Service Worker** | PWA is "lite" - no offline mode | Users lose access when offline |
+| **Sync Database Access** | [VideoStore](file:///Users/base/Projects/zget/src/zget/db/store.py#227-784) uses blocking SQLite calls in async context | Potential performance bottleneck |
+| **No Search Indexing** | FTS5 exists but isn't leveraged for fuzzy search | Limited discoverability |
+| **No Observability** | No structured logging or metrics | Hard to debug production issues |
+| **No Rate Limiting** | Open CORS + no throttling | Vulnerable to abuse |
+
+---
+
+## Part 3: 2026 Technology Trends & Recommendations
+
+### Trend 1: Intelligent Offline Caching (PWAs)
+
+**What's Hot**: PWAs in 2026 feature predictive prefetching that anticipates user intent.
+
+**Recommendation**: Implement a Service Worker that:
+1. Caches the app shell for instant load.
+2. Prefetches thumbnails for the top 20 videos in the library.
+3. Queues archive requests when offline and syncs when back online.
+
+**Priority**: 🔴 High (fundamental PWA feature missing)
+
+---
+
+### Trend 2: Modular Micro-Frontend Architecture
+
+**What's Hot**: Breaking monolithic frontends into independent, deployable components.
+
+**Recommendation**: Refactor from monolithic [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html) to component-based structure:
+```
+src/zget/server/static/
+├── index.html        # Shell only
+├── components/
+│   ├── vault.js
+│   ├── regions.js
+│   ├── player.js
+│   └── settings.js
+├── styles/
+│   └── main.css      # Extracted from inline <style>
+└── service-worker.js  # NEW
+```
+
+**Priority**: 🟡 Medium (maintainability, not user-facing)
+
+---
+
+### Trend 3: AI-Powered Personalization
+
+**What's Hot**: Smart recommendations, semantic search, and auto-tagging.
+
+**Recommendation**: Integrate with your existing **Librarian** agent for:
+1. **VLM Semantic Tagging**: Auto-tag videos with scene descriptions.
+2. **Smart Search**: Vector embeddings for "find videos like this."
+3. **Recommendations**: Surface related content in the player modal.
+
+**Priority**: 🟡 Medium (differentiator, aligns with existing ecosystem)
+
+---
+
+### Trend 4: Biometric/Passwordless Auth (WebAuthn)
+
+**What's Hot**: Native browser biometric authentication for secure, frictionless login.
+
+**Recommendation**: For multi-user deployments, add optional WebAuthn:
+1. Admin PIN to protect delete/settings actions.
+2. Face ID/Touch ID on iOS PWA for vault access.
+
+**Priority**: 🟢 Low (nice-to-have, not essential for personal use)
+
+---
+
+### Trend 5: Edge Computing for Near-Native Performance
+
+**What's Hot**: Serving assets from edge locations for instant loading.
+
+**Recommendation**: For remote access scenarios:
+1. Cloudflare Tunnel for secure external access.
+2. R2/S3 backup of thumbnails for CDN-like delivery.
+
+**Priority**: 🟢 Low (current LAN focus is appropriate)
+
+---
+
+### Trend 6: Async Database Patterns
+
+**What's Hot**: Non-blocking database access is table stakes for FastAPI.
+
+**Recommendation**: Migrate from synchronous `sqlite3` to `aiosqlite` or `databases`:
+1. Convert [VideoStore](file:///Users/base/Projects/zget/src/zget/db/store.py#227-784) methods to `async def`.
+2. Use `asyncpg` if migrating to PostgreSQL for multi-user.
+
+**Priority**: 🔴 High (current blocking calls may cause latency)
+
+---
+
+## Part 4: Revised Roadmap
+
+Based on this review, here's my recommended priority order:
+
+| Priority | Feature | Rationale |
+|----------|---------|-----------|
+| 1 | **Service Worker + Offline Mode** | Core PWA feature, differentiator |
+| 2 | **Async Database Migration** | Performance, scalability |
+| 3 | **UI Polish (Regions Tab)** | User-facing friction |
+| 4 | **Component-Based Frontend** | Developer experience |
+| 5 | **Librarian VLM Integration** | Ecosystem synergy |
+| 6 | **Subscription Feeds** | Feature request parity |
+| 7 | **Watch Party Mode** | Social differentiator |
+
+---
+
+## Part 5: Critical Honest Assessment
+
+### What's Working Well
+- The "Archivist/Vault/Portal" triad is excellent branding.
+- MCP integration is ahead of its time.
+- H.264 standard enforcement solves a real iOS pain point.
+- The glassmorphism aesthetic is premium.
+
+### What Needs Work
+- **The PWA is incomplete**: No service worker = no offline = not a real PWA.
+- **The frontend is tech debt**: 1,281 lines in one file is unmaintainable.
+- **No security model**: Anyone on the LAN can delete videos.
+- **No telemetry**: You're flying blind on usage patterns.
+
+### Honest Verdict
+**Rating**: 7/10 for a personal tool, 5/10 for a public release.
+
+The architecture is solid but the implementation is incomplete. The biggest gap is the missing Service Worker—without it, the "PWA" claim is technically inaccurate. The second biggest issue is the monolithic frontend, which will become a maintenance nightmare as features grow.
+
+**Bottom Line**: Ship the Regions UI fix and Service Worker before the social media launch. Everything else can wait.
+
+---
+
+## Appendix: Regions Tab UI Fix (Code)
+
+```css
+/* Add to <style> section */
+.category-chip {
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+.category-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255, 213, 79, 0.2);
+}
+```
+
+```javascript
+// Line 833: Add margin before chips
+html += '<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; margin-top: 8px;">';
+```

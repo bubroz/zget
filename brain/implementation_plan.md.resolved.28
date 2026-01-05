@@ -1,0 +1,40 @@
+# Implementation Plan: Premium PNG Logo for zget
+
+The goal is to provide a "proper" PNG logo for `zget` that moves beyond the limitations of JPEG (compression, lack of transparency) and aligns with the **Minimalist Portal** pivot of 2026.
+
+## Proposed Concepts
+
+I will generate three distinct concepts using high-fidelity generation:
+
+1.  **Concept: The Vault-Z**
+    - **Style**: Minimalist, flat-design icon.
+    - **Element**: A stylized letter "Z" that doubles as a bank vault wheel or an archival dial.
+    - **Palette**: Amber/Gold/Black (consistent with current theme).
+    - **Target**: Pure simplicity for mobile icons.
+
+2.  **Concept: High-End Glassmorphism**
+    - **Style**: 3D premium "Apple-style" asset.
+    - **Element**: A translucent glass cube containing the "zget" logotype in gold, with subtle play-button reflections.
+    - **Palette**: Frosted glass, gold accents, deep dark background.
+    - **Target**: High-end branding for The Portal header.
+
+3.  **Concept: The Archivist Abstract**
+    - **Style**: Vector-like geometric abstract.
+    - **Element**: An abstract representation of data flowing into a secure container.
+    - **Palette**: High-contrast gold on black.
+    - **Target**: Professional, tech-forward branding.
+
+## Execution Steps
+
+1.  **Generate Assets**: Use `generate_image` for each concept, prompting for a "solid deep black background" or "solid white background" to ensure the cleanest possible PNG transition.
+2.  **Review**: Present the concepts to the user.
+3.  **Refine & Deploy**:
+    - Convert the selected concept to the final [icon.png](file:///Users/base/Projects/zget/src/zget/server/static/icon.png).
+    - (Optional) Use code to remove the background if transparency is required for specific UI areas.
+
+## Verification Plan
+
+### Manual Verification
+- View the generated images to ensure they meet the "premium" and "minimalist" criteria.
+- Confirm with the USER which concept they prefer.
+- Verify the final PNG looks crisp in The Portal UI.

@@ -1,0 +1,19 @@
+# Task: Portal UI Feature Hardening
+
+- [/] Resolve Registry Data Mismatch (Intelligence Registry empty)
+    - [ ] Audit [src/zget/regions.py](file:///Users/base/Projects/zget/src/zget/regions.py) for site data retrieval
+    - [ ] Verify `/api/registry` output via terminal/fetch
+    - [ ] Fix backend or frontend data mapping
+- [ ] Verify Activity Monitor Functionality
+    - [ ] Test download polling
+    - [ ] Test download cancellation
+- [ ] Verify Settings & Maintenance
+    - [ ] Test `ZGET_HOME` update
+    - [ ] Test Library Repair & Thumbnail Regeneration triggers
+- [ ] Verify Video Deletion & Vault Refresh
+    - [ ] Test "Delete" button in player
+    - [ ] Verify file is removed from disk and DB
+    - [ ] Verify Vault refreshes automatically
+- [ ] Final UI Polish
+    - [ ] Ensure consistent styling across all tabs
+    - [ ] Verify mobile responsiveness

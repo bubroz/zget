@@ -1,0 +1,9 @@
+# Task Checklist: Logo Refinement & Sync
+
+- [ ] Refine Logo Visibility & Size
+    - [ ] Research current logo CSS styling `[/]`
+    - [ ] Adjust header logo dimensions for better mobile presence
+    - [ ] Verify aesthetic balance on desktop/mobile
+- [ ] Finalize Documentation & Sync
+    - [ ] Update `walkthrough.md` with final logo state
+    - [ ] Sync all brain artifacts to GitHub-friendly project root

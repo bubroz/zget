@@ -1,0 +1,14 @@
+# Portal UI Feature Hardening
+
+- [ ] Resolve Registry Data Mismatch [/]
+    - [ ] Analyze [src/zget/server/app.py](file:///Users/base/Projects/zget/src/zget/server/app.py) and [src/zget/server/static/components/regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js)
+    - [ ] Update backend to provide flat site registry at `/api/registry`
+    - [ ] Verify Registry grid populates in browser
+- [ ] Verify Core Functionalities
+    - [ ] Test Activity Monitor (polling, cancellation)
+    - [ ] Test Settings (ZGET_HOME update, maintenance triggers)
+    - [ ] Test Video Deletion and Vault refresh
+- [ ] Final UI/UX Polish
+    - [ ] Branding check (icon usage)
+    - [ ] Responsive design check
+    - [ ] Documentation update

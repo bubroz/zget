@@ -1,0 +1,33 @@
+# Resolve Registry Component and Cache issues
+
+Fix the naming mismatch between frontend components and backend expectations, and force a browser refresh by updating the service worker cache version.
+
+## Proposed Changes
+
+### [Frontend Components]
+
+#### [MODIFY] [registry.js](file:///Users/base/Projects/zget/src/zget/server/static/components/registry.js) (RENAMED from [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js))
+- Rename [ZgetRegions](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js#3-213) class to `ZgetRegistry`.
+- Standardize on `zget-registry` as the custom element name.
+- Ensure it fetches from `/api/registry`. (Already doing this)
+
+#### [MODIFY] [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+- Update import path from [./regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js) to `./registry.js`.
+- Replace all occurrences of `zget-regions` with `zget-registry`.
+- Update navigation and view-pane identifiers for consistency.
+
+#### [MODIFY] [service-worker.js](file:///Users/base/Projects/zget/src/zget/server/static/service-worker.js)
+- Increment `APP_SHELL_CACHE` version to `app-shell-v2` to force the browser to discard the old, broken UI and components.
+
+## Verification Plan
+
+### Automated Tests
+- None available for the frontend components in the current environment.
+
+### Manual Verification
+1. Start the server: `zget-server` or `python3 src/zget/server/main.py`.
+2. Use the browser subagent to navigate to `http://localhost:8000`.
+3. Check the console to ensure no 404s for `registry.js` or [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js).
+4. Navigate to the "Intelligence Registry" (🌐) and verify the dense grid is populated with site chips.
+5. Verify the "Vault" (📀), "Activity" (🚀), and "Settings" (⚙️) views are accessible and functional.
+6. Verify URL Ingest (Command Center) works.

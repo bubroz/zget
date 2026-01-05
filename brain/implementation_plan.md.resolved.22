@@ -1,0 +1,31 @@
+# Implementation Plan - Portal Feature Hardening
+
+Restore core functionalities and resolve the Registry data mismatch to ensure a professional, fully functional "Site Intelligence" view.
+
+## Proposed Changes
+
+### Backend
+#### [MODIFY] [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+- Verify `/api/registry` logic and ensure it correctly aggregates sites from all regions.
+- Ensure `weight` normalization and `category` extraction are robust.
+
+#### [MODIFY] [regions.py](file:///Users/base/Projects/zget/src/zget/regions.py)
+- Ensure regional data loading is correct and includes all expected platforms.
+
+### Frontend
+#### [MODIFY] [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js)
+- Fix property initialization (`sitesData` vs `regionsData`).
+- Ensure [renderSites](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js#53-77) is called correctly after data fetch.
+- Add additional fallback check for empty registry view.
+
+## Verification Plan
+
+### Automated/Terminal Tests
+- Run `curl http://localhost:8000/api/registry` to verify JSON structure and content.
+- Check `pytest` if applicable for regional data loading.
+
+### Manual Verification
+- **Registry Grid**: Navigate to "Intelligence Registry" and verify the dense grid of chips appears. Test search and category filtering.
+- **Activity Monitor**: Start a download via "Command Center" and observe it in the "Global Activity" tab. Test cancellation.
+- **Settings**: Update `ZGET_HOME` and verify the success message. Trigger "Library Repair" and check server logs.
+- **Video Deletion**: Open a video from the "Vault", click "Delete", and verify the Vault refreshes and the video is gone.

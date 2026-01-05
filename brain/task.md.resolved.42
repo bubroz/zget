@@ -1,0 +1,15 @@
+# Portal UI Feature Hardening
+
+- [/] Resolve Registry Data Mismatch
+    - [x] Analyze [src/zget/server/app.py](file:///Users/base/Projects/zget/src/zget/server/app.py) and [src/zget/server/static/components/regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js)
+    - [/] Rename [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js) to `registry.js` and update [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js) imports
+    - [ ] Bump Service Worker cache version
+    - [ ] Verify Registry grid populates in browser
+- [ ] Verify Core Functionalities
+  - [ ] Test Activity Monitor (polling, cancellation)
+  - [ ] Test Settings (ZGET_HOME update, maintenance triggers)
+  - [ ] Test Video Deletion and Vault refresh
+- [ ] Final UI/UX Polish
+  - [ ] Branding check (icon usage)
+  - [ ] Responsive design check
+  - [ ] Documentation update

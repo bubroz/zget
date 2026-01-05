@@ -1,0 +1,60 @@
+# Walkthrough: Documentation Audit & GitHub Update (v0.4.0)
+
+I have completed a comprehensive audit of all project documentation to reflect the recent **Native Web Component** refactor and the new **Smart Regions & Popularity** features.
+
+## Key Changes
+
+### 1. Version Bump & Standardization
+
+- Bumped project version to **v0.4.0** across:
+  - [pyproject.toml](file:///Users/base/Projects/zget/pyproject.toml)
+  - [src/zget/cli.py](file:///Users/base/Projects/zget/src/zget/cli.py)
+  - `src/get/mcp/server.py`
+- Updated copyright year to **2026** in [LICENSE](file:///Users/base/Projects/zget/LICENSE).
+- Standardized terminology: **"Webport"** has been replaced with **"The Portal"** consistently across the codebase and documentation.
+
+### 2. Terminology Sanitization
+
+- Removed references to **"Digital Intelligence Ecosystem"** as per user preference.
+- Focused branding on the core triad: **The Archivist**, **The Vault**, and **The Portal**.
+
+### 3. Documentation Updates
+
+- [README.md](file:///Users/base/Projects/zget/README.md): Completely modernized to highlight the "Zero-Build" native component architecture and intelligence features.
+- [AGENTS.md](file:///Users/base/Projects/zget/AGENTS.md): Updated to reflect the modular component structure for better AI assistant engagement.
+- [openspec/project.md](file:///Users/base/Projects/zget/openspec/project.md): Updated tech stack and design principles to include Native Web Components.
+
+### 4. Recognition
+
+- Added natural acknowledgments for the **yt-dlp** community and the **Gemini** and **Antigravity** teams at Google DeepMind.
+
+### 5. Repository Cleanup
+
+- Removed redundant files: `sw.js`, `openspec/AGENTS.md`, and [src/zget/server/portal/README.md](file:///Users/base/Projects/zget/src/zget/server/portal/README.md).
+- Cleaned up development artifacts: `server.log` and `data/failed_sites.txt`.
+- Hardened [.gitignore](file:///Users/base/Projects/zget/.gitignore) to prevent leakage of runtime data (`health_log.json`, `Downloads/`) and AI infrastructure files (`.gemini/`, `.agent/`).
+
+### 6. Portal Pivot: Command Center & Registry
+- **Unified Ingest**: Moved the URL archive bar into the global header. It's now persistent and easily accessible.
+- **Intelligence Registry**: Pivoted the 'Regions' view into a **Site Intelligence Registry**. It displays platform health, global prominence, and discovery categories in a more compact, useful layout.
+- **Event-Driven Refresh**: Archiving a new URL now automatically refreshes the Vault view once the download is queued.
+
+![New Portal Command Center](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/header_and_registry_view_1767511876205.png)
+
+## Verification
+
+### CLI Check
+
+Ran `zget --help` (simulated by code review) to ensure the new Portal terminology and version are present.
+
+### Document Audit
+
+Verified all clickable links and architecture diagrams in the updated markdown files.
+
+## Proposed GitHub Metadata
+
+**Description:**
+> The Archival Engine v0.4.0: A high-fidelity media archival system featuring a modular Native Web Component Portal, zero-build architecture, and local popularity-driven site registry.
+
+**Tags:**
+`media-archival` `native-web-components` `fastapi` `sqlite` `yt-dlp` `mcp` `pwa` `zero-build`

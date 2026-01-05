@@ -1,0 +1,14 @@
+# Task: Refactor zget Frontend to Web Components
+
+## Status
+
+- [x] Implement `<zget-regions>` Component
+    - [x] Research backend API endpoints for regions and sites
+    - [x] Refine [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js) to use real data
+    - [x] Connect [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js) to [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+- [x] Enhance Player Data Loading
+    - [x] Add `/api/video/{id}` endpoint to backend
+    - [x] Update `<zget-app>` to use the new endpoint
+video data [ ]
+- [ ] Implement `<zget-queue>` Component (Optional) [ ]
+- [ ] Final Verification and Cleanup [ ]

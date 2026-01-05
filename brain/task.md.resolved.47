@@ -1,0 +1,23 @@
+# Task Checklist: Settings & Aesthetic Refinement
+
+- [x] **Backend: Network Configurability**
+  - [x] Update [SettingsUpdate](file:///Users/base/Projects/zget/src/zget/server/app.py#67-71) model in [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+  - [x] Modify `/api/settings` GET/POST to handle `host` and `port`
+  - [x] Ensure persistence to `config.json`
+  - [x] Update [main.py](file:///Users/base/Projects/zget/src/zget/server/main.py) to use persistent config as defaults
+- [x] **Frontend: UI Refinements**
+  - [x] Restore "Amber/Gold" aesthetic (Theme, icons, minimalist cards)
+  - [x] Fix Settings modal width and layout
+  - [x] Add Host/Port inputs to Settings UI
+  - [x] Remove "black box" background from Ingest input
+  - [x] Add LAN Access indicator in Settings
+- [x] **Verification**
+  - [x] Verify settings save functional and visual success state
+  - [x] Verify persistence to filesystem
+  - [x] Perform visual audit of restored theme
+
+- [/] **UI & IP Logic Refinement**
+  - [/] Refine IP detection logic in [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+  - [ ] Fix "fucking lines" (double borders) in [ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)
+  - [ ] Improve "Access URL" display in [settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)
+  - [ ] Final visual verification

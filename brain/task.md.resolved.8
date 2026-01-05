@@ -1,0 +1,63 @@
+# zget MCP Server & Webport Pivot
+
+## Phase 1: Core MCP Server [DONE]
+
+- [x] Create `src/zget/mcp/` module structure
+- [x] Implement MCP server with `zget_search`, `zget_get_video`
+- [x] Add `zget-mcp` entry point to pyproject.toml
+
+## Phase 2: Download Tools [DONE]
+
+- [x] Implement `zget_download` with sync wrapper
+- [x] Implement `zget_extract_info`, `zget_list_formats`
+- [x] Add `zget_check_url` for duplicate detection
+
+## Phase 3: Librarian Integration Tools [DONE]
+
+- [x] Add `zget_get_local_path` for file handoff
+- [x] Add `zget_get_recent`, `zget_get_by_uploader`
+
+## Phase 4: Finalize [DONE]
+
+- [x] Update README with MCP documentation
+- [x] Test with MCP inspector
+- [x] Commit and push to GitHub (089f022)
+
+## Phase 5: Hyper-Diagnosis of TUI Hang [DONE]
+
+- [x] Reproduce hang with URL (Confirmed CLI works, TUI hangs)
+- [x] Identify bottleneck (Event loop saturation/callback threading)
+
+## Phase 6: The Webport Pivot (PWA) [DONE]
+
+- [x] Implement `zget-server` (FastAPI)
+- [x] Create mobile-responsive PWA frontend
+- [x] Verify PWA on mobile (iOS/Android)
+
+## Phase 7: De-TUI & Streamlining [DONE]
+
+- [x] Remove `src/zget/tui/`
+- [x] Remove `textual` dependency
+- [x] Update CLI to remove TUI launch logic
+- [x] Final project audit
+- [x] Troubleshooting TUI persistence & CLI pathing
+- [x] Phase 8: Auto-Startup Configuration
+  - [x] Create macOS Launch Agent (.plist)
+  - [x] Verify service persistence
+
+## Phase 9: Webport Feature Parity & Fixes [DONE]
+
+- [x] Fix nested link failure and ID routing
+- [x] Implement robust thumbnail resolver API
+- [x] Add library search to PWA
+- [x] Add metadata details toggle
+- [x] Add delete functionality
+- [x] Add site registry (health) view
+
+## Phase 10: Webport Polish & Asset Audit [IN PROGRESS]
+
+- [x] Remove 'webport' branding from UI
+- [/] Debug Instagram thumbnails (Verified API is working)
+- [ ] Investigate persistent link failure
+- [ ] Audit `onclick` handlers in `index.html`
+- [x] Standardize environment with `ZGET_HOME` in plist

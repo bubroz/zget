@@ -1,0 +1,41 @@
+# Implementation Plan: Premium PNG Logo for zget
+
+The goal is to provide a "proper" PNG logo for `zget` that moves beyond the limitations of JPEG (compression, lack of transparency) and aligns with the **Minimalist Portal** pivot of 2026.
+
+## Proposed Concepts (Refined: zget Branding)
+
+I will generate three new concepts that focus on the **zget** brand identity:
+
+1.  **Concept: The Zenith Capture**
+    - **Style**: Minimalist, high-tech vector icon.
+    - **Element**: A stylized "Z" that forms a focus-bracket or lens shutter, representing the instant "get"/capture of media.
+    - **Palette**: Premium Gold/Amber on Deep Black.
+    - **Target**: The core "capture" identity of zget.
+
+2.  **Concept: The Fast-Get "Z"**
+    - **Style**: Sleek, aerodynamic logotype.
+    - **Element**: A bold "Z" with speed-lines or a subtle arrow integrated into the stroke, emphasizing the "get" performance.
+    - **Palette**: Polished Gold on Deep Black.
+    - **Target**: Performance and efficiency.
+
+3.  **Concept: The Archival Infinity**
+    - **Style**: Elegant, single-line geometric.
+    - **Element**: A continuous gold line that forms both a "Z" and an infinity symbol, representing the permanence of the archive.
+    - **Palette**: Golden line art on Deep Black.
+    - **Target**: The enduring nature of the zget library.
+
+## Execution Steps
+
+1. **Generate Assets**: Use `generate_image` for each concept, prompting for a "solid deep black background" or "solid white background" to ensure the cleanest possible PNG transition.
+2. **Review**: Present the concepts to the user.
+3. **Refine & Deploy**:
+    - Convert the selected concept to the final [icon.png](file:///Users/base/Projects/zget/src/zget/server/static/icon.png).
+    - (Optional) Use code to remove the background if transparency is required for specific UI areas.
+
+## Verification Plan
+
+### Manual Verification
+
+- View the generated images to ensure they meet the "premium" and "minimalist" criteria.
+- Confirm with the USER which concept they prefer.
+- Verify the final PNG looks crisp in The Portal UI.

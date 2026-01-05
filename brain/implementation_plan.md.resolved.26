@@ -1,0 +1,36 @@
+# Implementation Plan: UI Refinement and IP Logic Fix
+
+This plan addresses the "fucking lines" (double borders) in the ingest input and the confusing/static "LAN ACCESS" IP display in the settings modal.
+
+## Proposed Changes
+
+### [Component] Ingest Input (Web Component)
+
+#### [MODIFY] [ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)
+- Use high-specificity selectors for the `input` to override global [theme.css](file:///Users/base/Projects/zget/src/zget/server/static/styles/theme.css) styles.
+- Explicitly reset `border`, `background`, and `box-shadow` on the `input` element to ensure it doesn't create "lines" inside the capsule.
+
+### [Component] Server API & Settings
+
+#### [MODIFY] [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+- Update `/api/settings` to return a more intelligent `local_ip`.
+- If `host` is `127.0.0.1`, `local_ip` should be `127.0.0.1` (or `localhost`).
+- If `host` is `0.0.0.0`, use the current socket-based auto-detection.
+- Add a field `is_vpn` or similar if we can detect it (e.g., if IP starts with `100.`), or just label it "Auto-detected" in the UI.
+
+#### [MODIFY] [settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)
+- Update the LAN Access section to be more dynamic.
+- If the IP looks like a Tailscale IP (starts with `100.`), add a small note "(VPN)".
+- Change the wording from "LAN ACCESS" to "Access URL" if it's more appropriate.
+
+## Verification Plan
+
+### Automated Tests
+- Run `cat /Users/base/.config/zget/config.json` to verify settings are still correct.
+- Call the `/api/settings` endpoint manually via `curl` to verify the returned `local_ip` reflects the binding host.
+
+### Manual Verification (Browser)
+- Open the Portal in the browser.
+- Verify the ingest input is a clean "capsule" without any rectangular internal boxes or lines.
+- Open Settings and verify the "Access URL" correctly reflects the bind address (e.g., if it's `127.0.0.1`, it shows `http://127.0.0.1:8000`).
+- Take screenshots of the fixed UI.

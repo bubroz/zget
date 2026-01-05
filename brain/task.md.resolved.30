@@ -1,0 +1,20 @@
+# Task: Refactor zget Frontend to Web Components
+
+## Status
+
+- [x] Implement `<zget-regions>` Component
+  - [x] Research backend API endpoints for regions and sites
+  - [x] Refine [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js) to use real data
+  - [x] Connect [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js) to [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+- [x] Enhance Player Data Loading
+  - [x] Add `/api/video/{id}` endpoint to backend
+  - [x] Update `<zget-app>` to use the new endpoint
+- [x] Implement `<zget-queue>` Component (Optional)
+- [x] Final Verification and Cleanup
+
+## Phase 22: Smart Categories & Popularity Sorting
+- [ ] Implement 'Local Popularity' metric in backend [/]
+    - [ ] Calculate video counts per platform in [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py) or [regions.py](file:///Users/base/Projects/zget/src/zget/regions.py) [ ]
+- [ ] Implement Smart Category chips in `<zget-regions>` [ ]
+- [ ] Update Regions API to sort sites by popularity [ ]
+- [ ] Refine UI with category filtering [ ]

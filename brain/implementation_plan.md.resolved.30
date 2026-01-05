@@ -1,0 +1,41 @@
+# Implementation Plan: Premium PNG Logo for zget
+
+The goal is to provide a "proper" PNG logo for `zget` that moves beyond the limitations of JPEG (compression, lack of transparency) and aligns with the **Minimalist Portal** pivot of 2026.
+
+## Proposed Concepts (Refined: Fluid Branding)
+
+I will generate three variations of the refined **Fluid Archival Z**:
+
+1.  **Concept: The Flowing Archive**
+    - **Style**: Single-line, liquid-gold aesthetic.
+    - **Element**: A highly fluid, cursive "Z" where the tail loops back to form a tiny, subtle infinity loop.
+    - **Palette**: Polished Amber on Deep Black.
+    - **Target**: Elegance and fluidity.
+
+2.  **Concept: The Kinetic Z**
+    - **Style**: Brush-stroke / Calligraphic vector.
+    - **Element**: A fast, fluid stroke forming a "Z". The intersections of the stroke suggest an infinity symbol without being explicit.
+    - **Palette**: Glowing Gold on Deep Black.
+    - **Target**: Speed and archival depth.
+
+3.  **Concept: The Silk Loop**
+    - **Style**: 3D golden ribbon.
+    - **Element**: A golden ribbon twisting through space to form a "Z", with one subtle crossover representing the infinity connection.
+    - **Palette**: Reflective Gold on Deep Black.
+    - **Target**: Premium, high-end archival asset.
+
+## Execution Steps
+
+1. **Generate Assets**: Use `generate_image` for each concept, prompting for a "solid deep black background" or "solid white background" to ensure the cleanest possible PNG transition.
+2. **Review**: Present the concepts to the user.
+3. **Refine & Deploy**:
+    - Convert the selected concept to the final [icon.png](file:///Users/base/Projects/zget/src/zget/server/static/icon.png).
+    - (Optional) Use code to remove the background if transparency is required for specific UI areas.
+
+## Verification Plan
+
+### Manual Verification
+
+- View the generated images to ensure they meet the "premium" and "minimalist" criteria.
+- Confirm with the USER which concept they prefer.
+- Verify the final PNG looks crisp in The Portal UI.

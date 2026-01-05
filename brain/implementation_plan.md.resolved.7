@@ -1,0 +1,93 @@
+# The Webport Pivot: Headless Engine & PWA Frontend
+
+Convert `zget` from a standalone TUI into a headless archival server with multiple frontends (TUI, PWA, MCP).
+
+## User Review Required
+
+> [!IMPORTANT]
+> This is a significant architectural pivot. `zget` will now require a background process (`zget-server`) to be running for full archival capabilities, though the CLI will remain standalone for one-off downloads.
+
+## Proposed Changes
+
+### [Component] Headless Server (zget-server)
+
+- [NEW] [src/zget/server/app.py](file:///Users/base/Projects/zget/src/zget/server/app.py): FastAPI application serving as the central "Archivist's Brain".
+- [MODIFY] [src/zget/queue/manager.py](file:///Users/base/Projects/zget/src/zget/queue/manager.py): Detach queue lifecycle from TUI and move it to the server.
+- [NEW] `src/zget/server/routes/`: API endpoints for downloads, search, and library management.
+
+### [Component] PWA Frontend
+
+- [NEW] `src/zget/server/static/`: Mobile-responsive web frontend.
+- [NEW] `src/zget/server/static/manifest.json`: PWA manifest for home screen installation.
+- Features: Paste URL, Share sheet support (via URL params), Progress bars, and "Download to Camera Roll" (standard browser download).
+
+### [Component] TUI Update
+
+- [MODIFY] `src/zget/tui/app.py`: Update to operate as a client to the local server, or retain an "internal server" mode for zero-config use.
+
+## Verification Plan
+
+### Automated Tests
+
+- `pytest` for the new FastAPI endpoints.
+- `zget-mcp` verification against the server.
+
+- Verifying the "Camera Roll" flow (Download -> Save to Files -> Camera Roll).
+
+### [Component] macOS Launch Agent (com.bubroz.zget-server.plist)
+
+- [NEW] `~/Library/LaunchAgents/com.bubroz.zget-server.plist`: A macOS background service definition.
+- **Config**:
+  - Starts `zget-server` on login.
+  - Automatically restarts on failure.
+  - Logs to `~/Downloads/zget/logs/server.log`.
+
+## Phase 11: 2026 Evolution
+
+- **Dynamic Configurability**: Transition from hardcoded paths to a persistent `config.json` system.
+- **Asset Integrity**: Implement background repair tasks for missing thumbnails and metadata.
+- **UX Refresh**: Add Settings tab for storage management and experimental "2026 Labs" toggles.
+- **VLM Readiness**: Lay groundwork for semantic search and auto-tagging.
+
+## Phase 12: Unified Dashboard & Architectural Clarity
+
+- **UI Consolidation**: Merge Archive and Library into a single high-fidelity "Vault" view.
+- **Terminology Shift**: Rename "Download" to "Save to Device" or "Export" to distinguish it from Server Archival.
+- **Optimistic Archival**: Provide immediate visual feedback when an 'Archive' request is sent.
+- **Persistent Controls**: Keep the 'Archive' input bar as a fixed or prominent header component.
+
+## Phase 13: Vault Pro Refinement
+
+- Redesign Library Items as high-fidelity cards
+- Fix header 'smooshed' layout
+- Make metadata and 'Save' actions persistent on cards
+- Implement Network Access IP detection
+
+## Phase 14: Integrated Media Player
+
+The goal is to provide a seamless video viewing experience within the PWA, avoiding the clunky Safari download interface.
+
+### [Component Name]
+
+#### [MODIFY] [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html)
+
+- Add a video player modal that supports the native `<video>` tag.
+- Implement a `WATCH` button on each library card.
+- Add JS logic to handle opening/closing the player and setting the video source.
+
+#### [MODIFY] [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+
+- Ensure the media serving endpoint supports range headers for smooth seeking.
+
+## Phase 15: iOS Compatibility Fix (H.264 Prioritization)
+Instagram often serves VP9 video which iOS Safari cannot play in an MP4 container.
+
+### [Component Name]
+#### [MODIFY] [core.py](file:///Users/base/Projects/zget/src/zget/core.py)
+- Update `yt-dlp` format selection to prioritize H.264/AVC1 codecs.
+- Ensure audio is always AAC/M4A for maximum compatibility.
+
+#### [MODIFY] [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+- Implement `@app.post("/api/repair")` endpoint.
+- Add logic to scan for VP9 videos and transcode them to H.264 using `ffmpeg`.
+- Regenerate missing thumbnails during repair.

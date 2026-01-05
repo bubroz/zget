@@ -1,0 +1,57 @@
+# Task Checklist: Settings & Aesthetic Refinement
+
+- [x] **Backend: Network Configurability**
+  - [x] Update [SettingsUpdate](file:///Users/base/Projects/zget/src/zget/server/app.py#67-71) model in [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+  - [x] Modify `/api/settings` GET/POST to handle `host` and [port](file:///Users/base/Projects/zget/src/zget/db/models.py#154-205)
+  - [x] Ensure persistence to `config.json`
+  - [x] Update `main.py` to use persistent config as defaults
+- [x] **Frontend: UI Refinements**
+  - [x] Restore "Amber/Gold" aesthetic (Theme, icons, minimalist cards)
+  - [x] Fix Settings modal width and layout
+  - [x] Add Host/Port inputs to Settings UI
+  - [x] Remove "black box" background from Ingest input
+  - [x] Add LAN Access indicator in Settings
+- [x] **Minimalist UI Refinement**
+  - [x] Transform ingest input to single line style in [ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)
+  - [x] Remove "Registry" from header in [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+  - [x] Final visual verification
+
+- [x] **UI & IP Logic Refinement**
+  - [x] Refine IP detection logic in [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+  - [x] Fix "fucking lines" (double borders) in [ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)
+  - [x] Improve "Access URL" display in [settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)
+  - [x] Final visual verification
+
+- [x] **Mobile Optimization & Branding**
+  - [x] Change "zget Portal" to "zget" in header
+  - [x] Audit mobile display issues
+  - [x] Fix responsive layout problems
+  - [x] Verify mobile experience
+
+- [x] **Mobile UX Overhaul**
+  - [x] Simplify header: centered "zget", settings icon top-right
+  - [x] Shorten ingest placeholder for mobile
+  - [x] Remove verbose vault header, keep file count subtle
+  - [x] Improve video card layouts (YouTube/Instagram style)
+  - [x] Verify mobile UX
+
+- [x] **Mobile Refinement & Quick Download**
+  - [x] Redesign player modal for better vertical flow on mobile
+  - [x] Add "Download" button to player modal
+  - [x] Add direct download button to video cards in Vault
+  - [x] Adjust Vault spacing to prevent "smooshed" look
+  - [x] Verify final mobile UX
+
+- [x] **Player Content Enhancement**
+  - [x] Implement metadata rows (views, resolution, date)
+  - [x] Add URL linkification for descriptions
+  - [x] Implement "Show More" toggle for description
+  - [x] Refine vertical spacing and font hierarchy
+  - [x] Verify player UX
+
+- [x] **Player & Vault Refinement**
+  - [x] Fix centered description text in player
+  - [x] Improve metadata hierarchy and separators
+  - [x] Implement natural aspect ratios for mobile vault cards
+  - [x] Improve uploader visibility on grid cards
+  - [x] Final verification of "premium" mobile feel

@@ -1,0 +1,35 @@
+# Implementation Plan - Portal UI Hardening
+
+## Goal
+
+Restore the "Intelligence Registry" functionality by fixing the data mismatch between backend and frontend, and perform a full functional audit of the new sidebar-based UI.
+
+## Proposed Changes
+
+### Backend
+
+#### [MODIFY] [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+
+- Rename `/api/repair` to `/api/repair/thumbnails` to match frontend expectations.
+- Ensure `/api/repair/library` handles both library sync and thumbnail healing as a comprehensive tool.
+- Verify `/api/registry` correctly aggregates all sites from all regions.
+
+### Frontend
+
+#### [MODIFY] [regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js)
+
+- Fix the logic in [renderSites()](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js#53-82) to use `this.sitesData` instead of the non-existent `this.regionsData`.
+- Ensure category filtering correctly matches both `site.category` and `site.categories` array.
+
+## Verification Plan
+
+### Automated Tests
+
+- N/A (Manual/Browser verification preferred for UI features).
+
+### Manual Verification
+
+- **Registry View**: Open the Registry tab and verify the dense grid populates. Test search and filters.
+- **Activity Monitor**: Start a download via Command Center and verify it appears in the Activity tab with progress.
+- **Settings**: Change a setting (e.g., Log Level) and verify it persists on refresh. Trigger a Library Repair.
+- **Video Deletion**: Delete a video from the player and verify it disappears from the Vault.

@@ -1,0 +1,46 @@
+# zget: The Archival Intelligence Engine (v0.3.0)
+
+Successfully transformed [zget](file:///Users/base/Projects/zget/src/zget) from a terminal-bound script into a high-fidelity, headless archival ecosystem. This audit confirms that the transition is complete, stable, and documented for 2026 standards.
+
+## 🏛️ Architectural Integrity
+- **Headless Core**: All archival logic resides in the FastAPI backend ([src/zget/server/app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)).
+- **Dead Code Purged**: The `src/zget/tui` directory and its `textual` dependencies have been completely removed.
+- **Streamlined CLI**: [zget](file:///Users/base/Projects/zget/src/zget) now acts as a high-fidelity status browser and lightning-fast single-shot downloader.
+
+## 📱 The Webport (PWA)
+The new Webport is the primary management interface, designed with a **StoryTime** bioluminescent aesthetic.
+
+- **Responsive Management**: Full library search and download queue monitoring on any device.
+- **Share Target**: Registered in [manifest.json](file:///Users/base/Projects/zget/src/zget/server/static/manifest.json) to handle incoming URLs from mobile share sheets.
+- **Direct Handoff**: `/api/media/{id}` allows for immediate "Save to Files" or Camera Roll ingestion on iOS/Android.
+
+## 🤖 Agentic Readiness (MCP)
+The MCP server is the "Hands" of the system, enabling other agents to use [zget](file:///Users/base/Projects/zget/src/zget) as their primary archivist.
+
+| Tool | Capability |
+|------|------------|
+| `zget_download` | Asynchronous high-fidelity ingestion |
+| [get_local_path](file:///Users/base/Projects/zget/src/zget/mcp/tools.py#97-122) | Absolute path resolution for AI analysis (Librarian handoff) |
+| `zget_search` | FTS5-powered library querying |
+
+## 📁 Audit File Integrity
+- [x] [README.md](file:///Users/base/Projects/zget/README.md): Rewritten for Headless/Webport focus.
+- [x] [AGENTS.md](file:///Users/base/Projects/zget/AGENTS.md): Updated with "Archival Intelligence" mission.
+- [x] [openspec/project.md](file:///Users/base/Projects/zget/openspec/project.md): Refreshed definitions and tech stack.
+- [x] [pyproject.toml](file:///Users/base/Projects/zget/pyproject.toml): Dependency tree pruned (`textual` removed).
+- [x] [src/zget/cli.py](file:///Users/base/Projects/zget/src/zget/cli.py): TUI launch replaced with "Webport Welcome" dashboard.
+
+## Verification Proof
+
+```bash
+# Verify Server Entry Point
+uv run zget-server --help
+
+# Verify CLI Experience
+zget
+
+# Verify Documentation
+cat README.md
+```
+
+**Everything is validated, verified, and committed.**

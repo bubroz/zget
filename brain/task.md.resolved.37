@@ -1,0 +1,20 @@
+# Portal Feature Restoration & UI Hardening
+
+## Phase 1: Feature Audit & Structure
+- [x] Audit backend APIs (/api/settings, /api/downloads, /api/repair).
+- [/] Implement Side Navigation for better space management.
+- [ ] Create `activity.js` for Live Download Monitoring.
+- [ ] Create `settings.js` for Home/IP configuration.
+
+## Phase 2: UI Densification
+- [ ] Redesign `<zget-regions>` into a compact Platform Grid.
+- [ ] Add "Delete" capability to Video Player/Library.
+- [ ] Integrate "Repair" actions into Maintenance view.
+
+## Phase 3: Brand Integration
+- [ ] Set [zget-icon.jpeg](file:///Users/base/Projects/zget/zget-icon.jpeg) as the official PWA icon.
+- [ ] Simplify header to focus purely on "Command Center" (Ingest).
+
+## Phase 4: Verification
+- [ ] Verify all 19 endpoints are accessible.
+- [ ] Test real-time progress updates in Activity view.

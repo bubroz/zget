@@ -1,0 +1,287 @@
+# zget Gap Solutions: Deep Implementation Plan
+
+> **Research Date**: January 3, 2026
+> **Status**: Proposed
+
+---
+
+## Gap 1: Missing Service Worker (Incomplete PWA)
+
+### The Problem
+Without a Service Worker, the PWA has no offline capability, no background sync, and no asset caching. This means:
+- Users can't access their library when offline
+- Every page load requires a network fetch
+- The "Add to Home Screen" experience is degraded
+
+### The Solution: Workbox + Stale-While-Revalidate
+
+**Workbox** is Google's production-ready Service Worker library. It abstracts away the complexity of cache management.
+
+#### Strategy
+
+| Resource Type | Caching Strategy | Rationale |
+|---------------|------------------|-----------|
+| App Shell (HTML, CSS, JS) | **Precache** | Instant load on first visit |
+| Thumbnails | **Cache-First** | Rarely change, optimize for speed |
+| API responses (`/api/library`) | **Stale-While-Revalidate** | Show cached data immediately, update in background |
+| Video files | **Network-Only** | Too large to cache, stream on demand |
+
+#### Implementation
+
+**1. Create `service-worker.js`**
+```javascript
+import { precacheAndRoute } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
+import { StaleWhileRevalidate, CacheFirst } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
+
+// Precache app shell
+precacheAndRoute(self.__WB_MANIFEST);
+
+// Thumbnails: Cache-First (30 day expiry)
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/thumbnails'),
+  new CacheFirst({
+    cacheName: 'thumbnails-cache',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 500, maxAgeSeconds: 30 * 24 * 60 * 60 }),
+    ],
+  })
+);
+
+// Library API: Stale-While-Revalidate
+registerRoute(
+  ({ url }) => url.pathname === '/api/library',
+  new StaleWhileRevalidate({ cacheName: 'api-cache' })
+);
+
+// Offline fallback
+self.addEventListener('fetch', (event) => {
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/offline.html'))
+    );
+  }
+});
+```
+
+**2. Register in [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html)**
+```javascript
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js');
+}
+```
+
+**3. Create `offline.html`** — simple fallback page
+
+#### Effort Estimate
+**~4-6 hours** to implement and test.
+
+---
+
+## Gap 2: Monolithic Frontend (1,281 lines)
+
+### The Problem
+A single [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html) with 1,281 lines is:
+- Hard to navigate and maintain
+- Impossible to test individual components
+- Prone to merge conflicts in team settings
+- Violates separation of concerns
+
+### The Solution: Web Components (Native)
+
+Web Components are browser-native and require **no framework or build step**. They provide:
+- **Custom Elements**: Define your own HTML tags
+- **Shadow DOM**: Encapsulate styles (no CSS leaks)
+- **ES Modules**: Import/export for code organization
+
+#### Proposed Component Structure
+
+```
+src/zget/server/static/
+├── index.html           # Shell only (~100 lines)
+├── styles/
+│   └── main.css         # Extracted global styles
+├── components/
+│   ├── vault-view.js    # <zget-vault>
+│   ├── regions-view.js  # <zget-regions>
+│   ├── settings-view.js # <zget-settings>
+│   ├── video-player.js  # <zget-player>
+│   └── stats-bar.js     # <zget-stats>
+├── service-worker.js    # (from Gap 1)
+└── offline.html
+```
+
+#### Example: `<zget-vault>` Component
+
+```javascript
+// components/vault-view.js
+class ZgetVault extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.videos = [];
+  }
+
+  connectedCallback() {
+    this.render();
+    this.fetchLibrary();
+  }
+
+  async fetchLibrary() {
+    const response = await fetch('/api/library');
+    this.videos = await response.json();
+    this.render();
+  }
+
+  render() {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host { display: block; }
+        /* Component-scoped styles */
+      </style>
+      <div class="vault-container">
+        ${this.videos.map(v => this.renderVideo(v)).join('')}
+      </div>
+    `;
+  }
+
+  renderVideo(v) {
+    return `<div class="library-item">${v.title}</div>`;
+  }
+}
+
+customElements.define('zget-vault', ZgetVault);
+```
+
+#### Usage in [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html)
+```html
+<script type="module" src="/components/vault-view.js"></script>
+<zget-vault></zget-vault>
+```
+
+#### Migration Strategy
+1. Extract CSS to `styles/main.css`
+2. Create component files one at a time
+3. Replace sections in [index.html](file:///Users/base/Projects/zget/src/zget/server/static/index.html) with custom elements
+4. Test each component in isolation
+
+#### Effort Estimate
+**~8-12 hours** for full migration.
+
+---
+
+## Gap 3: Blocking Database Calls
+
+### The Problem
+The current [VideoStore](file:///Users/base/Projects/zget/src/zget/db/store.py#227-784) uses synchronous `sqlite3` calls inside FastAPI's async context:
+```python
+# Current (blocking)
+def get_recent(self, limit=50):
+    with sqlite3.connect(self.db_path) as conn:
+        ...
+```
+
+This blocks the event loop, reducing concurrency and response times.
+
+### The Solution: aiosqlite + Dependency Injection
+
+**aiosqlite** provides an async wrapper for SQLite, and **FastAPI's dependency injection** ensures proper connection lifecycle.
+
+#### Implementation
+
+**1. Add dependency**
+```bash
+uv add aiosqlite
+```
+
+**2. Create async database module**
+```python
+# src/zget/db/async_store.py
+import aiosqlite
+from contextlib import asynccontextmanager
+from fastapi import Depends
+
+DATABASE_PATH = "path/to/zget.db"
+
+@asynccontextmanager
+async def get_db():
+    """Async context manager for database connections."""
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        yield db
+
+async def get_db_connection():
+    """FastAPI dependency for database injection."""
+    async with aiosqlite.connect(DATABASE_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        yield db
+```
+
+**3. Create async VideoStore**
+```python
+# src/zget/db/async_store.py
+class AsyncVideoStore:
+    def __init__(self, db: aiosqlite.Connection):
+        self.db = db
+
+    async def get_recent(self, limit: int = 50):
+        cursor = await self.db.execute(
+            "SELECT * FROM videos ORDER BY created_at DESC LIMIT ?",
+            (limit,)
+        )
+        rows = await cursor.fetchall()
+        return [dict(row) for row in rows]
+
+    async def search(self, query: str, limit: int = 50):
+        cursor = await self.db.execute(
+            "SELECT * FROM videos WHERE title LIKE ? LIMIT ?",
+            (f"%{query}%", limit)
+        )
+        rows = await cursor.fetchall()
+        return [dict(row) for row in rows]
+```
+
+**4. Update app.py routes**
+```python
+from fastapi import Depends
+from .db.async_store import get_db_connection, AsyncVideoStore
+
+@app.get("/api/library")
+async def get_library(db = Depends(get_db_connection)):
+    store = AsyncVideoStore(db)
+    videos = await store.get_recent(limit=50)
+    return videos
+```
+
+#### Migration Strategy
+1. Create `async_store.py` alongside existing [store.py](file:///Users/base/Projects/zget/src/zget/db/store.py)
+2. Update routes one at a time to use async dependency
+3. Test each route after migration
+4. Remove sync [store.py](file:///Users/base/Projects/zget/src/zget/db/store.py) when complete
+
+#### Effort Estimate
+**~4-6 hours** for full migration.
+
+---
+
+## Priority Order
+
+| Priority | Gap | Effort | User Impact |
+|----------|-----|--------|-------------|
+| 1 | **Service Worker** | 4-6 hrs | High (offline access, faster loads) |
+| 2 | **Async Database** | 4-6 hrs | Medium (performance under load) |
+| 3 | **Web Components** | 8-12 hrs | Dev experience (no user impact) |
+
+---
+
+## Summary
+
+All three gaps are solvable with **native web technologies**—no new frameworks required:
+- **Service Worker**: Workbox for offline + caching
+- **Modular Frontend**: Native Web Components
+- **Async Database**: aiosqlite + FastAPI dependency injection
+
+Total estimated effort: **16-24 hours** for all three.
+
+Ready to proceed with any of these when you give the green light!

@@ -1,0 +1,119 @@
+# zget Frontend Modernization: The Native Component Architecture
+
+> **Philosophy**: Zero build steps. Zero frameworks. 100% Browser Standards.
+> **Date**: January 3, 2026
+
+## The Vision
+We aren't just cleaning code; we're building a **forward-looking, specification-compliant PWA** that runs directly in the browser. 
+
+No webpack, no vite, no node_modules hell. Just pure, unadulterated web standards.
+
+## Architecture Overview
+
+### 1. The Core (Lightweight Shell)
+`index.html` becomes a tiny semantic shell (< 100 lines). Its only job is to:
+1. Load critical CSS variables (Theme)
+2. Register the Service Worker
+3. Load the `AppRouter` component
+
+### 2. The Router (Client-Side)
+A custom `<zget-app>` component that handles:
+- URL routing (History API)
+- View switching (Lazy loading modules)
+- Global state container (Pub/Sub pattern)
+
+### 3. The Components (Shadow DOM)
+Each major feature becomes a self-contained module.
+
+| Component | File | Responsibility |
+|-----------|------|----------------|
+| `<zget-app>` | [components/app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js) | Router, State, Layout |
+| `<zget-vault>` | [components/vault.js](file:///Users/base/Projects/zget/src/zget/server/static/components/vault.js) | Main library grid |
+| `<zget-regions>` | [components/regions.js](file:///Users/base/Projects/zget/src/zget/server/static/components/regions.js) | Region status & grouping |
+| `<zget-player>` | [components/player.js](file:///Users/base/Projects/zget/src/zget/server/static/components/player.js) | Video playback & control |
+| `<zget-queue>` | `components/queue.js` | Download status & history |
+
+## Modern Features (2026 Standards)
+
+### 1. CSS Module Scripts
+We will use **Constructable Stylesheets** to share styles efficiently between Shadow DOM boundaries without duplication.
+
+```javascript
+import sharedStyles from '../styles/shared.css' with { type: 'css' };
+
+class ZgetComponent extends HTMLElement {
+  connectedCallback() {
+    const shadow = this.attachShadow({mode: 'open'});
+    shadow.adoptedStyleSheets = [sharedStyles];
+  }
+}
+```
+
+### 2. Reactive Attributes
+Components will observe their own attributes. Change `<zget-player src="...">` and it automatically re-renders.
+
+### 3. Event-Driven Communication
+- **Down**: Unidirectional data flow via properties
+- **Up**: Custom DOM Events bubbles for actions (`<zget-item @play-video="...">`)
+
+## Implementation Steps
+
+### Phase 1: The Foundation
+- [ ] Create [src/zget/server/static/styles/theme.css](file:///Users/base/Projects/zget/src/zget/server/static/styles/theme.css) (Variables)
+- [ ] Create [src/zget/server/static/styles/shared.css](file:///Users/base/Projects/zget/src/zget/server/static/styles/shared.css) (Common components)
+- [ ] Create [src/zget/server/static/components/base.js](file:///Users/base/Projects/zget/src/zget/server/static/components/base.js) (Base class helper)
+
+### Phase 2: The Core Components
+- [ ] Implement `<zget-app>` (Router)
+- [ ] Implement `<zget-vault>` (Library Grid)
+- [ ] Implement `<zget-player>` (Modal Player)
+
+### Phase 3: Regions & Site Registry
+- [ ] Refactor `<zget-regions>` to use `/api/regions` and `/api/regions/{id}`
+- [ ] Implement interactive region selection and site listing
+- [ ] Add loading and error states for regional data
+
+### Phase 4: Backend Optimization
+- [ ] Add `/api/video/{id}` to [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py) for efficient metadata retrieval
+- [ ] Update `<zget-app>` to use the new endpoint
+
+### Phase 5: Verification & Cleanup
+- [ ] Verify all components work together
+- [ ] Delete legacy `index.html` logic (already mostly done)
+- [ ] Audit for remaining `onclick` or inline JS
+
+## Directory Structure
+
+```
+static/
+├── index.html            # The Entry Point
+├── service-worker.js     # The Offline Engine
+├── styles/
+│   ├── theme.css         # --primary: #FFD54F;
+│   └── shared.css        # Buttons, Inputs, Cards
+└── components/
+    ├── app.js            # The Orchestrator
+    ├── base.js           # The helper class
+    ├── vault.js          # The Library
+    ├── regions.js        # The Regions
+    └── player.js         # The Player
+```
+
+## Verification Plan
+
+### Automated Tests
+- N/A (Frontend components require browser verification)
+
+### Manual Verification
+1. **Regions View**:
+   - Navigate to 'Regions'.
+   - Verify region cards load with correct stats (working/failed/untested).
+   - Click a region and verify sites list is displayed with correct statuses.
+2. **Video Player**:
+   - Navigate to 'Vault'.
+   - Click 'WATCH' on a video card.
+   - Verify player modal opens and video starts playing.
+   - Verify player fetches metadata efficiently (via Network tab).
+3. **Responsive Audit**:
+   - Check UI on mobile breakpoints (375px width).
+   - Verify glassmorphism effects and scrolling performance.

@@ -1,0 +1,18 @@
+# Portal Feature Hardening & Verification
+
+## Phase 1: Registry Data Restoration
+- [x] Implement/Update `/api/registry` backend endpoint to provide flat site list.
+- [x] Verify `zget-regions` (Registry) populates with dense site grid.
+
+## Phase 2: Functional Verification
+
+- [ ] Verify Activity Monitor (polling, progress bars, cancellation).
+- [ ] Verify Settings & Maintenance (home path updates, repair triggers).
+- [ ] Verify Video Deletion (DELETE request, Vault refresh).
+- [ ] Verify Command Center (URL ingest bar) functionality.
+
+## Phase 3: UI Hardening & Polish
+
+- [ ] Evaluate branding and icon usage.
+- [ ] Polish sidebar navigation layout and responsiveness.
+- [ ] Ensure consistent styling (theme.css/shared.css) across all views.

@@ -1,0 +1,33 @@
+# The Webport Pivot: Headless Engine & PWA Frontend
+
+Convert [zget](file:///Users/base/Projects/zget/src/zget) from a standalone TUI into a headless archival server with multiple frontends (TUI, PWA, MCP).
+
+## User Review Required
+
+> [!IMPORTANT]
+> This is a significant architectural pivot. [zget](file:///Users/base/Projects/zget/src/zget) will now require a background process (`zget-server`) to be running for full archival capabilities, though the CLI will remain standalone for one-off downloads.
+
+## Proposed Changes
+
+### [Component] Headless Server (zget-server)
+- [NEW] `src/zget/server/app.py`: FastAPI application serving as the central "Archivist's Brain".
+- [MODIFY] [src/zget/queue/manager.py](file:///Users/base/Projects/zget/src/zget/queue/manager.py): Detach queue lifecycle from TUI and move it to the server.
+- [NEW] `src/zget/server/routes/`: API endpoints for downloads, search, and library management.
+
+### [Component] PWA Frontend
+- [NEW] `src/zget/server/static/`: Mobile-responsive web frontend.
+- [NEW] `src/zget/server/static/manifest.json`: PWA manifest for home screen installation.
+- Features: Paste URL, Share sheet support (via URL params), Progress bars, and "Download to Camera Roll" (standard browser download).
+
+### [Component] TUI Update
+- [MODIFY] [src/zget/tui/app.py](file:///Users/base/Projects/zget/src/zget/tui/app.py): Update to operate as a client to the local server, or retain an "internal server" mode for zero-config use.
+
+## Verification Plan
+
+### Automated Tests
+- `pytest` for the new FastAPI endpoints.
+- `zget-mcp` verification against the server.
+
+### Manual Verification
+- Testing the PWA on an actual mobile device (via local network/Tailscale).
+- Verifying the "Camera Roll" flow (Download -> Save to Files -> Camera Roll).

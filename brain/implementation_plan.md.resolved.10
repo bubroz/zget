@@ -1,0 +1,70 @@
+# Repository Sanitization & Privacy Audit
+
+Systematically identify and remove all personal data, sensitive configurations, and unnecessary development artifacts from the `zget` repository to ensure a safe and professional public release.
+
+## User Review Required
+
+> [!IMPORTANT]
+> This plan involves rewriting major parts of the documentation to reflect the new "Museum Pro" / "Vault" branding and the retirement of the TUI.
+
+## Proposed Changes
+
+### [Documentation]
+
+#### [MODIFY] [README.md](file:///Users/base/Projects/zget/README.md)
+
+- Update intro to emphasize **The Archivist**, **The Vault**, and **The Portal**.
+- Add "Integrated Player" and "iOS/PWA Optimization" to the features list.
+- Update quick start to focus on the PWA installation and server exposure.
+- Add section on the "Integrity Repair" system.
+
+#### [MODIFY] [AGENTS.md](file:///Users/base/Projects/zget/AGENTS.md)
+
+- Expand instructions for AI agents.
+- Clarify the architectural triad (Archivist/Vault/Portal).
+- Detail the handoff process between `zget` and other agents (e.g., Librarian).
+
+#### [MODIFY] [project.md](file:///Users/base/Projects/zget/openspec/project.md)
+
+- Update tech stack to include PWA specificities (manifest, service workers).
+- Refine design principles to include "Museum Quality Content" (H.264 prioritization).
+
+#### [MODIFY] [AGENTS.md](file:///Users/base/Projects/zget/openspec/AGENTS.md)
+
+- **BIG REWRITE**: Remove all TUI references.
+- Remove mention of `tui/app.py`.
+- Update directory structure and component map to the headless server model.
+
+#### [MODIFY] [README.md](file:///Users/base/Projects/bubroz/README.md)
+
+- Update the `zget` description from "Archival TUI" to "The Archival Engine (The Archivist, The Vault, The Portal)".
+- Highlight the 2026 high-fidelity PWA features.
+
+### [Component Name]
+
+#### [MODIFY] [.gitignore](file:///Users/base/Projects/zget/.gitignore)
+- Add explicit exclusions for `*.log`, `*.png` (unless in static), and any other temp artifacts.
+- Ensure `libs/` and `scripts/` are fully ignored if intended for local use only.
+
+#### [DELETE] [server.log](file:///Users/base/Projects/zget/server.log)
+#### [DELETE] [server_debug.log](file:///Users/base/Projects/zget/server_debug.log)
+- These contain local terminal paths and internal network IPs.
+
+#### [DELETE] [__pycache__](file:///Users/base/Projects/zget/) (Recursive)
+- Remove all compiled Python files from the Git index.
+
+#### [MODIFY] [Codebase Sanity Check]
+- Search all [.py](file:///Users/base/Projects/zget/src/zget/cli.py), [.md](file:///Users/base/Projects/zget/AGENTS.md), and [.html](file:///Users/base/Projects/story-time-animated-hero/index.html) files for literal strings like `192.168.`, `/Users/base`, or specific test URLs that might be personal.
+
+## Verification Plan
+
+### Manual Verification
+
+- Review all modified `.md` files for consistency and clarity.
+- Ensure no TUI or outdated path references remain.
+- verify that the GitHub profile update accurately represents the project's current state.
+
+### Automated Checks
+- Run `git ls-files` and `git status` to ensure only essential files are tracked.
+- Run `grep -r "192.168." .` and `grep -r "/Users/" .` to confirm no remaining leaks.
+- verify that the GitHub profile update accurately represents the project's current state.

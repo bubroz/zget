@@ -1,0 +1,56 @@
+# Walkthrough: Webport Pivot & Final Refinement
+
+This walkthrough details the transition from the legacy [zget](file:///Users/base/Projects/zget/src/zget) TUI to the new headless FastAPI + PWA architecture, along with final refinements for feature parity and stability.
+
+## Key Accomplishments
+
+### 1. Headless Server Architecture (`zget-server`)
+
+- Replaced the Textual-based TUI with a high-performance **FastAPI** backend.
+- Migrated all library management logic to a RESTful API.
+- Implemented robust `launchd` configuration for macOS auto-startup and crash recovery.
+- Standardized on port `9989` with integrated logging.
+
+### 2. PWA Frontend (`Webport`)
+
+- Created a mobile-native, responsive frontend with a "StoryTime" aesthetic.
+- Implemented a tabbed interface: **Archive**, **Library**, and **Registry**.
+- Added advanced features:
+  - **Live Search**: Instant filtering of the video library.
+  - **Metadata Toggles**: Collapsible detailed metadata views for file size, resolution, and upload date.
+  - **Site Registry**: Real-time view of supported platforms and health status.
+  - **Share Target**: Integration with mobile share sheets for one-tap archival.
+23: 
+24: ### 4. 2026 Feature Expansion
+25: 
+26: - **Dynamic Configuration**: Added a **Settings** tab to change `ZGET_HOME` storage path on the fly via a persistent [config.json](file:///Users/base/Projects/story-time-animated-hero/tsconfig.json).
+27: - **Asset Integrity Repair**: Implemented a background "Repair" engine to fix missing thumbnails and corrupt metadata (especially for Instagram).
+28: - **2026 Labs**: Previewing future capabilities like **VLM Semantic Tagging** and **Multi-Node Sync**.
+
+### 3. Link & Asset Stability
+
+- **Internal ID Routing**: Standardized on database IDs for all media and thumbnail resolution, preventing broken links.
+- **Robust Thumbnail API**: Dynamic thumbnail serving with fallback logic.
+- **Unicode Resilience**: Sanitized HTTP headers to support filenames with non-ASCII characters (e.g., curly apostrophes).
+
+## Verification Results
+
+### API & Connectivity
+
+- [x] Server running on port `9989`.
+- [x] Health check returning `200 OK`.
+- [x] Library search returning filtered results.
+- [x] Site registry returning the "Integrity Matrix".
+
+### Media & Thumbnails
+
+- [x] Thumbnails resolving correctly via `/api/thumbnails/{id}`.
+- [x] Direct media downloads working with sanitized filenames.
+
+### Deployment
+
+- [x] [com.bubroz.zget-server.plist](file:///Users/base/Library/LaunchAgents/com.bubroz.zget-server.plist) verified to start on login.
+- [x] Service worker registered for offline PWA support.
+
+> [!TIP]
+> Users can access the Webport from any local device (including mobile) using the machine's IP address on port `9989`.

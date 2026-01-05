@@ -1,0 +1,37 @@
+# Walkthrough: native Web Component Refactor
+
+The `zget` portal has been successfully refactored to a modern, framework-free Web Component architecture. This transition improves performance, maintainability, and adheres to 2026 browser standards.
+
+## Key Accomplishments
+
+### 1. Modular Architecture
+- Implemented `<zget-app>`, `<zget-vault>`, `<zget-regions>`, and `<zget-player>` components.
+- Established a `ZgetBase` class for shared functionality (Shadow DOM, style injection).
+- Reduced `index.html` to a lightweight shell.
+
+### 2. Regions & Site Registry
+- The `<zget-regions>` component now uses a granular API strategy:
+  - Loads region summaries via `/api/regions`.
+  - Dynamically fetches site lists for specific regions via `/api/regions/{id}` when expanded.
+- Enhanced UI with interactive cards and loading states.
+
+### 3. Optimized Media Playback
+- Added `/api/video/{id}` endpoint to the backend for efficient metadata retrieval.
+- Updated the video player to fetch specific video details directly, eliminating the need to search through the entire library on the client side.
+
+## Functional Verification
+
+### Regions Interactive View
+The Regions tab correctly displays regional summaries and allows users to expand cards to view the full site registry for that region.
+
+![Regions Expanded](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/regions_expanded_1767509227930.png)
+
+### Efficient Video Player
+The video player modal opens instantly and displays rich metadata fetched from the new optimized endpoint.
+
+![Video Player Modal](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/video_player_modal_1767509271005.png)
+
+## Performance & Standards
+- **Zero Build Tools**: No webpack/vite/npm required for the frontend.
+- **Native Shadow DOM**: Styles are encapsulated within each component.
+- **Constructable Stylesheets**: Shared primitives (buttons, inputs) are distributed efficiently.

@@ -1,0 +1,26 @@
+# Documentation Audit & GitHub Update
+
+## Phase 1: Inventory & Review
+
+- [x] Identify all documentation files
+- [x] Review [README.md](file:///Users/base/Projects/zget/README.md) for accuracy (UI refactor, features)
+- [x] Review [AGENTS.md](file:///Users/base/Projects/zget/AGENTS.md) for OpenSpec compliance
+- [x] Review [pyproject.toml](file:///Users/base/Projects/zget/pyproject.toml) metadata
+- [x] Review internal docs (if any)
+- [x] Update [LICENSE](file:///Users/base/Projects/zget/LICENSE) and [pyproject.toml](file:///Users/base/Projects/zget/pyproject.toml)
+
+## Phase 2: Refinement & Polishing
+
+- [x] Highlight **Native Web Component** architecture in [README.md](file:///Users/base/Projects/zget/README.md)
+- [x] Add **Regions & Site Registry** and **Popularity Sorting** as core features
+- [x] Update architecture diagram and roadmap
+- [x] Reflect modular component structure in [AGENTS.md](file:///Users/base/Projects/zget/AGENTS.md)
+- [x] Update tech stack and design principles in [openspec/project.md](file:///Users/base/Projects/zget/openspec/project.md)
+- [x] Update [LICENSE](file:///Users/base/Projects/zget/LICENSE) copyright to 2026
+- [x] Standardize terminology ('The Portal') and bump version in CLI/MCP
+
+## Phase 3: Deployment & GitHub
+
+- [ ] Update GitHub repository description [ ]
+- [ ] Commit and push all documentation changes [ ]
+- [ ] Final verification of the repo state [ ]

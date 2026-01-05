@@ -1,0 +1,46 @@
+# Settings & Aesthetic Refinement
+
+The objective is to make the server network settings (IP and Port) configurable via the UI, improve the UX of the Settings modal (which is currently too small and cramped), and fix an aesthetic issue with the Ingest input (the "black box" boundary).
+
+## Proposed Changes
+
+### [Backend] Configuration & API
+
+#### [MODIFY] [app.py](file:///Users/base/Projects/zget/src/zget/server/app.py)
+- Update [SettingsUpdate](file:///Users/base/Projects/zget/src/zget/server/app.py#67-69) Pydantic model to include `host` and [port](file:///Users/base/Projects/zget/src/zget/db/models.py#154-205).
+- Update [get_settings](file:///Users/base/Projects/zget/src/zget/server/app.py#117-138) to return the current `host` and [port](file:///Users/base/Projects/zget/src/zget/db/models.py#154-205) from the persistent config.
+- Update [update_settings](file:///Users/base/Projects/zget/src/zget/server/app.py#140-148) to save `host` and [port](file:///Users/base/Projects/zget/src/zget/db/models.py#154-205) to the `config.json` file.
+
+#### [MODIFY] [main.py](file:///Users/base/Projects/zget/src/zget/server/main.py)
+- Modify the [main()](file:///Users/base/Projects/zget/src/zget/server/main.py#5-14) function to load `host` and [port](file:///Users/base/Projects/zget/src/zget/db/models.py#154-205) from `PERSISTENT_CONFIG` as defaults, allowing CLI arguments to override them.
+
+---
+
+### [Frontend] UI & UX
+
+#### [MODIFY] [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+- Increase `max-width` of `.settings-container` to 700px (up from 550px) to provide more horizontal space for complex settings.
+- Adjust padding and margins for better breathing room.
+
+#### [MODIFY] [settings.js](file:///Users/base/Projects/zget/src/zget/server/static/components/settings.js)
+- Redesign the layout to be more spacious and professional.
+- Add "Host" and "Port" inputs under a new "Server Network" section.
+- Replace the "Local Network Access" badge with interactive inputs.
+- Improve font sizes and layout of the maintenance action cards.
+
+#### [MODIFY] [ingest.js](file:///Users/base/Projects/zget/src/zget/server/static/components/ingest.js)
+- Remove the dark opaque background (`rgba(0, 0, 0, 0.4)`) that creates the "black box" look.
+- Use a more subtle background and border to match the clean "Librarian" aesthetic.
+
+## Verification Plan
+
+### Automated Verification
+- I will use the `browser_subagent` to:
+    1. Open the Settings modal and verify it is wider.
+    2. Check for the presence of Host and Port inputs.
+    3. Change the Port (to e.g. 8001), save, and verify the backend `config.json` is updated.
+    4. Verify the Ingest input no longer has a heavy black box background.
+
+### Manual Verification
+- The user should verify that the Settings modal feels more comfortable on their screen.
+- After saving Host/Port changes, the user must restart the server to apply them (as indicated by the UI message).

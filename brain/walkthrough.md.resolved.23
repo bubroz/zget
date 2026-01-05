@@ -1,0 +1,30 @@
+# Portal Registry Data Mismatch Resolution
+
+## Summary
+Resolved the UI/component naming mismatch preventing the Registry from loading in the Portal frontend.
+
+## Changes Made
+
+### [registry.js](file:///Users/base/Projects/zget/src/zget/server/static/components/registry.js)
+- Renamed from `regions.js`
+- Class renamed from `ZgetRegions` → [ZgetRegistry](file:///Users/base/Projects/zget/src/zget/server/static/components/registry.js#3-213)
+- Custom element registered as `zget-registry`
+
+### [app.js](file:///Users/base/Projects/zget/src/zget/server/static/components/app.js)
+- Updated import: `./regions.js` → [./registry.js](file:///Users/base/Projects/zget/src/zget/server/static/components/registry.js)
+- Updated lazy-load check and nav items to use `registry` view name
+- Updated view pane ID to `view-registry`
+
+### [service-worker.js](file:///Users/base/Projects/zget/src/zget/server/static/service-worker.js)
+- Bumped `APP_SHELL_CACHE` from `v1` → `v2` to invalidate stale caches
+
+## Verification
+
+Browser verification confirmed:
+- ✅ Sidebar navigation present (📀 Vault, 🚀 Activity, 🌐 Registry, ⚙️ Settings)
+- ✅ Registry loads with dense grid of 1,600+ site chips
+- ✅ No console errors (no 404s for [registry.js](file:///Users/base/Projects/zget/src/zget/server/static/components/registry.js))
+
+![Registry Grid Verified](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/registry_grid_verified.png)
+
+![Browser verification recording](file:///Users/base/.gemini/antigravity/brain/96534431-eec5-45ce-b60c-0118b51f4eb0/verify_registry_fix_1767524020561.webp)

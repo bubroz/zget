@@ -1,0 +1,20 @@
+# Portal Ingest & Intelligence Pivot
+
+## Phase 1: Ingest Component
+- [ ] Create `ingest.js` for URL submission.
+- [ ] Implement URL validation and submission logic.
+- [ ] Handle download start/success/error feedback.
+
+## Phase 2: Shell Integration
+- [ ] Add `<zget-ingest>` to `<zget-app>` header.
+- [ ] Redesign header to balance brand, ingest, and navigation.
+
+## Phase 3: Intelligence Pivot
+- [ ] Rename 'Regions' tab to 'Registry' or 'Intelligence'.
+- [ ] Condense the 'Regions' view to focus on 'Discovery' and 'Health'.
+- [ ] Integrate 'Platform Discovery' into the Ingest flow if possible.
+
+## Phase 4: Verification
+- [ ] Verify URL submission starts a download.
+- [ ] Verify UI reflects ingestion progress.
+- [ ] Ensure Registry view is readable and valuable.
