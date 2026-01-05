@@ -43,19 +43,19 @@ export class ZgetApp extends HTMLElement {
                 }
 
                 .brand {
-                    font-size: 0.9rem;
+                    font-size: 1.1rem;
                     font-weight: 600;
                     display: flex;
                     align-items: center;
-                    gap: 12px;
-                    color: white;
-                    letter-spacing: 0.02em;
+                    gap: 14px;
+                    color: var(--primary-color);
+                    letter-spacing: 0.03em;
                 }
 
                 .brand img {
-                    width: 20px;
-                    height: 20px;
-                    filter: drop-shadow(0 0 8px var(--primary-color));
+                    width: 48px;
+                    height: 48px;
+                    filter: drop-shadow(0 0 10px var(--primary-color));
                 }
 
                 .header-nav {
@@ -192,8 +192,8 @@ export class ZgetApp extends HTMLElement {
                     }
 
                     .brand img {
-                        width: 18px;
-                        height: 18px;
+                        width: 36px;
+                        height: 36px;
                     }
 
                     .command-center {
@@ -229,8 +229,7 @@ export class ZgetApp extends HTMLElement {
 
             <header class="app-header">
                 <div class="brand">
-                    <img src="/components/icon.png" alt="⚡" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>'">
-                    <span>zget</span>
+                    <img src="/icon.png" alt="zget" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>'"">
                 </div>
                 
                 <div class="command-center">
