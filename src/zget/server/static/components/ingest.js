@@ -164,6 +164,21 @@ export class ZgetIngest extends ZgetBase {
           from { opacity: 0; transform: translateY(4px); }
           to { opacity: 1; transform: translateY(0); }
         }
+
+        @media (max-width: 768px) {
+          .ingest-wrapper {
+            padding: 4px 10px;
+            gap: 8px;
+          }
+          input {
+            font-size: 0.75rem;
+          }
+          .submit-btn {
+            padding: 0 12px;
+            font-size: 0.7rem;
+            height: 26px;
+          }
+        }
       </style>
 
       <div class="ingest-wrapper">

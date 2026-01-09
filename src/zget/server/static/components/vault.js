@@ -230,48 +230,43 @@ export class ZgetVault extends ZgetBase {
         /* Mobile Responsive */
         @media (max-width: 768px) {
           :host {
-            padding: 0 0 40px 0;
+            padding: 0 16px 40px 16px;
+          }
+
+          .search-container {
+            margin-bottom: 16px;
           }
 
           .video-grid {
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 20px;
             padding: 0;
-            background: rgba(255,255,255,0.02);
           }
 
           .video-card {
-            border-radius: 0;
-            border-left: none;
-            border-right: none;
-            border-top: none;
-            background: transparent;
-          }
-
-          .video-card:hover {
-            background: transparent;
+            border-radius: 12px;
+            background: #0B0E14;
+            border: 1px solid var(--border-color);
           }
 
           .thumbnail-container {
-            border-radius: 0;
-            aspect-ratio: auto;
-            min-height: 200px;
+            aspect-ratio: 16/9;
+            min-height: auto;
+            max-height: 40vh;
+            border-bottom: 1px solid var(--border-color);
           }
 
           .thumbnail-container img {
-            height: auto;
-            max-height: 70vh;
-            object-fit: contain;
-            background: #000;
+            height: 100%;
+            object-fit: cover;
           }
 
           .card-info {
-            padding: 16px;
-            background: #0B0E14;
+            padding: 12px;
           }
 
           .card-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
           }
         }
 

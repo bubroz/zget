@@ -11,6 +11,8 @@
   - **Industrial Zen Dashboard**: A premium, two-row "Command Center" aesthetic with glassmorphism and industrial typography.
   - **Unified Ingest & Search**: Dedicated, full-width input bars for high-speed archival and library retrieval.
   - **High-Fidelity Stats**: Industrial-style system status indicators (INDEX // COUNT) for immediate library context.
+  - **Real-Time Activity**: Live download progress banner with speed metrics and error reporting.
+  - **Reactive Vault**: Automatic library refresh ensuring instant access to new archives without reloading.
   - **Rich Player**: High-density technical metadata (Resolution, Codec, Views) with aggressive mobile download support.
   - **Natural Feed**: Dynamic aspect ratios for Vault cards—supporting landscape YouTube and vertical Reels natively.
   - **Regions & Registry**: Interactive explorer for 625+ verified sites, sorted by **Local Popularity**.
