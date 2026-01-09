@@ -1,14 +1,16 @@
-# <img src="src/zget/server/static/icon.png" width="48" height="48" align="center"> zget: The Archival Engine
+# ZGET : The Archival Engine
 
-`zget` is a high-fidelity media archival system built for personal high-fidelity preservation. It operates through a specialized triad: **The Archivist** (Ingestion), **The Vault** (Persistence), and **The Portal** (Discovery).
+`zget` is a personal media archival system. Download videos from YouTube, Instagram, TikTok, and 600+ other sites to your own library.
 
-## The Triad
+## Core Components
 
-- **The Archivist (Server)**: A robust FastAPI engine that manages complex extraction and background downloads independently.
-- **The Vault (Library)**: A persistent SQLite-backed repository (FTS5) designed for high-fidelity, metadata-rich media storage.
-- **The Portal (PWA)**: A premium **Minimalist Portal** built with **Native Web Components**.
+- **Server (Ingestion)**: A robust FastAPI engine that manages complex extraction and background downloads independently.
+- **Library (Persistence)**: A persistent SQLite-backed repository (FTS5) designed for high-fidelity, metadata-rich media storage.
+- **Dashboard (Discovery)**: A premium **Minimalist Portal** built with **Native Web Components**.
   - **Zero Build**: No bundlers, no npm, no transpilation. 100% native browser standards.
-  - **Minimalist Aesthetics**: Zero-clutter mobile experience with a premium, app-native feel.
+  - **Industrial Zen Dashboard**: A premium, two-row "Command Center" aesthetic with glassmorphism and industrial typography.
+  - **Unified Ingest & Search**: Dedicated, full-width input bars for high-speed archival and library retrieval.
+  - **High-Fidelity Stats**: Industrial-style system status indicators (INDEX // COUNT) for immediate library context.
   - **Rich Player**: High-density technical metadata (Resolution, Codec, Views) with aggressive mobile download support.
   - **Natural Feed**: Dynamic aspect ratios for Vault cards—supporting landscape YouTube and vertical Reels natively.
   - **Regions & Registry**: Interactive explorer for 625+ verified sites, sorted by **Local Popularity**.
@@ -53,14 +55,14 @@ src/zget/
 
 ## Quick Start
 
-### 1. Wake The Archivist
+### 1. Start the Server
 
 ```bash
 # Recommended: Use uv for high-speed execution
 uv run zget-server --port 8000 --host 0.0.0.0
 ```
 
-### 2. Enter The Portal
+### 2. Open the App
 
 Access `http://localhost:8000` in any browser. Tap **"Add to Home Screen"** on iOS for the full experience.
 
