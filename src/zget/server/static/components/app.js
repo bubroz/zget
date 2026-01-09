@@ -29,33 +29,55 @@ export class ZgetApp extends HTMLElement {
 
                 /* Header with Glassmorphism */
                 .app-header {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: var(--spacing-md) var(--spacing-lg);
                     background: var(--glass-bg);
                     backdrop-filter: blur(var(--glass-blur));
                     border-bottom: 1px solid var(--glass-border);
                     position: sticky;
                     top: 0;
                     z-index: 100;
-                    height: 70px;
+                    height: 64px;
+                    width: 100%;
+                }
+
+                .header-inner {
+                    max-width: 1400px;
+                    margin: 0 auto;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0 40px;
+                    gap: 32px;
                 }
 
                 .brand {
-                    font-size: 1.1rem;
-                    font-weight: 600;
+                    font-family: var(--font-mono);
+                    font-size: 1.6rem;
+                    font-weight: 800;
                     display: flex;
                     align-items: center;
-                    gap: 14px;
                     color: var(--primary-color);
-                    letter-spacing: 0.03em;
+                    letter-spacing: 0.15em;
+                    text-transform: uppercase;
+                    /* Radiant Solar Glow */
+                    text-shadow: 0 0 10px hsla(var(--primary-hsl), 0.6),
+                                 0 0 20px hsla(var(--primary-hsl), 0.4),
+                                 0 0 40px hsla(var(--primary-hsl), 0.2);
+                    position: relative;
+                    user-select: none;
+                    transition: all 0.3s ease;
                 }
 
-                .brand img {
-                    width: 48px;
-                    height: 48px;
-                    filter: drop-shadow(0 0 10px var(--primary-color));
+                .brand:hover {
+                    text-shadow: 0 0 15px hsla(var(--primary-hsl), 0.8),
+                                 0 0 30px hsla(var(--primary-hsl), 0.6),
+                                 0 0 60px hsla(var(--primary-hsl), 0.4);
+                    transform: scale(1.02);
+                }
+
+                /* Removing legacy underline/sublabel pseudo-element */
+                .brand::after {
+                    content: none;
                 }
 
                 .header-nav {
@@ -85,23 +107,49 @@ export class ZgetApp extends HTMLElement {
 
                 .command-center {
                     flex: 1;
-                    max-width: 600px;
-                    margin: 0 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    max-width: 100%;
+                }
+
+                .header-search { display: none; }
+
+                .system-status {
+                    font-family: var(--font-mono);
+                    font-size: 0.7rem;
+                    color: var(--text-muted);
+                    letter-spacing: 0.1em;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding-right: 12px;
+                    border-right: 1px solid var(--glass-border);
+                    white-space: nowrap;
+                    user-select: none;
+                }
+
+                .system-status .count {
+                    color: var(--primary-color);
+                    font-weight: 700;
                 }
 
                 .settings-toggle {
                     background: transparent;
                     border: none;
-                    color: var(--text-muted);
+                    color: var(--primary-color);
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     margin-left: 10px;
+                    transition: all 0.3s ease;
                 }
 
                 .settings-toggle:hover {
-                    color: var(--text-color);
+                    color: var(--primary-color);
+                    filter: drop-shadow(0 0 8px hsla(var(--primary-hsl), 0.4));
+                    transform: rotate(30deg) scale(1.1);
                 }
 
                 /* Active Downloads Banner Area */
@@ -112,9 +160,12 @@ export class ZgetApp extends HTMLElement {
 
                 /* Main Content Area (Vault) */
                 .main-content {
-                    max-width: 1300px;
+                    max-width: 1400px;
                     margin: 0 auto;
-                    padding: 40px 20px;
+                    /* Total padding needs to match header (40px)
+                       app padding (0) + vault host padding (40px) = 40px
+                       We'll remove padding here and let vault handle it for cleaner alignment control */
+                    padding: 40px 0;
                 }
 
                 /* Settings Modal Container */
@@ -187,13 +238,8 @@ export class ZgetApp extends HTMLElement {
                     }
 
                     .brand {
-                        font-size: 1rem;
+                        font-size: 1.2rem;
                         justify-content: center;
-                    }
-
-                    .brand img {
-                        width: 36px;
-                        height: 36px;
                     }
 
                     .command-center {
@@ -225,25 +271,49 @@ export class ZgetApp extends HTMLElement {
                         padding: 16px;
                     }
                 }
+
+                /* Desktop Polish (large screens) */
+                @media (min-width: 1024px) {
+                    .app-header {
+                        /* Removed conflicting padding */
+                    }
+                    
+                    .command-center {
+                        max-width: 520px;
+                    }
+                    
+                    .brand {
+                        min-width: 80px;
+                    }
+                    
+                    .header-nav {
+                        min-width: 100px;
+                        justify-content: flex-end;
+                    }
+                }
             </style>
 
             <header class="app-header">
-                <div class="brand">
-                    <img src="/icon.png" alt="zget" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>'"">
-                </div>
-                
-                <div class="command-center">
-                    <zget-ingest></zget-ingest>
-                </div>
+                <div class="header-inner">
+                    <div class="brand">
+                        zget
+                    </div>
+                    
+                    <div class="command-center">
+                        <zget-ingest style="flex: 1;"></zget-ingest>
+                    </div>
 
-                <div class="header-nav">
-                    <span class="nav-link active">Vault</span>
-                    <button class="settings-toggle" title="Settings">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
-                        </svg>
-                    </button>
+                    <div class="header-nav">
+                        <div class="system-status">
+                            INDEX // <span class="count" id="headerCount">--</span>
+                        </div>
+                        <button class="settings-toggle" title="Settings">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -273,12 +343,18 @@ export class ZgetApp extends HTMLElement {
         const settingsBtn = this.shadowRoot.querySelector('.settings-toggle');
         const closeSettingsBtn = this.shadowRoot.querySelector('.close-settings');
 
+        const headerCount = this.shadowRoot.getElementById('headerCount');
+
         vault.addEventListener('open-video', (e) => {
             player.open(e.detail);
         });
 
+        this.addEventListener('library-updated', (e) => {
+            if (headerCount) headerCount.textContent = e.detail.count;
+        });
+
         this.shadowRoot.addEventListener('video-deleted', () => {
-            vault.loadVideos();
+            vault.fetchVideos();
         });
 
         settingsBtn.addEventListener('click', () => {

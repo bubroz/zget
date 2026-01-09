@@ -6,6 +6,18 @@ export class ZgetVault extends ZgetBase {
     this.videos = [];
     this.loading = true;
     this.searchQuery = '';
+
+    // Platform Color Intelligence (Arc Raiders Radiant Alignment)
+    this.PLATFORM_COLORS = {
+      'youtube': { bg: '#FF0000', fg: '#FFFFFF' },
+      'instagram': { bg: '#E4405F', fg: '#FFFFFF' },
+      'tiktok': { bg: '#00F2EA', fg: '#000000' },
+      'twitter': { bg: '#1DA1F2', fg: '#FFFFFF' },
+      'x': { bg: '#FFFFFF', fg: '#000000' }, // X is often White/Black
+      'reddit': { bg: '#FF4500', fg: '#FFFFFF' },
+      'twitch': { bg: '#9146FF', fg: '#FFFFFF' },
+      'facebook': { bg: '#1877F2', fg: '#FFFFFF' }
+    };
   }
 
   connectedCallback() {
@@ -55,26 +67,46 @@ export class ZgetVault extends ZgetBase {
       <link rel="stylesheet" href="/styles/theme.css">
       <link rel="stylesheet" href="/styles/shared.css">
       <style>
-        :host { display: block; padding: 0 20px 40px 20px; }
+        :host { display: block; padding: 0 40px 40px 40px; }
         
         .vault-header {
-          margin-bottom: 40px;
+          display: none;
+        }
+
+        .search-container {
+          margin-bottom: 20px;
           display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
+          width: 100%;
+          padding-top: 0;
         }
 
-        .header-title h2 { 
-          margin: 0; 
-          font-size: 1.8rem; 
-          font-weight: 700; 
-          color: white; 
+        .search-box {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--border-color);
+          border-radius: 4px;
+          padding: 8px 16px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          transition: all 0.2s ease;
         }
 
-        .header-title .subtitle {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 4px;
+        .search-box:focus-within {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: var(--primary-color);
+          box-shadow: 0 0 15px hsla(var(--primary-hsl), 0.1);
+        }
+
+        .search-box input {
+          background: transparent;
+          border: none;
+          color: var(--text-color);
+          font-size: 0.8rem;
+          font-family: var(--font-mono);
+          outline: none;
+          flex: 1;
+          letter-spacing: 0.05em;
         }
 
         .video-grid {
@@ -104,7 +136,6 @@ export class ZgetVault extends ZgetBase {
           background: #000;
           border: none;
           outline: none;
-          /* No border here to avoid double-border look */
         }
         
         .thumbnail-container img {
@@ -134,14 +165,15 @@ export class ZgetVault extends ZgetBase {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: #7c3aed; /* Violet for tags */
-            color: white;
+            background: var(--platform-color, var(--primary-color));
+            color: var(--platform-fg, white);
             font-size: 0.65rem;
-            font-weight: 700;
-            padding: 2px 8px;
+            font-weight: 800;
+            padding: 3px 10px;
             border-radius: 4px;
             text-transform: uppercase;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            letter-spacing: 0.05em;
         }
 
         .card-info { 
@@ -178,7 +210,7 @@ export class ZgetVault extends ZgetBase {
             font-size: 0.65rem;
             font-weight: 700;
             color: var(--primary-color);
-            background: rgba(16, 185, 129, 0.1); /* Green tint */
+            background: rgba(16, 185, 129, 0.1);
             padding: 2px 6px;
             border-radius: 4px;
             border: 1px solid rgba(16, 185, 129, 0.2);
@@ -199,23 +231,6 @@ export class ZgetVault extends ZgetBase {
         @media (max-width: 768px) {
           :host {
             padding: 0 0 40px 0;
-          }
-
-          .vault-header {
-            flex-direction: row;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-            padding: 0 16px;
-          }
-
-          .header-title {
-            display: none;
-          }
-
-          .vault-header .input-group {
-            flex: 1;
-            width: auto !important;
           }
 
           .video-grid {
@@ -283,35 +298,33 @@ export class ZgetVault extends ZgetBase {
 
         @media (max-width: 768px) {
           .download-btn {
-            padding: 8px; /* Bigger touch target */
+            padding: 8px;
             background: rgba(255,255,255,0.08);
           }
         }
       </style>
 
-      <div class="vault-header">
-        <div class="header-title">
-          <h2>The Vault</h2>
-          <div class="subtitle">Secure Archive <span style="opacity: 0.3; margin-left: 8px;" id="count-badge">0 Files</span></div>
-        </div>
-        <div class="input-group" style="width: 240px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 20px; padding: 6px 16px;">
-          <input type="text" placeholder="Search..." id="searchInput" style="background: transparent; border: none; font-size: 0.75rem; outline: none; width: 100%; color: var(--text-color);">
-          <span id="mobile-count" style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; margin-left: 8px;"></span>
+      <div class="search-container">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity: 0.4;">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="text" placeholder="SEARCH // ARCHIVE" id="vaultSearch">
         </div>
       </div>
-
       <div class="video-grid" id="grid">
         <!-- Videos injected here -->
       </div>
     `;
 
-    this.shadowRoot.getElementById('searchInput').addEventListener('keypress', (e) => this.handleSearch(e));
+    this.shadowRoot.getElementById('vaultSearch').addEventListener('input', (e) => {
+      this.searchQuery = e.target.value;
+      this.fetchVideos();
+    });
   }
 
   updateList() {
     const grid = this.shadowRoot.getElementById('grid');
-    const badge = this.shadowRoot.getElementById('count-badge');
-    const mobileCount = this.shadowRoot.getElementById('mobile-count');
 
     if (!grid) return;
 
@@ -320,25 +333,40 @@ export class ZgetVault extends ZgetBase {
       return;
     }
 
-    // Update count
-    if (badge) badge.textContent = `${this.videos.length} Files`;
-    if (mobileCount) mobileCount.textContent = `${this.videos.length}`;
+    // Dispatch library-updated event for the global header
+    this.dispatchEvent(new CustomEvent('library-updated', {
+      detail: { count: this.videos.length },
+      bubbles: true,
+      composed: true
+    }));
 
     if (this.videos.length === 0) {
       grid.innerHTML = '<div class="empty-state">No files found in library.</div>';
       return;
     }
 
-    // Attach click handlers properly instead of inline HTML for better performance?
-    // For simplicity, we just attach a data attribute and use delegation or direct onclick
     grid.innerHTML = ''; // clear
 
     this.videos.forEach(v => {
+      const platformDisplay = (v.platform_display || 'Web').toLowerCase();
+      let platformKey = Object.keys(this.PLATFORM_COLORS).find(key =>
+        platformDisplay.includes(key)
+      );
+
+      const colorSet = this.PLATFORM_COLORS[platformKey] || {
+        bg: 'var(--primary-color)',
+        fg: '#FFFFFF'
+      };
+
       const card = document.createElement('div');
       card.className = 'video-card';
+      card.style.setProperty('--platform-color', colorSet.bg);
+      card.style.setProperty('--platform-fg', colorSet.fg);
+
       card.innerHTML = `
             <div class="thumbnail-container">
               <img src="/api/thumbnails/${v.id}" loading="lazy" alt="${v.title}">
+              <div class="platform-badge">${v.platform_display || 'Web'}</div>
               <div class="duration-badge">${this.formatDuration(v.duration_seconds)}</div>
             </div>
             <div class="card-info">
@@ -346,8 +374,6 @@ export class ZgetVault extends ZgetBase {
               <div class="card-meta-row" style="font-size: 0.75rem; color: var(--text-muted);">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <span style="color: var(--text-color); font-weight: 500;">${v.uploader}</span>
-                  <span style="opacity: 0.3">•</span>
-                  <span>${v.platform_display || 'Web'}</span>
                 </div>
                 <button class="download-btn" title="Download Video">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

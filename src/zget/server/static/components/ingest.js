@@ -80,48 +80,46 @@ export class ZgetIngest extends ZgetBase {
         
         .ingest-wrapper {
           display: flex;
-          align-items: flex-end;
-          gap: 16px;
-          background: transparent !important;
-          border-bottom: 2px solid var(--border) !important;
-          border-top: none !important;
-          border-left: none !important;
-          border-right: none !important;
-          border-radius: 0 !important;
-          padding: 0 0 4px 4px;
+          align-items: center;
+          gap: 12px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--border-color);
+          border-radius: 4px;
+          padding: 6px 12px;
           width: 100%;
-          max-width: 600px;
-          transition: border-color 0.3s var(--ease-out);
+          max-width: 100%;
           position: relative;
+          transition: all 0.2s ease;
         }
 
         .ingest-wrapper:focus-within {
-          border-bottom-color: var(--primary) !important;
-          background: transparent !important;
+          background: rgba(255, 255, 255, 0.05);
+          border-color: var(--primary-color);
+          box-shadow: 0 0 15px hsla(var(--primary-hsl), 0.1);
         }
 
         input {
           flex: 1;
-          height: 32px;
           background: transparent !important;
           border: none !important;
-          box-shadow: none !important;
-          color: var(--text-main);
-          font-size: 1rem;
+          color: var(--text-color);
+          font-size: 0.8rem;
+          font-family: var(--font-mono);
           outline: none;
           padding: 0;
           margin: 0;
-          letter-spacing: 0.01em;
+          letter-spacing: 0.05em;
         }
 
         .submit-btn {
           height: 28px;
-          padding: 0 12px;
+          padding: 0 16px;
           border-radius: 4px;
           font-size: 0.75rem;
           font-weight: 700;
+          font-family: var(--font-mono);
           text-transform: uppercase;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.1em;
           white-space: nowrap;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -129,24 +127,18 @@ export class ZgetIngest extends ZgetBase {
           align-items: center;
           gap: 6px;
           background: transparent;
-          color: var(--primary);
-          border: 1px solid var(--primary);
-          margin-bottom: 2px;
+          color: var(--primary-color);
+          border: 1px solid var(--primary-color);
         }
 
         .submit-btn:hover:not(:disabled) {
-          background: var(--primary);
-          color: var(--bg);
-        }
-
-        .submit-btn:hover:not(:disabled) {
-          transform: scale(1.02);
-          filter: brightness(1.1);
+          background: var(--primary-color);
+          color: black;
+          transform: translateY(-1px);
         }
 
         .submit-btn:disabled {
-          background: var(--border);
-          color: var(--text-dim);
+          opacity: 0.5;
           cursor: not-allowed;
         }
 
@@ -176,7 +168,7 @@ export class ZgetIngest extends ZgetBase {
 
       <div class="ingest-wrapper">
         <input type="text" 
-          placeholder="Paste URL..." 
+          placeholder="PASTE URL // ARCHIVE" 
           id="urlInput"
           value="${this.value}"
           ${this.status === 'loading' ? 'disabled' : ''}>

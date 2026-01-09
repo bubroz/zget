@@ -1,22 +1,23 @@
 :root {
   /* Librarian Reference Palette */
 
-  /* HSL Values */
-  --bg-hsl: 222, 47%, 4%;
-  /* #05070A - Deepest possible */
-  --card-hsl: 222, 47%, 6%;
-  /* #06090F - Card Background */
-  --primary-hsl: 38, 92%, 50%;
-  /* #f59e0b (Amber/Gold) */
-  --border-hsl: 215, 25%, 12%;
-  /* Deeper borders */
+  /* HSL Values (Arc Raiders Aesthetic) */
+  --bg-hsl: 220, 15%, 5%;
+  /* #0B0D0E - Neutral Space Gray */
+  --card-hsl: 220, 15%, 8%;
+  /* #121516 - Card Background */
+  --primary-hsl: 18, 100%, 50%;
+  /* #FF4D00 (Solar Orange) */
+  --border-hsl: 220, 10%, 15%;
+  /* Neutral borders */
   /* Core Colors */
   --bg-color: hsl(var(--bg-hsl));
   --bg-card: hsl(var(--card-hsl));
   --surface: var(--bg-card);
 
-  --text-color: #f8fafc;
-  --text-muted: #94a3b8;
+  --text-color: #FDFCFB;
+  /* Cream / Off-white */
+  --text-muted: #8E9196;
 
   --primary-color: hsl(var(--primary-hsl));
   --primary-fg: #ffffff;
@@ -76,9 +77,9 @@ body {
 }
 
 .btn.primary:hover {
-  background: hsl(38, 92%, 45%);
-  border-color: hsl(38, 92%, 45%);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+  background: hsl(18, 100%, 45%);
+  border-color: hsl(18, 100%, 45%);
+  box-shadow: 0 4px 12px rgba(255, 77, 0, 0.15);
 }
 
 /* Clean Input Styles */
