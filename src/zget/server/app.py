@@ -1,5 +1,6 @@
 import os
 import json
+import socket
 from pathlib import Path
 from typing import Optional
 
@@ -10,7 +11,16 @@ from pydantic import BaseModel
 
 from fastapi.responses import FileResponse
 
-from ..config import DB_PATH, THUMBNAILS_DIR, VIDEOS_DIR, ensure_directories, PLATFORM_DISPLAY
+from ..config import (
+    DB_PATH,
+    THUMBNAILS_DIR,
+    VIDEOS_DIR,
+    ensure_directories,
+    PLATFORM_DISPLAY,
+    PERSISTENT_CONFIG,
+    ZGET_HOME,
+    CONFIG_FILE,
+)
 from ..db import VideoStore, AsyncVideoStore, get_db_dependency
 from ..queue import DownloadQueue, QueueStatus
 

@@ -229,12 +229,17 @@ export class ZgetApp extends HTMLElement {
                 /* Mobile Responsive */
                 @media (max-width: 768px) {
                     .app-header {
-                        flex-direction: column;
-                        align-items: center;
                         height: auto;
+                        position: sticky;
+                        top: 0;
+                    }
+
+                    .header-inner {
+                        flex-direction: column;
                         padding: 16px;
-                        gap: 16px;
-                        position: relative;
+                        gap: 12px;
+                        align-items: stretch;
+                        height: auto;
                     }
 
                     .brand {
@@ -250,9 +255,17 @@ export class ZgetApp extends HTMLElement {
                     }
 
                     .header-nav {
-                        position: absolute;
-                        top: 12px;
-                        right: 16px;
+                        position: static;
+                        justify-content: center;
+                        border-top: 1px solid var(--glass-border);
+                        padding-top: 12px;
+                        margin-top: 4px;
+                        order: 3;
+                    }
+
+                    .system-status {
+                        border-right: none;
+                        padding-right: 0;
                     }
 
                     .header-nav .nav-link {
@@ -351,6 +364,10 @@ export class ZgetApp extends HTMLElement {
 
         this.addEventListener('library-updated', (e) => {
             if (headerCount) headerCount.textContent = e.detail.count;
+        });
+
+        this.addEventListener('archive-complete', () => {
+            vault.fetchVideos();
         });
 
         this.shadowRoot.addEventListener('video-deleted', () => {

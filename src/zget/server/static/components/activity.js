@@ -26,7 +26,33 @@ export class ZgetActivity extends ZgetBase {
     try {
       const res = await fetch('/api/downloads');
       if (res.ok) {
-        this.downloads = await res.json();
+        const newData = await res.json();
+
+        // Detect completions or removals to trigger vault refresh
+        // We look for:
+        // 1. Items that transitioned to 'complete' status
+        // 2. Items that were in our list but are now gone (backend pruned them)
+        const oldIds = new Set(this.downloads.map(d => d.id));
+        const newIds = new Set(newData.map(d => d.id));
+
+        const justCompleted = this.downloads.filter(d =>
+          d.status !== 'complete' &&
+          newData.find(n => n.id === d.id && n.status === 'complete')
+        );
+
+        const prunedOut = this.downloads.filter(d =>
+          !newIds.has(d.id) && d.status !== 'complete'
+        );
+
+        if (justCompleted.length > 0 || prunedOut.length > 0) {
+          this.dispatchEvent(new CustomEvent('archive-complete', {
+            bubbles: true,
+            composed: true,
+            detail: { count: justCompleted.length + prunedOut.length }
+          }));
+        }
+
+        this.downloads = newData;
         this.render();
       }
     } catch (e) {
@@ -34,14 +60,13 @@ export class ZgetActivity extends ZgetBase {
     }
   }
 
-  async cancelDownload(id) {
-    if (!confirm('Cancel this archival sequence?')) return;
-    try {
-      await fetch(`/api/downloads/${id}`, { method: 'DELETE' });
-      this.fetchActivity();
-    } catch (e) {
-      console.error('Cancel failed:', e);
-    }
+  formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    if (!bytes || isNaN(bytes)) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
   render() {
@@ -61,7 +86,7 @@ export class ZgetActivity extends ZgetBase {
         }
 
         .activity-banner {
-            background: rgba(34, 197, 94, 0.05); /* Very subtle green tint */
+            background: rgba(34, 197, 94, 0.05);
             border: 1px solid rgba(34, 197, 94, 0.2);
             border-radius: var(--radius-md);
             padding: 16px;
@@ -138,6 +163,11 @@ export class ZgetActivity extends ZgetBase {
             box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         }
 
+        .progress-fill.failed {
+            background: var(--status-error);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
         .cancel-btn {
             background: transparent;
             border: none;
@@ -159,7 +189,7 @@ export class ZgetActivity extends ZgetBase {
 
       <div class="activity-banner">
         <div class="banner-header">
-            <span>Resolving Stream...</span>
+            <span>Archival Progress</span>
             <div style="display: flex; align-items: center; gap: 6px;">
                  <span style="width: 6px; height: 6px; background: var(--primary-color); border-radius: 50%; box-shadow: 0 0 8px var(--primary-color);"></span>
                  <span style="font-size: 0.75rem; opacity: 0.8;">Active</span>
@@ -171,25 +201,28 @@ export class ZgetActivity extends ZgetBase {
             <div class="download-item">
               <div class="item-details">
                 <div class="item-main-row">
-                    <span class="item-title" title="${item.title || item.url}">${item.title || 'Processing...'}</span>
+                    <span class="item-title" title="${item.title || item.url}">${item.title || 'Resolving Stream...'}</span>
                     <span class="item-stats">
-                        ${item.percent ? item.percent.toFixed(1) + '%' : '0%'} 
-                        ${item.speed ? '• ' + item.speed : ''} 
-                        ${item.eta ? '• ' + item.eta : ''}
+                        ${item.status === 'complete' ? 'COMPLETE' : (item.status === 'failed' ? 'FAILED' : (item.progress ? Math.round(item.progress) + '%' : '0%'))} 
+                        ${item.speed ? '• ' + this.formatBytes(item.speed) + '/s' : ''} 
+                        ${item.eta ? '• ' + Math.round(item.eta) + 's left' : ''}
                     </span>
                 </div>
                 
                 <div class="progress-track">
-                    <div class="progress-fill" style="width: ${item.percent || 0}%"></div>
+                    <div class="progress-fill ${item.status === 'failed' ? 'failed' : ''}" 
+                         style="width: ${item.status === 'complete' ? 100 : (item.progress || 0)}%"></div>
                 </div>
               </div>
 
+              ${item.status !== 'complete' ? `
               <button class="cancel-btn" onclick="this.getRootNode().host.cancelDownload('${item.id}')" title="Stop">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
               </button>
+              ` : ''}
             </div>
           `).join('')}
         </div>
