@@ -18,7 +18,7 @@ These instructions are for AI assistants working in this project.
   - **High-Density Metadata**: Technical metadata (Views, Codec, Resolution) should be presented cleanly and precisely.
   - **Responsive Context**: Thumbnails must respect **Natural Aspect Ratios** (YouTube vs. Shorts/Reels).
 - **Agent Handoff**: `zget` is the primary ingestion pipeline for the ecosystem. Use the MCP `zget_get_local_path` tool to hand off files from **The Vault** to agents like **Librarian**.
-- **Branding Consistency**: When modifying the UI, always ensure the **Silk Gold Ribbon** logo is prominently displayed and legible (48px desktop / 36px mobile).
+- **Branding Consistency**: When modifying the UI, always ensure the **zget Binary Logo** (monospaced, glowing IBM-style text) is prominently displayed and maintains its minimalist, command-center aesthetic.
 
 Always refer to `openspec/project.md` for full architectural specs.
 <!-- OPENSPEC:END -->
