@@ -39,14 +39,13 @@ Social media content disappears constantly. Videos get deleted, accounts get ban
 
 Extensively tested and verified working:
 
-| Platform | Status |
-| -------- | ------ |
-| YouTube | ✅ Verified |
+| Platform  | Status |
+| YouTube   | ✅ Verified |
 | Instagram | ✅ Verified |
-| X (Twitter) | ✅ Verified |
-| TikTok | ✅ Verified |
-| Reddit | ✅ Verified |
-| Twitch | ✅ Verified |
+| X         | ✅ Verified |
+| TikTok    | ✅ Verified |
+| Reddit    | ✅ Verified |
+| Twitch    | ✅ Verified |
 
 Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are not officially tested.
 
