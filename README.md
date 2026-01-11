@@ -8,7 +8,7 @@
 
 **The internet is ephemeral. Your library isn't.**
 
-Social media content disappears constantly. Videos get deleted, accounts get banned, platforms change policies or shut down entirely. zget lets you build a permanent personal archive that you actually own.
+Social media content disappears constantly. Videos get deleted, accounts get banned, platforms change policies, or shut down entirely. zget lets you build a permanent personal archive that you actually own.
 
 ### Use Cases
 
