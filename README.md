@@ -2,6 +2,8 @@
 
 `zget` is a personal media archival system. Download videos from YouTube, Instagram, TikTok, and 600+ other sites to your own library.
 
+![zget demo](assets/demo.gif)
+
 ## Core Components
 
 - **Server (Ingestion)**: A robust FastAPI engine that manages complex extraction and background downloads independently.
