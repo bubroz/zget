@@ -568,8 +568,9 @@ def list_downloads():
     for item_id in to_delete:
         del queue._items[item_id]
 
-    # Return items that are not complete, OR were completed within the last 60 seconds
-    # This ensures the user sees the 'Complete' state but it doesn't linger forever.
+    # Return items that are:
+    # - Still in progress (pending/downloading)
+    # - OR completed/failed within the last 60 seconds (so user sees the final state briefly)
     return [
         {
             "id": item.id,
@@ -579,9 +580,10 @@ def list_downloads():
             "title": item.title,
             "speed": item.speed,
             "eta": item.eta_seconds,
+            "error": item.error_message,
         }
         for item in queue._items.values()
-        if item.status != QueueStatus.COMPLETE
+        if item.status not in (QueueStatus.COMPLETE, QueueStatus.FAILED, QueueStatus.CANCELLED)
         or (item.completed_at and (now - item.completed_at) < timedelta(seconds=60))
     ]
 
@@ -601,6 +603,24 @@ def get_download_status(item_id: str):
         "video_id": item.video_id,
         "local_path": item.local_path,
     }
+
+
+@app.delete("/api/downloads/{item_id}")
+def cancel_download(item_id: str):
+    """Cancel a pending/downloading item or remove a completed/failed item."""
+    item = queue.get(item_id)
+    if not item:
+        # Already gone, that's fine
+        return {"status": "removed"}
+
+    # Use the queue's remove method which handles cancellation
+    queue.remove(item_id)
+
+    # Also remove from the items dict entirely for clean UI
+    if item_id in queue._items:
+        del queue._items[item_id]
+
+    return {"status": "removed"}
 
 
 # Serve thumbnails

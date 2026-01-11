@@ -5,6 +5,7 @@ export class ZgetActivity extends ZgetBase {
     super();
     this.downloads = [];
     this.timer = null;
+    this.deletedIds = new Set(); // Track IDs we've deleted to prevent re-appearance during polling
   }
 
   connectedCallback() {
@@ -26,7 +27,18 @@ export class ZgetActivity extends ZgetBase {
     try {
       const res = await fetch('/api/downloads');
       if (res.ok) {
-        const newData = await res.json();
+        let newData = await res.json();
+
+        // Filter out any items we've locally deleted (race condition prevention)
+        const serverIds = new Set(newData.map(d => d.id));
+        // Clean up deletedIds for items the server has confirmed removed
+        for (const id of this.deletedIds) {
+          if (!serverIds.has(id)) {
+            this.deletedIds.delete(id);
+          }
+        }
+        // Don't show items we've deleted locally
+        newData = newData.filter(d => !this.deletedIds.has(d.id));
 
         // Detect completions or removals to trigger vault refresh
         // We look for:
@@ -60,6 +72,24 @@ export class ZgetActivity extends ZgetBase {
     }
   }
 
+  async cancelDownload(itemId) {
+    try {
+      // Track this ID as deleted to prevent race condition with polling
+      this.deletedIds.add(itemId);
+
+      // Remove from local state immediately for responsive UI
+      this.downloads = this.downloads.filter(d => d.id !== itemId);
+      this.render();
+
+      // Tell the server to cancel/remove
+      await fetch(`/api/downloads/${itemId}`, { method: 'DELETE' });
+    } catch (e) {
+      console.error('Failed to cancel download:', e);
+      // On error, remove from deletedIds so it can reappear
+      this.deletedIds.delete(itemId);
+    }
+  }
+
   formatBytes(bytes) {
     if (bytes === 0) return '0 B';
     if (!bytes || isNaN(bytes)) return '0 B';
@@ -67,6 +97,13 @@ export class ZgetActivity extends ZgetBase {
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  truncateError(error) {
+    if (!error) return '';
+    // Extract just the main message, not the full path
+    const msg = error.replace(/^.*?Error:\s*/, '').replace(/https?:\/\/[^\s]+/g, '[URL]');
+    return msg.length > 60 ? msg.substring(0, 60) + '...' : msg;
   }
 
   render() {
@@ -208,6 +245,9 @@ export class ZgetActivity extends ZgetBase {
                         ${item.eta ? '• ' + Math.round(item.eta) + 's left' : ''}
                     </span>
                 </div>
+                ${item.status === 'failed' && item.error ? `
+                <div style="font-size: 0.75rem; color: var(--status-error); opacity: 0.8; margin-top: 4px;">${this.truncateError(item.error)}</div>
+                ` : ''}
                 
                 <div class="progress-track">
                     <div class="progress-fill ${item.status === 'failed' ? 'failed' : ''}" 
