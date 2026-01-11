@@ -4,6 +4,28 @@
 
 ![zget demo](assets/demo.gif)
 
+## Why zget?
+
+**The internet is ephemeral. Your library isn't.**
+
+Social media content disappears constantly. Videos get deleted, accounts get banned, platforms change policies or shut down entirely. zget lets you build a permanent personal archive that you actually own.
+
+### Use Cases
+
+- **Save before it's gone.** That perfect tutorial, that interview you keep referencing, that viral clip about to get DMCA'd
+- **Share without barriers.** Send videos to friends and family who can't access the original platform. Whether it's geo-restrictions, government censorship, login walls, or grandma just doesn't "do" TikTok
+- **Watch offline.** Download for flights, road trips, or anywhere with spotty connectivity
+- **Research and journalism.** Archive footage and evidence before it gets altered or removed
+- **Family media server.** One household library accessible by everyone's devices
+
+### Why not just use the platform?
+
+- **One tool for 600+ sites.** No more juggling different apps for each platform
+- **Mobile-native.** Share sheet integration on iOS and Android. No clunky workarounds
+- **Metadata preserved.** Original titles, upload dates, view counts, and full-text search
+- **Self-hosted.** Your data stays on your hardware. No subscriptions, no cloud dependency
+- **Premium UI.** Actually enjoyable to use, not just a CLI
+
 ## Core Components
 
 - **Server (Ingestion)**: A robust FastAPI engine that manages complex extraction and background downloads independently.
