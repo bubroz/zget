@@ -13,23 +13,19 @@ Downloads/
 
 # Logs & Temporary
 *.log
-data/failed_sites.txt
-data/health_log.json
 
-# Large directories (development only)
+# Development artifacts
+brain/
+data/
+openspec/
 libs/
 scripts/
 
-# PWA Assets
+# PWA Assets (handled by build)
 src/zget/server/static/icon.png
 *.png
 !src/zget/server/static/*.png
+!assets/*.png
 
-# Data Registry (Baseline only)
-data/*
-!data/registry_base.json
-!data/enriched_registry.json
-!data/regions.json
-
-# Specs
-openspec/changes/archived/
+# Old assets
+zget-icon.jpeg
