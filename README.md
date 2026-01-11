@@ -102,6 +102,9 @@ Access `http://localhost:8000` in any browser. Tap **"Add to Home Screen"** on i
 | 📋 | **Transcript Extraction** | Subtitle archival using Whisper or native tracks. |
 | 💡 | **Librarian Handoff v2** | Full multimodal indexing (frames, faces, voiceprints). |
 
+---
+*Built with assistance from [Gemini](https://deepmind.google/technologies/gemini/)*
+
 ## License
 
 MIT
