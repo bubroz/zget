@@ -184,8 +184,14 @@ def detect_platform(url: str) -> str:
     url_lower = url.lower()
     for platform, patterns in PLATFORM_PATTERNS.items():
         for pattern in patterns:
-            if pattern in url_lower:
-                return platform
+            # Check for proper domain boundary: pattern must be followed by / or end of domain
+            # This prevents 't.co' from matching in 'combatfootage'
+            idx = url_lower.find(pattern)
+            if idx != -1:
+                end_idx = idx + len(pattern)
+                # Check that pattern is at domain boundary (followed by /, :, or end)
+                if end_idx >= len(url_lower) or url_lower[end_idx] in ("/", ":", "?", "#"):
+                    return platform
     return "other"
 
 
