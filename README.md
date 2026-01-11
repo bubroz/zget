@@ -1,4 +1,4 @@
-# ZGET : The Archival Engine
+# zget : The Archival Engine
 
 `zget` is a personal media archival system. Download videos from YouTube, Instagram, TikTok, Reddit, and many other sites to your own library.
 
