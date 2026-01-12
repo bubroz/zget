@@ -111,19 +111,20 @@ def download(
         )
         opts["merge_output_format"] = "mp4"
 
-    # Cookie authentication
+    # Cookie authentication (only if a browser is configured/detected)
     if cookies_from:
         opts["cookiesfrombrowser"] = (cookies_from,)
     elif cookies_file:
         opts["cookiefile"] = str(cookies_file)
     else:
-        # Use platform-specific default browser for cookies
+        # Use platform-specific default browser for cookies (if available)
         default_browser = get_cookie_browser(platform)
         if default_browser:
             if BROWSER_PROFILE:
                 opts["cookiesfrombrowser"] = (default_browser, BROWSER_PROFILE)
             else:
                 opts["cookiesfrombrowser"] = (default_browser,)
+        # If no browser detected, skip cookies entirely (downloads still work for public content)
 
     # Progress callback
     downloaded_filepath = None
@@ -227,6 +228,7 @@ def extract_info(
                 opts["cookiesfrombrowser"] = (default_browser, BROWSER_PROFILE)
             else:
                 opts["cookiesfrombrowser"] = (default_browser,)
+        # If no browser detected, skip cookies entirely
 
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=False)
