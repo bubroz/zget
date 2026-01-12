@@ -51,16 +51,31 @@ Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are
 
 ## Quick Start
 
-### 1. Start the Server
+### 1. Bootstrap the Environment
 
 ```bash
-# Recommended: Use uv for dependency management
+make bootstrap
+```
+
+This installs [uv](https://docs.astral.sh/uv/) (if not already installed) and sets up the project dependencies.
+
+### 2. Start the Server
+
+```bash
+make serve
+```
+
+Or manually:
+
+```bash
 uv run zget-server --port 8000 --host 0.0.0.0
 ```
 
-### 2. Open the App
+### 3. Open the App
 
-Access `http://localhost:8000` in any browser. Tap **"Add to Home Screen"** on iOS for the full experience.
+Access `http://localhost:8000` in your browser. Tap **"Add to Home Screen"** on iOS for the full experience.
+
+> **⚠️ Safari Users:** Always use `localhost:8000` — Safari doesn't resolve `0.0.0.0` and will show a blank page.
 
 ## Architecture
 
