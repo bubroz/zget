@@ -5,13 +5,67 @@ Central configuration for all paths and settings.
 """
 
 from pathlib import Path
+import os
+import json
+import platform
+
+
+# ============================================================================
+# BROWSER DETECTION
+# ============================================================================
+
+def detect_installed_browser() -> str | None:
+    """
+    Detect the first available browser for cookie extraction.
+    
+    Returns the first browser found, or None if no supported browser is installed.
+    Priority order: Chrome, Brave, Firefox, Edge, Chromium, Opera, Vivaldi
+    """
+    if platform.system() == "Darwin":  # macOS
+        browser_paths = {
+            "chrome": Path.home() / "Library/Application Support/Google/Chrome",
+            "brave": Path.home() / "Library/Application Support/BraveSoftware/Brave-Browser",
+            "firefox": Path.home() / "Library/Application Support/Firefox",
+            "edge": Path.home() / "Library/Application Support/Microsoft Edge",
+            "chromium": Path.home() / "Library/Application Support/Chromium",
+            "opera": Path.home() / "Library/Application Support/com.operasoftware.Opera",
+            "vivaldi": Path.home() / "Library/Application Support/Vivaldi",
+        }
+    elif platform.system() == "Windows":
+        local_app_data = Path(os.environ.get("LOCALAPPDATA", ""))
+        app_data = Path(os.environ.get("APPDATA", ""))
+        browser_paths = {
+            "chrome": local_app_data / "Google/Chrome/User Data",
+            "brave": local_app_data / "BraveSoftware/Brave-Browser/User Data",
+            "firefox": app_data / "Mozilla/Firefox",
+            "edge": local_app_data / "Microsoft/Edge/User Data",
+            "chromium": local_app_data / "Chromium/User Data",
+            "opera": app_data / "Opera Software/Opera Stable",
+            "vivaldi": local_app_data / "Vivaldi/User Data",
+        }
+    else:  # Linux
+        config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+        browser_paths = {
+            "chrome": config_home / "google-chrome",
+            "brave": config_home / "BraveSoftware/Brave-Browser",
+            "firefox": Path.home() / ".mozilla/firefox",
+            "edge": config_home / "microsoft-edge",
+            "chromium": config_home / "chromium",
+            "opera": config_home / "opera",
+            "vivaldi": config_home / "vivaldi",
+        }
+    
+    # Return first installed browser
+    for browser, path in browser_paths.items():
+        if path.exists():
+            return browser
+    
+    return None
+
 
 # ============================================================================
 # PATHS
 # ============================================================================
-
-import os
-import json
 
 # Standard config location
 CONFIG_DIR = Path.home() / ".config" / "zget"
@@ -88,7 +142,12 @@ CHECK_INTERVAL_JITTER = 0.10
 # ============================================================================
 
 # Default browser for cookie extraction (for logged-in sessions)
-DEFAULT_COOKIE_BROWSER = "brave"
+# Auto-detects first available browser, or can be set via config/env
+_detected_browser = detect_installed_browser()
+DEFAULT_COOKIE_BROWSER = os.getenv(
+    "ZGET_COOKIE_BROWSER",
+    PERSISTENT_CONFIG.get("cookie_browser", _detected_browser)
+)
 
 # Per-platform browser preferences (can be overridden)
 PLATFORM_COOKIE_BROWSERS: dict[str, str] = {}
@@ -99,7 +158,11 @@ PLATFORM_COOKIE_BROWSERS: dict[str, str] = {}
 
 # Browser application to use for opening URLs
 # Options: "default", "brave", "chrome", "safari", "firefox"
-BROWSER_APP = "brave"
+# Falls back to "default" if no browser detected
+BROWSER_APP = os.getenv(
+    "ZGET_BROWSER_APP",
+    PERSISTENT_CONFIG.get("browser_app", _detected_browser or "default")
+)
 
 # Browser profile directory name (for Brave/Chrome)
 # Use None for default profile, or specify like "Profile 1", "Profile 4", etc.
