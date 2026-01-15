@@ -6,6 +6,9 @@ export class ZgetVault extends ZgetBase {
     this.videos = [];
     this.loading = true;
     this.searchQuery = '';
+    this.selectedIds = new Set(); // Multi-select state
+    this.orphanedCount = 0; // Orphan detection state
+    this.orphanedIds = []; // IDs of orphaned records
 
     // Platform Color Intelligence (Arc Raiders Radiant Alignment)
     this.PLATFORM_COLORS = {
@@ -36,6 +39,10 @@ export class ZgetVault extends ZgetBase {
     this.loadStyles();
     this.renderTemplate();
     this.fetchVideos();
+    // Listen for Escape key to clear selection
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.clearSelection();
+    });
   }
 
   async fetchVideos() {
@@ -49,11 +56,83 @@ export class ZgetVault extends ZgetBase {
 
       const res = await fetch(url);
       this.videos = await res.json();
+
+      // Proactively check for orphaned records
+      this.checkOrphans();
     } catch (err) {
       console.error('Failed to fetch videos:', err);
     } finally {
       this.loading = false;
       this.updateList();
+    }
+  }
+
+  async checkOrphans() {
+    try {
+      const res = await fetch('/api/library/doctor', { method: 'POST' });
+      const data = await res.json();
+      this.orphanedCount = data.orphaned_count || 0;
+      this.orphanedIds = data.orphaned_ids || [];
+      // Re-render to show orphan banner if needed
+      if (this.orphanedCount > 0) {
+        this.updateList();
+      }
+    } catch (err) {
+      console.error('Failed to check orphans:', err);
+    }
+  }
+
+  async cleanupOrphans() {
+    try {
+      const res = await fetch('/api/library/cleanup', { method: 'POST' });
+      const data = await res.json();
+      this.orphanedCount = 0;
+      this.orphanedIds = [];
+      this.fetchVideos(); // Refresh the list
+    } catch (err) {
+      console.error('Failed to cleanup orphans:', err);
+    }
+  }
+
+  toggleSelection(videoId) {
+    if (this.selectedIds.has(videoId)) {
+      this.selectedIds.delete(videoId);
+    } else {
+      this.selectedIds.add(videoId);
+    }
+    this.updateList();
+  }
+
+  clearSelection() {
+    this.selectedIds.clear();
+    this.updateList();
+  }
+
+  selectAll() {
+    this.videos.forEach(v => this.selectedIds.add(v.id));
+    this.updateList();
+  }
+
+  async bulkDelete() {
+    const count = this.selectedIds.size;
+    if (count === 0) return;
+
+    if (!confirm(`Delete ${count} video${count > 1 ? 's' : ''}? This cannot be undone.`)) return;
+
+    try {
+      const res = await fetch('/api/media/bulk', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: Array.from(this.selectedIds) })
+      });
+      const data = await res.json();
+      this.selectedIds.clear();
+      this.fetchVideos();
+      // Emit refresh event
+      this.dispatchEvent(new CustomEvent('video-deleted', { bubbles: true, composed: true }));
+    } catch (err) {
+      console.error('Bulk delete failed:', err);
+      alert('Delete failed. Please try again.');
     }
   }
 
@@ -309,6 +388,158 @@ export class ZgetVault extends ZgetBase {
             background: rgba(255,255,255,0.08);
           }
         }
+
+        /* Selection State */
+        .video-card.selected {
+          border: 2px solid var(--primary-color) !important;
+          box-shadow: 0 0 20px hsla(var(--primary-hsl), 0.3);
+          background: #0B0E14;
+        }
+
+        .video-card.selected .thumbnail-container::after {
+          content: '✓';
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          background: var(--primary-color);
+          color: white;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          font-weight: bold;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Orphan Warning Banner */
+        .orphan-banner {
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          border-radius: 8px;
+          padding: 12px 16px;
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+        }
+
+        .orphan-banner-text {
+          color: #ef4444;
+          font-size: 0.85rem;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .orphan-banner-btn {
+          background: rgba(239, 68, 68, 0.2);
+          border: 1px solid rgba(239, 68, 68, 0.4);
+          color: #ef4444;
+          padding: 6px 12px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          white-space: nowrap;
+        }
+
+        .orphan-banner-btn:hover {
+          background: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Floating Action Bar */
+        .action-bar {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: var(--glass-bg);
+          backdrop-filter: blur(12px);
+          border-top: 1px solid var(--glass-border);
+          padding: 12px 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          z-index: 100;
+          animation: slideUp 0.2s ease;
+        }
+
+        @keyframes slideUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        .action-bar-inner {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          max-width: 600px;
+          width: 100%;
+        }
+
+        .action-bar-count {
+          font-family: var(--font-mono);
+          font-size: 0.85rem;
+          color: var(--text-color);
+          font-weight: 600;
+        }
+
+        .action-bar-btn {
+          padding: 8px 16px;
+          border-radius: 6px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: 1px solid var(--border-color);
+          background: rgba(255,255,255,0.05);
+          color: var(--text-color);
+        }
+
+        .action-bar-btn:hover {
+          background: rgba(255,255,255,0.1);
+        }
+
+        .action-bar-btn.danger {
+          background: rgba(239, 68, 68, 0.2);
+          border-color: rgba(239, 68, 68, 0.4);
+          color: #ef4444;
+        }
+
+        .action-bar-btn.danger:hover {
+          background: rgba(239, 68, 68, 0.3);
+        }
+
+        .action-bar-spacer {
+          flex: 1;
+        }
+
+        @media (max-width: 768px) {
+          .action-bar {
+            padding: 12px 16px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+          }
+
+          .action-bar-inner {
+            gap: 12px;
+          }
+
+          .action-bar-btn {
+            padding: 10px 14px;
+            flex: 1;
+          }
+        }
+
+        /* Padding for action bar */
+        :host(.has-selection) {
+          padding-bottom: 100px;
+        }
       </style>
 
       <div class="search-container">
@@ -319,9 +550,11 @@ export class ZgetVault extends ZgetBase {
           <input type="text" placeholder="SEARCH // ARCHIVE" id="vaultSearch">
         </div>
       </div>
+      <div id="orphanBanner"></div>
       <div class="video-grid" id="grid">
         <!-- Videos injected here -->
       </div>
+      <div id="actionBar"></div>
     `;
 
     this.shadowRoot.getElementById('vaultSearch').addEventListener('input', (e) => {
@@ -332,8 +565,60 @@ export class ZgetVault extends ZgetBase {
 
   updateList() {
     const grid = this.shadowRoot.getElementById('grid');
+    const orphanBanner = this.shadowRoot.getElementById('orphanBanner');
+    const actionBar = this.shadowRoot.getElementById('actionBar');
 
     if (!grid) return;
+
+    // Update host class for selection padding
+    if (this.selectedIds.size > 0) {
+      this.classList.add('has-selection');
+    } else {
+      this.classList.remove('has-selection');
+    }
+
+    // Render orphan banner
+    if (orphanBanner) {
+      if (this.orphanedCount > 0) {
+        orphanBanner.innerHTML = `
+          <div class="orphan-banner">
+            <span class="orphan-banner-text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <path d="M12 9v4"/><path d="M12 17h.01"/>
+              </svg>
+              ${this.orphanedCount} archived item${this.orphanedCount > 1 ? 's have' : ' has'} missing files
+            </span>
+            <button class="orphan-banner-btn" id="cleanupBtn">Clean Up</button>
+          </div>
+        `;
+        this.shadowRoot.getElementById('cleanupBtn').onclick = () => this.cleanupOrphans();
+      } else {
+        orphanBanner.innerHTML = '';
+      }
+    }
+
+    // Render action bar
+    if (actionBar) {
+      if (this.selectedIds.size > 0) {
+        actionBar.innerHTML = `
+          <div class="action-bar">
+            <div class="action-bar-inner">
+              <span class="action-bar-count">${this.selectedIds.size} selected</span>
+              <div class="action-bar-spacer"></div>
+              <button class="action-bar-btn" id="selectAllBtn">Select All</button>
+              <button class="action-bar-btn" id="clearBtn">Clear</button>
+              <button class="action-bar-btn danger" id="deleteBtn">Delete</button>
+            </div>
+          </div>
+        `;
+        this.shadowRoot.getElementById('selectAllBtn').onclick = () => this.selectAll();
+        this.shadowRoot.getElementById('clearBtn').onclick = () => this.clearSelection();
+        this.shadowRoot.getElementById('deleteBtn').onclick = () => this.bulkDelete();
+      } else {
+        actionBar.innerHTML = '';
+      }
+    }
 
     if (this.loading) {
       grid.innerHTML = '<div class="empty-state">Loading Library...</div>';
@@ -370,6 +655,9 @@ export class ZgetVault extends ZgetBase {
 
       const card = document.createElement('div');
       card.className = 'video-card';
+      if (this.selectedIds.has(v.id)) {
+        card.classList.add('selected');
+      }
       card.style.setProperty('--platform-color', colorSet.bg);
       card.style.setProperty('--platform-fg', colorSet.fg);
 
@@ -400,7 +688,24 @@ export class ZgetVault extends ZgetBase {
         this.downloadVideo(v.id);
       };
 
-      card.onclick = (e) => this.openVideo(e, v);
+      // Card click: toggle selection if in selection mode, otherwise open video
+      card.onclick = (e) => {
+        if (this.selectedIds.size > 0) {
+          // Already in selection mode - toggle this card
+          e.preventDefault();
+          this.toggleSelection(v.id);
+        } else {
+          // Not in selection mode - open the video
+          this.openVideo(e, v);
+        }
+      };
+
+      // Long press / right-click to start selection (optional: add later)
+      card.oncontextmenu = (e) => {
+        e.preventDefault();
+        this.toggleSelection(v.id);
+      };
+
       grid.appendChild(card);
     });
   }

@@ -206,6 +206,44 @@ async def run_repair():
                 print(f"Failed repair for {v.id}: {e}")
 
 
+class BulkDeleteRequest(BaseModel):
+    ids: list[int]
+
+
+@app.delete("/api/media/bulk")
+async def bulk_delete_media(request: BulkDeleteRequest):
+    """Delete multiple videos at once."""
+    from ..library.thumbnails import delete_thumbnail
+    from ..safe_delete import safe_delete
+
+    deleted = 0
+    errors = []
+
+    for video_id in request.ids:
+        try:
+            video = store.get_video(video_id)
+            if not video:
+                errors.append(f"Video {video_id} not found")
+                continue
+
+            # Delete file if it exists (move to trash)
+            if video.local_path:
+                path = Path(video.local_path)
+                if path.exists():
+                    safe_delete(path, use_trash=True)
+
+            # Delete thumbnail
+            await delete_thumbnail(video.video_id, video.platform, THUMBNAILS_DIR)
+
+            # Delete from DB
+            store.delete_video(video_id)
+            deleted += 1
+        except Exception as e:
+            errors.append(f"Error deleting {video_id}: {str(e)}")
+
+    return {"deleted": deleted, "errors": errors}
+
+
 @app.get("/api/media/{video_id}")
 @app.head("/api/media/{video_id}")
 async def get_media(video_id: str, download: bool = False):
@@ -241,15 +279,17 @@ async def get_media(video_id: str, download: bool = False):
 
 @app.delete("/api/media/{id}")
 async def delete_media(id: int):
+    from ..safe_delete import safe_delete
+
     video = store.get_video(id)
     if not video:
         raise HTTPException(status_code=404, detail="Video not found")
 
-    # Delete file
+    # Delete file (move to trash)
     if video.local_path:
         path = Path(video.local_path)
         if path.exists():
-            path.unlink()
+            safe_delete(path, use_trash=True)
 
     # Delete thumbnail
     from ..library.thumbnails import delete_thumbnail
@@ -259,6 +299,40 @@ async def delete_media(id: int):
     # Delete from DB
     store.delete_video(id)
     return {"status": "deleted"}
+
+
+@app.post("/api/library/doctor")
+async def doctor_check():
+    """Detect orphaned records (DB entries where video file is missing)."""
+    videos = store.get_recent(limit=10000)
+    orphaned_ids = []
+
+    for v in videos:
+        if not v.local_path or not Path(v.local_path).exists():
+            orphaned_ids.append(v.id)
+
+    return {"orphaned_count": len(orphaned_ids), "orphaned_ids": orphaned_ids}
+
+
+@app.post("/api/library/cleanup")
+async def cleanup_orphans():
+    """Remove orphaned records (DB entries where video file is missing)."""
+    from ..library.thumbnails import delete_thumbnail
+
+    videos = store.get_recent(limit=10000)
+    cleaned = 0
+
+    for v in videos:
+        if not v.local_path or not Path(v.local_path).exists():
+            if v.id is None:
+                continue
+            # Delete thumbnail if it exists
+            await delete_thumbnail(v.video_id, v.platform, THUMBNAILS_DIR)
+            # Delete from DB
+            store.delete_video(v.id)
+            cleaned += 1
+
+    return {"cleaned": cleaned}
 
 
 @app.get("/api/thumbnails/{video_id}")
