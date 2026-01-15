@@ -267,6 +267,33 @@ export class ZgetVault extends ZgetBase {
             letter-spacing: 0.05em;
         }
 
+        .delete-overlay-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 6px;
+            padding: 6px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .video-card:hover .delete-overlay-btn {
+            opacity: 1;
+        }
+        
+        .delete-overlay-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
         .card-info { 
             padding: 16px; 
             display: flex;
@@ -665,6 +692,11 @@ export class ZgetVault extends ZgetBase {
             <div class="thumbnail-container">
               <img src="/api/thumbnails/${v.id}" loading="lazy" alt="${v.title}">
               <div class="duration-badge">${this.formatDuration(v.duration_seconds)}</div>
+              <button class="delete-overlay-btn" title="Delete Video">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                </svg>
+              </button>
             </div>
             <div class="card-info">
               <div class="card-title">${v.title}</div>
@@ -686,6 +718,23 @@ export class ZgetVault extends ZgetBase {
       dlBtn.onclick = (e) => {
         e.stopPropagation();
         this.downloadVideo(v.id);
+      };
+
+      // Delete overlay button
+      const deleteBtn = card.querySelector('.delete-overlay-btn');
+      deleteBtn.onclick = async (e) => {
+        e.stopPropagation();
+        if (confirm(`Delete "${v.title || 'this video'}"?`)) {
+          try {
+            const res = await fetch(`/api/media/${v.id}`, { method: 'DELETE' });
+            if (res.ok) {
+              this.fetchVideos();
+              this.dispatchEvent(new CustomEvent('video-deleted', { bubbles: true, composed: true }));
+            }
+          } catch (err) {
+            alert('Delete failed.');
+          }
+        }
       };
 
       // Card click: toggle selection if in selection mode, otherwise open video
