@@ -113,6 +113,28 @@ def main():
         help="Verify ALL sites in registry (caution: slow)",
     )
 
+    # Doctor (Library Health Check)
+    parser.add_argument(
+        "--doctor",
+        action="store_true",
+        help="Run library health check (detect orphaned records)",
+    )
+    parser.add_argument(
+        "--fix",
+        action="store_true",
+        help="Auto-fix issues found by --doctor (clean orphaned records)",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview fixes without making changes (use with --doctor --fix)",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Show detailed status for each item",
+    )
+
     args = parser.parse_args()
 
     # Handle non-download commands first
@@ -120,6 +142,10 @@ def main():
         import asyncio
 
         asyncio.run(handle_health(args))
+        return
+
+    if args.doctor:
+        handle_doctor(args)
         return
 
     if args.search:
@@ -464,6 +490,138 @@ def handle_stats():
         )
     )
     console.print(table)
+
+
+def handle_doctor(args):
+    """Run library health check and optionally fix issues."""
+    from pathlib import Path
+
+    from rich.panel import Panel
+    from rich.table import Table
+
+    from zget.config import DB_PATH, THUMBNAILS_DIR, ensure_directories
+    from zget.db import VideoStore
+    from zget.safe_delete import TRASH_AVAILABLE, safe_delete
+
+    ensure_directories()
+    store = VideoStore(DB_PATH)
+
+    console.print(
+        Panel(
+            "[bold]🩺 Library Health Check[/bold]",
+            border_style="blue",
+        )
+    )
+
+    # Get all videos from database
+    all_videos = store.get_recent(limit=10000)
+    total_records = len(all_videos)
+
+    orphaned = []
+    healthy = 0
+    orphan_size = 0
+
+    console.print(f"\n[dim]Scanning {total_records} records...[/dim]\n")
+
+    for v in all_videos:
+        file_exists = False
+        if v.local_path:
+            path = Path(v.local_path)
+            file_exists = path.exists()
+
+        if file_exists:
+            healthy += 1
+            if args.verbose:
+                console.print(f"  [green]✓[/green] {v.id}: {v.title[:50]}")
+        else:
+            orphaned.append(v)
+            if v.file_size_bytes:
+                orphan_size += v.file_size_bytes
+            if args.verbose:
+                console.print(f"  [red]✗[/red] {v.id}: {v.title[:50]} [dim](file missing)[/dim]")
+
+    # Summary
+    console.print()
+    if orphaned:
+        size_str = _format_size(orphan_size)
+        console.print(f"[yellow]⚠ Found {len(orphaned)} orphaned record(s)[/yellow]")
+        console.print(f"  Recoverable space: [cyan]{size_str}[/cyan]")
+
+        if args.verbose or len(orphaned) <= 10:
+            table = Table(title="Orphaned Records", show_header=True)
+            table.add_column("ID", style="cyan")
+            table.add_column("Title")
+            table.add_column("Former Path", style="dim")
+
+            for v in orphaned[:20]:  # Limit display
+                table.add_row(
+                    str(v.id),
+                    (v.title[:40] + "...") if len(v.title or "") > 40 else (v.title or "?"),
+                    (v.local_path[:50] + "...")
+                    if v.local_path and len(v.local_path) > 50
+                    else (v.local_path or "?"),
+                )
+
+            if len(orphaned) > 20:
+                table.add_row("...", f"({len(orphaned) - 20} more)", "...")
+
+            console.print(table)
+    else:
+        console.print("[green]✓ No issues found. Library is healthy![/green]")
+
+    # Handle fix
+    if args.fix and orphaned:
+        console.print()
+        if args.dry_run:
+            console.print("[yellow]DRY RUN - No changes will be made[/yellow]")
+            console.print(f"  Would remove {len(orphaned)} orphaned database record(s)")
+            console.print(f"  Would clean up associated thumbnails")
+        else:
+            # Actually fix
+            console.print("[bold]Cleaning up orphaned records...[/bold]")
+            cleaned = 0
+            for v in orphaned:
+                try:
+                    # Delete thumbnail if exists
+                    if v.video_id and v.platform:
+                        thumb_path = THUMBNAILS_DIR / f"{v.platform}_{v.video_id}.jpg"
+                        if thumb_path.exists():
+                            safe_delete(thumb_path, use_trash=True)
+
+                    # Delete from database
+                    store.delete_video(v.id)
+                    cleaned += 1
+                except Exception as e:
+                    console.print(f"  [red]Error cleaning {v.id}: {e}[/red]")
+
+            trash_note = " (thumbnails moved to trash)" if TRASH_AVAILABLE else ""
+            console.print(f"[green]✓ Cleaned {cleaned} orphaned record(s){trash_note}[/green]")
+
+    elif args.fix and not orphaned:
+        console.print("\n[dim]Nothing to fix.[/dim]")
+
+    # Final summary
+    console.print(
+        Panel(
+            f"  Healthy Records:  [green]{healthy}[/green]\n"
+            f"  Orphaned Records: [{'red' if orphaned else 'green'}]{len(orphaned)}[/{'red' if orphaned else 'green'}]\n"
+            f"  Trash Available:  [{'green' if TRASH_AVAILABLE else 'yellow'}]{'Yes' if TRASH_AVAILABLE else 'No'}[/{'green' if TRASH_AVAILABLE else 'yellow'}]",
+            title="Summary",
+            border_style="blue",
+        )
+    )
+
+
+def _format_size(size_bytes: int) -> str:
+    """Format bytes to human readable string."""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    elif size_bytes < 1024 * 1024 * 1024:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+    else:
+        return f"{size_bytes / (1024 * 1024 * 1024):.1f} GB"
 
 
 if __name__ == "__main__":
