@@ -14,10 +14,11 @@ import platform
 # BROWSER DETECTION
 # ============================================================================
 
+
 def detect_installed_browser() -> str | None:
     """
     Detect the first available browser for cookie extraction.
-    
+
     Returns the first browser found, or None if no supported browser is installed.
     Priority order: Chrome, Brave, Firefox, Edge, Chromium, Opera, Vivaldi
     """
@@ -54,12 +55,12 @@ def detect_installed_browser() -> str | None:
             "opera": config_home / "opera",
             "vivaldi": config_home / "vivaldi",
         }
-    
+
     # Return first installed browser
     for browser, path in browser_paths.items():
         if path.exists():
             return browser
-    
+
     return None
 
 
@@ -120,6 +121,32 @@ FILENAME_TEMPLATE = "%(upload_date)s_%(uploader)s_%(title)s.%(ext)s"
 FILENAME_TEMPLATE_SAFE = "%(upload_date)s_%(uploader)s_%(title)s.%(ext)s"
 
 # ============================================================================
+# PLEX / MEDIA SERVER INTEGRATION
+# ============================================================================
+
+# Custom output directory (overrides VIDEOS_DIR for downloads)
+# Set to a path like "/Volumes/Media/Social Videos" for Plex
+# Can be set via ZGET_OUTPUT_DIR env var or config.json "output_dir" key
+_custom_output_raw = os.getenv("ZGET_OUTPUT_DIR", PERSISTENT_CONFIG.get("output_dir", None))
+CUSTOM_OUTPUT_DIR: Path | None = Path(_custom_output_raw) if _custom_output_raw else None
+
+# Use flat structure (no platform subdirectories)
+# Default: False (organize by platform)
+# When True, all videos go in one folder regardless of platform
+FLAT_OUTPUT_STRUCTURE = os.getenv("ZGET_FLAT_OUTPUT", "").lower() in (
+    "1",
+    "true",
+    "yes",
+) or PERSISTENT_CONFIG.get("flat_output", False)
+
+# Custom filename template (yt-dlp format)
+# Default uses existing FILENAME_TEMPLATE_SAFE
+# Plex-friendly example: "%(upload_date>%Y-%m-%d)s %(extractor)s - %(uploader).50s - %(title).100s.%(ext)s"
+CUSTOM_FILENAME_TEMPLATE: str | None = os.getenv(
+    "ZGET_FILENAME_TEMPLATE", PERSISTENT_CONFIG.get("filename_template", None)
+)
+
+# ============================================================================
 # MONITORING SETTINGS
 # ============================================================================
 
@@ -145,8 +172,7 @@ CHECK_INTERVAL_JITTER = 0.10
 # Auto-detects first available browser, or can be set via config/env
 _detected_browser = detect_installed_browser()
 DEFAULT_COOKIE_BROWSER = os.getenv(
-    "ZGET_COOKIE_BROWSER",
-    PERSISTENT_CONFIG.get("cookie_browser", _detected_browser)
+    "ZGET_COOKIE_BROWSER", PERSISTENT_CONFIG.get("cookie_browser", _detected_browser)
 )
 
 # Per-platform browser preferences (can be overridden)
@@ -160,8 +186,7 @@ PLATFORM_COOKIE_BROWSERS: dict[str, str] = {}
 # Options: "default", "brave", "chrome", "safari", "firefox"
 # Falls back to "default" if no browser detected
 BROWSER_APP = os.getenv(
-    "ZGET_BROWSER_APP",
-    PERSISTENT_CONFIG.get("browser_app", _detected_browser or "default")
+    "ZGET_BROWSER_APP", PERSISTENT_CONFIG.get("browser_app", _detected_browser or "default")
 )
 
 # Browser profile directory name (for Brave/Chrome)
@@ -259,10 +284,36 @@ def detect_platform(url: str) -> str:
 
 
 def get_video_output_dir(platform: str) -> Path:
-    """Get the output directory for a platform's videos."""
-    output_dir = VIDEOS_DIR / platform
+    """Get the output directory for a platform's videos.
+
+    If CUSTOM_OUTPUT_DIR is set, uses that as the base directory.
+    If FLAT_OUTPUT_STRUCTURE is True (or custom dir is set), skips platform subdirectories.
+    """
+    if CUSTOM_OUTPUT_DIR:
+        base_dir = CUSTOM_OUTPUT_DIR
+        # When using custom output dir, default to flat structure
+        use_flat = True
+    else:
+        base_dir = VIDEOS_DIR
+        use_flat = FLAT_OUTPUT_STRUCTURE
+
+    if use_flat:
+        # Flat structure: all videos in one folder
+        output_dir = base_dir
+    else:
+        # Organized by platform (default)
+        output_dir = base_dir / platform
+
     output_dir.mkdir(parents=True, exist_ok=True)
     return output_dir
+
+
+def get_filename_template() -> str:
+    """Get the active filename template.
+
+    Returns custom template if set, otherwise the default safe template.
+    """
+    return CUSTOM_FILENAME_TEMPLATE or FILENAME_TEMPLATE_SAFE
 
 
 def get_check_interval(platform: str) -> int:

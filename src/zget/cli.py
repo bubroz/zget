@@ -91,6 +91,11 @@ def main():
         action="store_true",
         help="Show library statistics",
     )
+    parser.add_argument(
+        "--flat",
+        action="store_true",
+        help="Use flat output structure (no platform subdirectories)",
+    )
 
     # Smokescreen Health Verification
     parser.add_argument(
@@ -134,6 +139,27 @@ def main():
         action="store_true",
         help="Show detailed status for each item",
     )
+
+    # Special handling for 'config' subcommand before general parsing
+    # This avoids conflicts with the positional 'url' argument
+    if len(sys.argv) > 1 and sys.argv[1] == "config":
+        from zget.commands.config import handle_config
+
+        config_parser = argparse.ArgumentParser(
+            prog="zget config", description="Manage persistent configuration settings."
+        )
+        config_parser.add_argument(
+            "config_action",
+            nargs="?",
+            choices=["show", "set", "unset"],
+            default="show",
+            help="Action to perform (show, set, unset)",
+        )
+        config_parser.add_argument("config_params", nargs="*", help="Config key and optional value")
+
+        config_args = config_parser.parse_args(sys.argv[2:])
+        handle_config(config_args)
+        return
 
     args = parser.parse_args()
 
@@ -263,7 +289,19 @@ def handle_download(args):
     if args.output:
         output_dir = Path(args.output)
     else:
+        # If --flat is passed, we need to temporarily override the config behavior
+        # or just pass it to get_video_output_dir if we update its signature.
+        # For now, let's use a trick: if --flat is set, we'll handle it here.
+        from zget import config
+
+        original_flat = config.FLAT_OUTPUT_STRUCTURE
+        if args.flat:
+            config.FLAT_OUTPUT_STRUCTURE = True
+
         output_dir = get_video_output_dir(platform)
+
+        # Restore (though usually not necessary in a one-off CLI run)
+        config.FLAT_OUTPUT_STRUCTURE = original_flat
 
     try:
         with Progress(
@@ -341,6 +379,29 @@ def handle_download(args):
             video.id = store.insert_video(video)
             if not args.quiet:
                 console.print(f"[green]✓[/green] Added to library: {video.title}")
+
+            # PLEX INTEGRATION: Generate NFO sidecar and local thumbnail
+            if filepath.exists():
+                try:
+                    from zget.metadata.nfo import generate_nfo
+                    from zget.config import THUMBNAILS_DIR
+                    import shutil
+
+                    # Generate NFO
+                    nfo_path = filepath.with_suffix(".nfo")
+                    generate_nfo(video, nfo_path)
+
+                    # Copy thumbnail to video directory
+                    if video.thumbnail_path:
+                        thumb_src = Path(video.thumbnail_path)
+                        if thumb_src.exists():
+                            local_thumb = filepath.with_suffix(thumb_src.suffix)
+                            if not local_thumb.exists():
+                                shutil.copy2(thumb_src, local_thumb)
+                except Exception as nfo_error:
+                    if not args.quiet:
+                        console.print(f"[yellow]⚠[/yellow] NFO generation failed: {nfo_error}")
+
         except Exception as e:
             if not args.quiet:
                 console.print(f"[yellow]⚠[/yellow] Downloaded but not added to library: {e}")

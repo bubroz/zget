@@ -1,6 +1,6 @@
-# zget : The Archival Engine
+# zget
 
-`zget` is a personal media archival system. Download videos from YouTube, Instagram, TikTok, Reddit, and many other sites to your own library.
+Personal media archival. Download videos from YouTube, Instagram, TikTok, Reddit, and 600+ other sites to your own library.
 
 ![zget demo](assets/demo.gif)
 
@@ -8,38 +8,42 @@
 
 **The internet is ephemeral. Your library isn't.**
 
-Social media content disappears constantly. Videos get deleted, accounts get banned, platforms change policies or shut down entirely. zget lets you build a personal archive that you actually control.
+Content disappears constantly—videos get deleted, accounts get banned, platforms shut down. zget lets you build a personal archive that you control.
 
-### Use Cases
-
-- **Save before it's gone.** That perfect tutorial, that interview you keep referencing, that viral clip about to get DMCA'd
-- **Share without barriers.** Send videos to friends and family who can't access the original platform. Whether it's geo-restrictions, government censorship, login walls, or grandma just doesn't "do" TikTok
-- **Watch offline.** Download for flights, road trips, or anywhere with spotty connectivity
-- **Research and journalism.** Archive footage and evidence before it gets altered or removed
-- **Family media server.** One household library accessible by everyone's devices
-
-### Why not just use the platform?
-
-- **One tool for many sites.** No more juggling different apps for each platform
-- **Mobile-native.** Share sheet integration on iOS and Android
-- **Metadata preserved.** Original titles, upload dates, view counts, and full-text search
-- **Self-hosted.** Your data stays on your hardware. No subscriptions, no cloud dependency
+- **Save before it's gone.** That tutorial you keep referencing, that interview, that viral clip
+- **Share without barriers.** Send videos to people who can't access the original (geo-blocks, login walls, or grandma doesn't "do" TikTok)
+- **Watch offline.** Download for flights, road trips, anywhere with bad connectivity
+- **Research and journalism.** Archive footage before it gets altered or removed
+- **Family media server.** One household library accessible from every device
 
 ## Features
 
-- **Web Dashboard**: A clean, responsive interface built with native Web Components. No build step required.
-- **Real-Time Progress**: Live download status with speed metrics and error reporting
-- **Platform Detection**: Automatic recognition of source platforms with visual icons
-- **Full-Text Search**: Find videos by title, uploader, or description
-- **H.264 Transcoding**: Automatic conversion for universal iOS/Safari compatibility
-- **Mobile PWA**: Add to home screen for a native app experience
-- **MCP Server**: First-class support for AI agents via the Model Context Protocol
+### Core
+
+- **Multi-Platform Downloads**: YouTube, Instagram, TikTok, Reddit, Twitch, X, and 600+ sites via yt-dlp
+- **Full-Text Search**: Find videos by title, uploader, or description (SQLite FTS5)
+- **Metadata Preservation**: Original titles, upload dates, view counts, descriptions
+- **H.264 Transcoding**: Automatic conversion for iOS/Safari compatibility
+- **Duplicate Detection**: By URL and file hash
+
+### Media Server Integration (Plex / Jellyfin / Emby)
+
+- **Custom Output Directory**: Point downloads directly at your library folder
+- **Flat Structure**: Skip platform subdirectories for watch-folder scanning
+- **NFO Sidecar Generation**: Kodi-style XML metadata files so Plex identifies social media correctly
+- **Local Thumbnails**: Poster images placed alongside videos for automatic artwork
+- **Atomic Move**: Downloads complete in temp before moving, preventing partial scans
+
+### Interfaces
+
+- **Web Dashboard**: Responsive PWA with real-time progress, platform icons, search
+- **CLI**: Direct downloads, library management, health checks
+- **MCP Server**: AI agent integration via Model Context Protocol
 
 ## Verified Platforms
 
-Extensively tested and verified working:
-
 | Platform  | Status |
+|-----------|--------|
 | YouTube   | ✅ Verified |
 | Instagram | ✅ Verified |
 | X         | ✅ Verified |
@@ -51,13 +55,13 @@ Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are
 
 ## Quick Start
 
-### 1. Bootstrap the Environment
+### 1. Bootstrap
 
 ```bash
 make bootstrap
 ```
 
-This installs [uv](https://docs.astral.sh/uv/) (if not already installed) and sets up the project dependencies.
+Installs [uv](https://docs.astral.sh/uv/) and sets up dependencies.
 
 ### 2. Start the Server
 
@@ -73,34 +77,97 @@ uv run zget-server --port 8000 --host 0.0.0.0
 
 ### 3. Open the App
 
-Access `http://localhost:8000` in your browser. Tap **"Add to Home Screen"** on iOS for the full experience.
+Access `http://localhost:8000` in your browser. Tap **Add to Home Screen** on iOS for the full PWA experience.
 
-> **⚠️ Safari Users:** Always use `localhost:8000` — Safari doesn't resolve `0.0.0.0` and will show a blank page.
+> **Safari Users:** Always use `localhost:8000`—Safari doesn't resolve `0.0.0.0`.
+
+## CLI Reference
+
+### Download a Video
+
+```bash
+zget <url>                    # Download to default location
+zget <url> --output /path     # Download to specific directory
+zget <url> --flat             # Skip platform subdirectory
+```
+
+### Library Commands
+
+```bash
+zget search <query>           # Full-text search
+zget stats                    # Library statistics
+zget doctor                   # Health check (find orphans, verify files)
+zget doctor --fix             # Auto-fix issues
+zget formats <url>            # List available formats without downloading
+```
+
+### Configuration
+
+Persistent settings stored in `~/.config/zget/config.json`:
+
+```bash
+zget config show              # View current settings
+zget config set <key> <value> # Set a value
+zget config unset <key>       # Remove a value
+```
+
+Common keys:
+
+| Key | Description | Example |
+|-----|-------------|---------|
+| `output_dir` | Custom output path | `/Volumes/Media/Videos` |
+| `flat` | Skip platform subdirs | `true` |
+| `template` | Filename format | `%(upload_date>%Y-%m-%d)s %(title)s.%(ext)s` |
+
+### Plex Setup Example
+
+```bash
+zget config set output_dir "/Volumes/Media/Social Videos"
+zget config set flat true
+zget config set template "%(upload_date>%Y-%m-%d)s %(extractor)s - %(uploader).50s - %(title).100s.%(ext)s"
+```
+
+Videos will now download directly to your Plex library with proper metadata (NFO) and artwork (thumbnails) generated automatically.
+
+## MCP Integration
+
+zget exposes tools for AI agents via the Model Context Protocol:
+
+| Tool | Description |
+|------|-------------|
+| `zget_download` | Download a video from URL |
+| `zget_search` | Full-text search the library |
+| `zget_get_video` | Get metadata by video ID |
+| `zget_get_local_path` | Get filesystem path for a video |
+| `zget_extract_info` | Extract metadata without downloading |
+| `zget_list_formats` | List available formats |
+| `zget_check_url` | Check if URL exists in library |
+| `zget_get_recent` | Get recently downloaded videos |
+| `zget_get_by_uploader` | Get videos by uploader/channel |
+
+Run the MCP server:
+
+```bash
+uv run python -m zget.mcp.server
+```
 
 ## Architecture
 
 ```
 src/zget/
-├── server/     # FastAPI backend + Web Components frontend
-├── mcp/        # Model Context Protocol server
-├── library/    # Video storage and metadata
-├── db/         # SQLite FTS5 database
-├── core.py     # yt-dlp wrapper
-└── cli.py      # Command-line interface
+├── server/       # FastAPI backend + Web Components frontend
+├── mcp/          # Model Context Protocol server
+├── library/      # Video ingest pipeline
+├── db/           # SQLite FTS5 database
+├── metadata/     # NFO generation
+├── commands/     # CLI subcommands
+├── core.py       # yt-dlp wrapper
+└── cli.py        # Main CLI entry point
 ```
-
-## Roadmap
-
-| Status | Feature | Description |
-| ------ | ------- | ----------- |
-| 🔜 | Subscription Feeds | Auto-monitor channels for new content |
-| 🔜 | Watch Party | Sync playback across LAN devices |
-| 📋 | iOS Shortcuts | Deep linking via `zget://` URL scheme |
-| 📋 | Transcripts | Subtitle extraction via Whisper |
 
 ## Acknowledgments
 
-`zget` is made possible by the incredible work of the [yt-dlp](https://github.com/yt-dlp/yt-dlp) community and was built with assistance from [Gemini](https://deepmind.google/technologies/gemini/).
+zget is built on [yt-dlp](https://github.com/yt-dlp/yt-dlp) and was developed with assistance from [Gemini](https://deepmind.google/technologies/gemini/).
 
 ## License
 
