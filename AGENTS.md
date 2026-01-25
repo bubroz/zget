@@ -1,24 +1,36 @@
-<!-- OPENSPEC:START -->
-# OpenSpec Instructions: zget (The Archivist)
+# AI Assistant Instructions: zget
 
 These instructions are for AI assistants working in this project.
 
-## Mission: The Archival Engine
+## What zget Does
 
-`zget` is a high-fidelity media archival system built for the Digital Intelligence Ecosystem. It operates as **"The Archivist"**, managing **"The Vault"** (local persistence) and providing **"The Portal"** (PWA discovery).
+zget downloads videos from social media platforms (YouTube, Instagram, TikTok, etc.) and stores them locally with full metadata. It's designed for personal archival and integrates with media servers like Plex.
 
-## Critical Guidelines
+## Key Files
 
-- **The Triad**:
-  - **The Archivist**: Orchestrates ingestion and format standards (H.264/AAC for universal compatibility).
-  - **The Vault**: SQLite-backed local storage for high-fidelity archival.
-  - **The Portal**: Premium, **Minimalist** web interface built with native **Custom Elements** and Shadow DOM.
-- **Portal Aesthetic**:
-  - **Minimalism**: Prioritize content over chrome. Avoid redundant elements (e.g., duplicate descriptions).
-  - **High-Density Metadata**: Technical metadata (Views, Codec, Resolution) should be presented cleanly and precisely.
-  - **Responsive Context**: Thumbnails must respect **Natural Aspect Ratios** (YouTube vs. Shorts/Reels).
-- **Agent Handoff**: `zget` is the primary ingestion pipeline for the ecosystem. Use the MCP `zget_get_local_path` tool to hand off files from **The Vault** to agents like **Librarian**.
-- **Branding Consistency**: When modifying the UI, always ensure the **zget Binary Logo** (monospaced, glowing IBM-style text) is prominently displayed and maintains its minimalist, command-center aesthetic.
+| File | Purpose |
+|------|---------|
+| `src/zget/core.py` | yt-dlp wrapper, download logic |
+| `src/zget/cli.py` | Main CLI entry point |
+| `src/zget/config.py` | All configuration and paths |
+| `src/zget/library/ingest.py` | Video ingest pipeline |
+| `src/zget/db/store.py` | SQLite database operations |
+| `src/zget/mcp/server.py` | MCP server for agent integration |
 
-Always refer to `openspec/project.md` for full architectural specs.
-<!-- OPENSPEC:END -->
+## Running the Project
+
+```bash
+make bootstrap    # First-time setup
+make serve        # Start web server on port 8000
+uv run zget <url> # CLI download
+```
+
+## MCP Integration
+
+zget exposes tools via `/src/zget/mcp/server.py`. Use `zget_get_local_path` to get file paths for handoff to other tools (e.g., transcription, analysis).
+
+## Design Notes
+
+- **Framework-Free Frontend**: The web UI uses native Web Components, no build step
+- **H.264 Standard**: All videos are transcoded to H.264/AAC for compatibility
+- **Metadata First**: Every download preserves title, uploader, date, description

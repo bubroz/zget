@@ -99,11 +99,20 @@ export class ZgetActivity extends ZgetBase {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
-  truncateError(error) {
+  formatError(error) {
     if (!error) return '';
-    // Extract just the main message, not the full path
-    const msg = error.replace(/^.*?Error:\s*/, '').replace(/https?:\/\/[^\s]+/g, '[URL]');
-    return msg.length > 60 ? msg.substring(0, 60) + '...' : msg;
+    // Extract the core error message (after "ERROR:" prefix)
+    const coreMsg = error.replace(/^.*?ERROR:\s*/i, '').trim();
+    // For display, get just the first line/sentence
+    const firstLine = coreMsg.split(/[.\n]/)[0].trim();
+    return { full: coreMsg, summary: firstLine || coreMsg.substring(0, 100) };
+  }
+
+  toggleErrorExpand(itemId) {
+    const el = this.shadowRoot.querySelector(`[data-error-id="${itemId}"]`);
+    if (el) {
+      el.classList.toggle('expanded');
+    }
   }
 
   render() {
@@ -222,6 +231,50 @@ export class ZgetActivity extends ZgetBase {
             color: var(--status-error);
             background: rgba(255, 255, 255, 0.05);
         }
+
+        .error-container {
+            font-size: 0.75rem;
+            color: var(--status-error);
+            opacity: 0.9;
+            margin-top: 4px;
+            cursor: pointer;
+            user-select: text;
+        }
+
+        .error-summary {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .error-summary::before {
+            content: '▶';
+            font-size: 0.6rem;
+            transition: transform 0.2s;
+        }
+
+        .error-container.expanded .error-summary::before {
+            transform: rotate(90deg);
+        }
+
+        .error-full {
+            display: none;
+            margin-top: 6px;
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .error-container.expanded .error-full {
+            display: block;
+        }
       </style>
 
       <div class="activity-banner">
@@ -245,9 +298,17 @@ export class ZgetActivity extends ZgetBase {
                         ${item.eta ? '• ' + Math.round(item.eta) + 's left' : ''}
                     </span>
                 </div>
-                ${item.status === 'failed' && item.error ? `
-                <div style="font-size: 0.75rem; color: var(--status-error); opacity: 0.8; margin-top: 4px;">${this.truncateError(item.error)}</div>
-                ` : ''}
+                ${(() => {
+        if (item.status === 'failed' && item.error) {
+          const err = this.formatError(item.error);
+          return `
+                    <div class="error-container" data-error-id="${item.id}" onclick="this.getRootNode().host.toggleErrorExpand('${item.id}')">
+                      <div class="error-summary">${err.summary}</div>
+                      <div class="error-full">${err.full}</div>
+                    </div>`;
+        }
+        return '';
+      })()}
                 
                 <div class="progress-track">
                     <div class="progress-fill ${item.status === 'failed' ? 'failed' : ''}" 

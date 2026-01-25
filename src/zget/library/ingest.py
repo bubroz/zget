@@ -4,9 +4,12 @@ Video ingest pipeline.
 Handles the complete flow: download → metadata extraction → deduplication → DB storage.
 """
 
+import asyncio
+import shutil
+import tempfile
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Optional
 
 from ..config import (
     EXPORTS_DIR,
@@ -17,6 +20,7 @@ from ..config import (
 )
 from ..core import compute_file_hash, download, parse_upload_date
 from ..db import Video, VideoStore
+from ..metadata.nfo import generate_nfo
 from .export import export_video_json
 from .thumbnails import cache_thumbnail
 
@@ -24,9 +28,9 @@ from .thumbnails import cache_thumbnail
 class DuplicateError(Exception):
     """Raised when a duplicate video is detected."""
 
-    def __init__(self, message: str, existing_video: Optional[Video] = None):
+    def __init__(self, message: str, existing_video: Video | None = None):
         super().__init__(message)
-        self.existing_video = existing_video
+        self.existing_video: Video | None = existing_video
 
 
 async def ingest_video(
@@ -79,21 +83,27 @@ async def ingest_video(
     if cookies_from is None:
         cookies_from = get_cookie_browser(platform)
 
-    # 4. Download with metadata (run in thread pool to avoid blocking)
-    import asyncio
-
-    info = await asyncio.to_thread(
-        download,
-        url,
-        output_dir,
-        format_id,
-        False,  # audio_only
-        "best",  # max_quality
-        cookies_from,
-        None,  # cookies_file
-        on_progress,
-        True,  # quiet
-    )
+    # 4. DOWNLOAD TO TEMP - "Atomic Move" strategy for Plex
+    # We download to a temporary directory first, then move to the final
+    # destination. This prevents media servers from scanning incomplete files.
+    temp_dir = Path(tempfile.mkdtemp(prefix="zget_"))
+    try:
+        # download with metadata (run in thread pool to avoid blocking)
+        info = await asyncio.to_thread(
+            download,
+            url,
+            temp_dir,
+            format_id,
+            False,  # audio_only
+            "best",  # max_quality
+            cookies_from,
+            None,  # cookies_file
+            on_progress,
+            True,  # quiet
+        )
+    except Exception:
+        # Forward any core download errors
+        raise
 
     # 5. Get the downloaded file path - try multiple sources
     file_path = None
@@ -128,7 +138,7 @@ async def ingest_video(
 
         # Search for mp4 files that might match
         for ext in ["mp4", "webm", "mkv"]:
-            for mp4 in output_dir.glob(f"*.{ext}"):
+            for mp4 in temp_dir.glob(f"*.{ext}"):
                 # Check if filename contains key parts
                 name = mp4.name
                 if (upload_date in name and uploader in name) or title[:20] in name:
@@ -139,13 +149,19 @@ async def ingest_video(
 
     # Method 4: Just get the most recently modified file
     if file_path is None:
-        mp4_files = list(output_dir.glob("*.mp4"))
+        mp4_files = list(temp_dir.glob("*.mp4"))
         if mp4_files:
             # Get most recent
             file_path = max(mp4_files, key=lambda p: p.stat().st_mtime)
 
     if file_path is None or not file_path.exists():
-        raise FileNotFoundError(f"Downloaded file not found in {output_dir}")
+        raise FileNotFoundError(f"Downloaded file not found in {temp_dir}")
+
+    # Now move it to the final destination (ATOMIC MOVE)
+    final_path = output_dir / file_path.name
+    # Use shutil.move to handle cross-device move if necessary
+    shutil.move(str(file_path), str(final_path))
+    file_path = final_path
 
     # 6. Compute file hash for deduplication (also in thread)
     file_hash = await asyncio.to_thread(compute_file_hash, file_path)
@@ -195,6 +211,27 @@ async def ingest_video(
 
     # 11. Export JSON
     await export_video_json(video, EXPORTS_DIR)
+
+    # 12. PLEX INTEGRATION: Generate NFO and Local Thumbnail
+    # We save these directly next to the video file for media server discovery
+    try:
+        nfo_path = file_path.with_suffix(".nfo")
+        generate_nfo(video, nfo_path)
+
+        # Copy thumbnail to video directory as well for Plex/Jellyfin
+        if thumbnail_path and thumbnail_path.exists():
+            local_thumb = file_path.with_suffix(thumbnail_path.suffix)
+            if not local_thumb.exists():
+                shutil.copy2(thumbnail_path, local_thumb)
+    except Exception as e:
+        # Don't fail the whole ingest if NFO generation fails
+        print(f"Warning: Failed to generate sidecar metadata: {e}")
+    finally:
+        # 13. Cleanup temp directory
+        try:
+            shutil.rmtree(temp_dir)
+        except Exception:
+            pass
 
     return video
 

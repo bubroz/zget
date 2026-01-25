@@ -15,9 +15,9 @@ import yt_dlp
 from .config import (
     BROWSER_PROFILE,
     DEFAULT_COOKIE_BROWSER,
-    FILENAME_TEMPLATE_SAFE,
     detect_platform,
     get_cookie_browser,
+    get_filename_template,
     get_video_output_dir,
 )
 
@@ -62,7 +62,7 @@ def download(
 
     # Build yt-dlp options
     opts = {
-        "outtmpl": str(output_dir / FILENAME_TEMPLATE_SAFE),
+        "outtmpl": str(output_dir / get_filename_template()),
         "quiet": quiet,
         "no_warnings": quiet,
         "retries": 3,
