@@ -255,6 +255,9 @@ PLATFORM_PATTERNS = {
         "twitch.tv",
         "clips.twitch.tv",
     ],
+    "c-span": [
+        "c-span.org",
+    ],
 }
 
 PLATFORM_DISPLAY = {
@@ -264,6 +267,7 @@ PLATFORM_DISPLAY = {
     "twitter": "X",
     "reddit": "Reddit",
     "twitch": "Twitch",
+    "c-span": "C-SPAN",
 }
 
 

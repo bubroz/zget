@@ -180,13 +180,21 @@ async def ingest_video(
     duration = info.get("duration")
     duration_seconds = int(duration) if duration is not None else None
 
+    # Determine uploader with fallbacks
+    uploader = info.get("uploader")
+    if not uploader or uploader.lower() in ("unknown", "null", "none"):
+        if platform == "c-span":
+            uploader = "C-SPAN"
+        else:
+            uploader = "unknown"
+
     video = Video(
         url=url,
         platform=platform,
         video_id=info.get("id", ""),
         title=info.get("title", "Untitled"),
         description=info.get("description"),
-        uploader=info.get("uploader", "unknown"),
+        uploader=uploader,
         uploader_id=info.get("uploader_id"),
         upload_date=parse_upload_date(info.get("upload_date")),
         duration_seconds=duration_seconds,
