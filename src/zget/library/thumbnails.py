@@ -64,7 +64,23 @@ async def cache_thumbnail(
 
     # Download thumbnail
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        # Build Referer from original URL if available (for CDN protections like C-SPAN)
+        referer = None
+        original_url = info.get("original_url") or info.get("webpage_url")
+        if original_url:
+            from urllib.parse import urlparse
+
+            parsed = urlparse(original_url)
+            referer = f"{parsed.scheme}://{parsed.netloc}/"
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        }
+        if referer:
+            headers["Referer"] = referer
+
+        async with httpx.AsyncClient(timeout=30.0, headers=headers) as client:
             response = await client.get(thumbnail_url, follow_redirects=True)
             response.raise_for_status()
 

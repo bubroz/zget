@@ -350,6 +350,12 @@ def handle_download(args):
             file_hash = None
             file_size = None
 
+        # Cache thumbnail from metadata
+        from zget.library.thumbnails import cache_thumbnail_sync
+        from zget.config import THUMBNAILS_DIR
+
+        thumbnail_path = cache_thumbnail_sync(result, THUMBNAILS_DIR)
+
         # Store in database
         store = VideoStore(DB_PATH)
 
@@ -359,7 +365,15 @@ def handle_download(args):
             video_id=result.get("id", ""),
             title=result.get("title", "Untitled"),
             description=result.get("description"),
-            uploader=result.get("uploader", "unknown"),
+            uploader=(
+                "C-SPAN"
+                if platform == "c-span"
+                and (
+                    not result.get("uploader")
+                    or result.get("uploader", "").lower() in ("unknown", "null", "none")
+                )
+                else result.get("uploader", "unknown")
+            ),
             uploader_id=result.get("uploader_id"),
             upload_date=parse_upload_date(result.get("upload_date")),
             duration_seconds=result.get("duration"),
@@ -371,6 +385,7 @@ def handle_download(args):
             file_size_bytes=file_size,
             file_hash_sha256=file_hash,
             local_path=str(filepath) if filepath.exists() else None,
+            thumbnail_path=str(thumbnail_path) if thumbnail_path else None,
             downloaded_at=datetime.now(),
             raw_metadata=result,
         )
