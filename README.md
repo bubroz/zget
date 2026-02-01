@@ -1,6 +1,6 @@
 # zget
 
-Personal media archival. Download videos from YouTube, Instagram, TikTok, Reddit, and 600+ other sites to your own library.
+Personal media archival. Download videos from YouTube, Instagram, TikTok, Reddit, X, Twitch, CNET, and 600+ other sites to your own library.
 
 ![zget demo](assets/demo.gif)
 
