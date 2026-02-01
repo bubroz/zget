@@ -50,6 +50,7 @@ Content disappears constantly—videos get deleted, accounts get banned, platfor
 | TikTok    | ✅ Verified |
 | Reddit    | ✅ Verified |
 | Twitch    | ✅ Verified |
+| C-SPAN    | ✅ Verified |
 
 Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are not officially tested.
 
