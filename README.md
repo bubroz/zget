@@ -1,6 +1,6 @@
 # zget
 
-Personal media archival. Download videos from YouTube, Instagram, TikTok, Reddit, X, Twitch, CSPAN, and 600+ other sites to your own library.
+Personal media archival. Download videos from YouTube, Instagram, TikTok, Reddit, X, Twitch, CSPAN, and 600+ other sites to your own library. Empower your agents with the MCP server!
 
 ![zget demo](assets/demo.gif)
 
