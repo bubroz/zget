@@ -35,8 +35,9 @@ export class ZgetSettings extends ZgetBase {
     const formData = new FormData(e.target);
     const updates = Object.fromEntries(formData.entries());
 
-    // Ensure numeric types
+    // Ensure numeric/boolean types
     if (updates.port) updates.port = parseInt(updates.port, 10);
+    updates.flat_output = formData.get('flat_output') === 'on';
 
     try {
       const res = await fetch('/api/settings', {
@@ -225,14 +226,41 @@ export class ZgetSettings extends ZgetBase {
       <form onsubmit="this.getRootNode().host.handleSave(event)">
         <div class="section">
           <div class="section-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Downloads
+          </div>
+          
+          <div class="form-grid">
+            <div class="field">
+              <label>Output Directory</label>
+              <div class="help-text">Absolute path to where files are saved. Leave empty for default.</div>
+              <div class="input-group">
+                <input type="text" name="output_dir" value="${this.settings.output_dir || ''}" placeholder="/Users/name/Movies">
+              </div>
+            </div>
+
+            <div class="field" style="flex-direction: row; align-items: center; justify-content: space-between;">
+              <div>
+                <label>Flat Folder Structure</label>
+                <div class="help-text">Save all files in one folder instead of subfolders by platform.</div>
+              </div>
+              <div class="input-group">
+                <input type="checkbox" name="flat_output" ${this.settings.flat_output ? 'checked' : ''}>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Library & Storage
+            System
           </div>
           
           <div class="form-grid">
             <div class="field">
               <label>zget Home Directory</label>
-              <div class="help-text">Where your downloads and database live. Default is <code>~/.zget</code></div>
+              <div class="help-text">Where database and internal configs live. Default is <code>~/.zget</code></div>
               <div class="input-group">
                 <input type="text" name="zget_home" value="${this.settings.zget_home || ''}" placeholder="/Users/name/zget">
               </div>

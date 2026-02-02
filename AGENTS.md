@@ -13,17 +13,27 @@ zget downloads videos from social media platforms (YouTube, Instagram, TikTok, e
 | `src/zget/core.py` | yt-dlp wrapper, download logic |
 | `src/zget/cli.py` | Main CLI entry point |
 | `src/zget/config.py` | All configuration and paths |
+| `src/zget/server/app.py` | FastAPI backend, settings API |
 | `src/zget/library/ingest.py` | Video ingest pipeline |
 | `src/zget/db/store.py` | SQLite database operations |
 | `src/zget/mcp/server.py` | MCP server for agent integration |
 
 ## Running the Project
 
+**Zero-terminal (recommended for users):**
+
+- macOS: Double-click `zget-start.command`
+- Windows: Double-click `zget-start.bat`
+
+**Terminal:**
+
 ```bash
 make bootstrap    # First-time setup
 make serve        # Start web server on port 8000
 uv run zget <url> # CLI download
 ```
+
+The `--open` flag auto-launches browser: `uv run zget-server --open`
 
 ## MCP Integration
 

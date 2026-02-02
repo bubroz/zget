@@ -37,6 +37,8 @@ Content disappears constantly—videos get deleted, accounts get banned, platfor
 ### Interfaces
 
 - **Web Dashboard**: Responsive PWA with real-time progress, platform icons, search
+- **Settings UI**: Configure output directory and folder structure from the browser
+- **Native Launchers**: Double-click `zget-start.command` (macOS), `zget-start.bat` (Windows)
 - **CLI**: Direct downloads, library management, health checks
 - **MCP Server**: AI agent integration via Model Context Protocol
 
@@ -56,25 +58,28 @@ Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are
 
 ## Quick Start
 
-### 1. Bootstrap
+### Option A: Zero-Terminal (Recommended)
+
+1. Double-click `zget-start.command` in Finder (macOS) or `zget-start.bat` (Windows)
+2. Your browser opens to `http://localhost:8000`
+3. Paste URLs into the Ingest tab
+
+The launcher installs dependencies automatically on first run.
+
+### Option B: Terminal
 
 ```bash
-make bootstrap
-```
-
-Installs [uv](https://docs.astral.sh/uv/) and sets up dependencies.
-
-### 2. Start the Server
-
-```bash
-make serve
+make bootstrap      # First-time setup
+make serve          # Start server
 ```
 
 Or manually:
 
 ```bash
-uv run zget-server --port 8000 --host 0.0.0.0
+uv run zget-server --port 8000 --host 0.0.0.0 --open
 ```
+
+The `--open` flag launches your browser automatically.
 
 ### 3. Open the App
 
