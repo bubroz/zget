@@ -19,7 +19,6 @@ brain/
 data/
 openspec/
 libs/
-scripts/
 
 # PWA Assets (handled by build)
 src/zget/server/static/icon.png
@@ -29,3 +28,6 @@ src/zget/server/static/icon.png
 
 # Old assets
 zget-icon.jpeg
+
+# Build artifacts
+zget.app/

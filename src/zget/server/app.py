@@ -80,6 +80,8 @@ class SettingsUpdate(BaseModel):
     zget_home: str
     host: Optional[str] = "0.0.0.0"
     port: Optional[int] = 8000
+    output_dir: Optional[str] = None
+    flat_output: Optional[bool] = False
 
 
 # Routes
@@ -130,7 +132,12 @@ def health_status():
 
 @app.get("/api/settings")
 def get_settings():
-    host_setting = PERSISTENT_CONFIG.get("host", "0.0.0.0")
+    from ..config import CONFIG_FILE, load_persistent_config
+
+    # Load fresh config on each request to reflect recent changes
+    config = load_persistent_config()
+
+    host_setting = config.get("host", "0.0.0.0")
     local_ip = "localhost"
 
     if host_setting == "127.0.0.1":
@@ -146,11 +153,13 @@ def get_settings():
             local_ip = "127.0.0.1" if host_setting == "127.0.0.1" else "localhost"
 
     return {
-        "zget_home": str(ZGET_HOME),
+        "zget_home": config.get("zget_home", str(Path.home() / ".zget")),
         "config_file": str(CONFIG_FILE),
         "local_ip": local_ip,
         "host": host_setting,
-        "port": PERSISTENT_CONFIG.get("port", 8000),
+        "port": config.get("port", 8000),
+        "output_dir": config.get("output_dir", ""),
+        "flat_output": config.get("flat_output", False),
         "version": "0.4.0",
     }
 
@@ -165,6 +174,8 @@ def update_settings(update: SettingsUpdate):
         "zget_home": update.zget_home,
         "host": update.host,
         "port": update.port,
+        "output_dir": update.output_dir if update.output_dir else None,
+        "flat_output": update.flat_output,
     }
 
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
