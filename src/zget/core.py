@@ -73,6 +73,12 @@ def download(
         "ffmpeg_location": "/opt/homebrew/bin/",  # Homebrew ffmpeg on Apple Silicon
         # IMPORTANT: Only download single video, not entire playlist
         "noplaylist": True,
+        # Anti-Bot Headers (Bypass 403 specific blocks)
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        },
     }
 
     # Format selection

@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10"
 
 [[package]]
@@ -587,6 +587,6 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8" },
     { name = "send2trash", specifier = ">=1.8" },
     { name = "uvicorn", specifier = ">=0.32.0" },
-    { name = "yt-dlp", specifier = ">=2024.12.0" },
+    { name = "yt-dlp", specifier = ">=2025.1.26" },
 ]
 provides-extras = ["dev"]
