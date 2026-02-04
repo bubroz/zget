@@ -28,15 +28,45 @@ def main():
     # Handle Secure Mode
     if args.secure:
         from ..net import get_tailscale_ip
+        from starlette.middleware.base import BaseHTTPMiddleware
+        from starlette.responses import JSONResponse
+        from .app import app
 
         ts_ip = get_tailscale_ip()
+
+        # In Secure Mode, we bind to 0.0.0.0 so we can catch ALL requests,
+        # but we use Middleware to reject anyone who isn't Localhost or Tailscale.
+        args.host = "0.0.0.0"
+
+        allowed_ips = {"127.0.0.1", "::1", "localhost"}
         if ts_ip:
-            print(f"🔒 SECURE MODE: Binding strictly to Tailscale IP ({ts_ip})")
-            print("   Public Wi-Fi access is BLOCKED. Access via http://zget:8000")
-            args.host = ts_ip
+            allowed_ips.add(ts_ip)
+            print(f"🔒 SECURE MODE: Active (Tailscale IP: {ts_ip})")
         else:
-            print("⚠️  Tailscale not detected! Falling back to localhost for security.")
-            args.host = "127.0.0.1"
+            print("⚠️  Tailscale not detected! Secure Mode restricted to Localhost only.")
+
+        print(f"   Allowed: {', '.join(sorted(allowed_ips))}")
+        print("   Blocked: Public Wi-Fi / LAN")
+
+        class SecureMeshMiddleware(BaseHTTPMiddleware):
+            async def dispatch(self, request, call_next):
+                client_ip = request.client.host
+                if client_ip not in allowed_ips:
+                    print(f"⛔️ BLOCKED connection attempt from: {client_ip}")
+                    return JSONResponse(
+                        status_code=403,
+                        content={
+                            "detail": "Access Denied: Secure Mesh Restriction. Connect via Tailscale."
+                        },
+                    )
+                return await call_next(request)
+
+        app.add_middleware(SecureMeshMiddleware)
+
+        # When using middleware dynamically, we must pass the app object, not the string.
+        # This disables 'reload', but secure mode is for production/archival usage.
+        uvicorn.run(app, host=args.host, port=args.port)
+        return
 
     if args.open:
         import webbrowser
@@ -45,15 +75,7 @@ def main():
 
         def open_browser():
             time.sleep(1.5)  # Give server time to start
-            # If bound to 0.0.0.0 or Tailscale IP, open localhost for the user on this machine
-            # (Users own machine can always reach localhost, assuming port isn't blocked output-wise)
-            # Actually, if we bind to Tailscale IP (100.x), localhost (127.0.0.1) MIGHT NOT work depending on OS routing.
-            # But usually 100.x is reachable locally. Let's try opening the specific IP if secure.
-            target_host = "localhost"
-            if args.host not in ("0.0.0.0", "127.0.0.1", "localhost"):
-                target_host = args.host  # Open the specific bound IP
-
-            url = f"http://{target_host}:{args.port}"
+            url = f"http://localhost:{args.port}"
             webbrowser.open(url)
 
         threading.Thread(target=open_browser, daemon=True).start()
