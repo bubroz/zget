@@ -6,20 +6,22 @@
     <string>com.bubroz.zget</string>
     <key>ProgramArguments</key>
     <array>
+        <!-- Path to 'uv' (usually /opt/homebrew/bin/uv or $HOME/.cargo/bin/uv) -->
         <string>/opt/homebrew/bin/uv</string>
         <string>run</string>
         <string>zget-server</string>
         <string>--secure</string>
     </array>
+    <!-- ABSOLUTE path to the zget repository -->
     <key>WorkingDirectory</key>
-    <string>/Users/base/Projects/zget</string>
+    <string>/Users/YOUR_USERNAME/Projects/zget</string>
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
     <true/>
     <key>StandardOutPath</key>
-    <string>/Users/base/Projects/zget/zget.log</string>
+    <string>/tmp/zget.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/base/Projects/zget/zget.log</string>
+    <string>/tmp/zget.log</string>
 </dict>
 </plist>
