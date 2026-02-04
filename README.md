@@ -56,44 +56,67 @@ Content disappears constantly—videos get deleted, accounts get banned, platfor
 
 Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are not officially tested.
 
-## Remote Access (Family Cloud)
+### 🔒 Remote Access (Secure Mesh)
 
-Share your library securely with family outside your home using **Tailscale** (free, zero-config VPN).
+zget is designed to work safely from anywhere using **Tailscale**.
+The default `zget-start.command` launcher automatically detects your Tailscale IP and binds **only** to that interface.
 
-1. **Server (Mac/PC)**: Install Tailscale and log in. Run `tailscale up --hostname=zget`.
-2. **Client (Phone/Tablet)**: Install Tailscale app, log in with the **same account**, and enable the VPN.
-3. **Access**: Open `http://zget:8000` in your phone's browser.
+**Benefits:**
+
+- **Secure**: Application is **invisible** to public Wi-Fi / coffee shop networks.
+- **Accessible**: Works seamlessly from your phone/iPad on the same Tailscale net.
+- **Zero-Config**: No IP settings to manage.
+
+1. Install [Tailscale](https://tailscale.com) on your Mac and Mobile devices.
 
 ## Quick Start
 
-### Option A: Zero-Terminal (Recommended)
+### Option A: Install & Forget (Recommended)
 
-1. Double-click `zget-start.command` in Finder (macOS) or `zget-start.bat` (Windows)
-2. Your browser opens to `http://localhost:8000`
-3. Paste URLs into the Ingest tab
+ zget runs silently in the background, staring automatically when you log in.
 
-The launcher installs dependencies automatically on first run.
+ 1. **Auto-Start**:
 
-### Option B: Terminal
+    ```bash
+    cp com.bubroz.zget.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.bubroz.zget.plist
+    ```
 
-```bash
-make bootstrap      # First-time setup
-make serve          # Start server
-```
+ 2. **Verification**: Open `http://zget:8000` (or `http://localhost:8000`)
+ 3. **Done**: You never need to touch the terminal again.
 
-Or manually:
+### Option B: Manual Launcher
 
-```bash
-uv run zget-server --port 8000 --host 0.0.0.0 --open
-```
+ Double-click `zget-start.command` in Finder to run temporarily.
 
-The `--open` flag launches your browser automatically.
+## Remote Access (Secure Mesh)
 
-### 3. Open the App
+ zget runs in **Secure Mode**, binding *only* to your Tailscale IP (e.g., `100.x.y.z`).
 
-Access `http://localhost:8000` in your browser. Tap **Add to Home Screen** on iOS for the full PWA experience.
+- **Invisible**: Public Wi-Fi cannot see your server.
+- **Accessible**: Your phones/tablets on Tailscale can see it perfectly.
+- **URL**: `http://zget:8000` (from any authenticated device)
 
-> **Safari Users:** Always use `localhost:8000`—Safari doesn't resolve `0.0.0.0`.
+## AI Agent Integration (MCP)
+
+ Give your AI agents (Claude, etc.) access to your video library.
+
+ Add this to your `claude_desktop_config.json`:
+
+ ```json
+ {
+   "mcpServers": {
+     "zget": {
+       "command": "/opt/homebrew/bin/uv",
+       "args": ["run", "zget-mcp"],
+       "cwd": "/Users/base/Projects/zget",
+       "env": {
+         "PATH": "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+       }
+     }
+   }
+ }
+ ```
 
 ## CLI Reference
 

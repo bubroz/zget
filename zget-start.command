@@ -15,4 +15,4 @@ fi
 
 # Sync dependencies and run
 echo "⚡️ Launching Server..."
-uv run zget-server --host 0.0.0.0 --open
+uv run zget-server --secure --open

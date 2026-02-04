@@ -15,7 +15,28 @@ def main():
     parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
     parser.add_argument("--open", action="store_true", help="Open browser on startup")
 
+    parser.add_argument(
+        "--secure",
+        "--tailscale",
+        dest="secure",
+        action="store_true",
+        help="Bind only to Tailscale VPN IP (Secure Mode)",
+    )
+
     args = parser.parse_args()
+
+    # Handle Secure Mode
+    if args.secure:
+        from ..net import get_tailscale_ip
+
+        ts_ip = get_tailscale_ip()
+        if ts_ip:
+            print(f"🔒 SECURE MODE: Binding strictly to Tailscale IP ({ts_ip})")
+            print("   Public Wi-Fi access is BLOCKED. Access via http://zget:8000")
+            args.host = ts_ip
+        else:
+            print("⚠️  Tailscale not detected! Falling back to localhost for security.")
+            args.host = "127.0.0.1"
 
     if args.open:
         import webbrowser
@@ -24,7 +45,15 @@ def main():
 
         def open_browser():
             time.sleep(1.5)  # Give server time to start
-            url = f"http://{args.host if args.host != '0.0.0.0' else 'localhost'}:{args.port}"
+            # If bound to 0.0.0.0 or Tailscale IP, open localhost for the user on this machine
+            # (Users own machine can always reach localhost, assuming port isn't blocked output-wise)
+            # Actually, if we bind to Tailscale IP (100.x), localhost (127.0.0.1) MIGHT NOT work depending on OS routing.
+            # But usually 100.x is reachable locally. Let's try opening the specific IP if secure.
+            target_host = "localhost"
+            if args.host not in ("0.0.0.0", "127.0.0.1", "localhost"):
+                target_host = args.host  # Open the specific bound IP
+
+            url = f"http://{target_host}:{args.port}"
             webbrowser.open(url)
 
         threading.Thread(target=open_browser, daemon=True).start()
