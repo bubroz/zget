@@ -56,6 +56,14 @@ Content disappears constantly—videos get deleted, accounts get banned, platfor
 
 Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are not officially tested.
 
+## Remote Access (Family Cloud)
+
+Share your library securely with family outside your home using **Tailscale** (free, zero-config VPN).
+
+1. **Server (Mac/PC)**: Install Tailscale and log in. Run `tailscale up --hostname=zget`.
+2. **Client (Phone/Tablet)**: Install Tailscale app, log in with the **same account**, and enable the VPN.
+3. **Access**: Open `http://zget:8000` in your phone's browser.
+
 ## Quick Start
 
 ### Option A: Zero-Terminal (Recommended)
