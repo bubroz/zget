@@ -1,3 +1,4 @@
+import asyncio
 import json
 import socket
 from contextlib import asynccontextmanager
@@ -18,7 +19,7 @@ from ..config import (
 )
 from ..db import AsyncVideoStore, VideoStore, get_db_dependency
 from ..queue import DownloadQueue, QueueStatus
-from ..utils import guess_media_type, sanitize_filename
+from ..utils import get_version, guess_media_type, sanitize_filename
 
 # Global instances
 ensure_directories()
@@ -35,17 +36,12 @@ async def lifespan(app: FastAPI):
 
 
 # Initialize app
-app = FastAPI(title="zget Server", version="0.3.0", lifespan=lifespan)
+app = FastAPI(title="zget Server", version=get_version(), lifespan=lifespan)
 
 # Enable CORS for local/Tailscale access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:*",
-        "http://127.0.0.1:*",
-        "https://localhost:*",
-        "https://127.0.0.1:*",
-    ],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -68,7 +64,7 @@ class SettingsUpdate(BaseModel):
 # Routes
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "version": "0.4.0 (2026 Preview)"}
+    return {"status": "ok", "version": get_version()}
 
 
 @app.get("/api/health/status")
@@ -171,7 +167,7 @@ async def repair_thumbnails(background_tasks: BackgroundTasks):
 
 async def run_repair():
 
-    videos = store.get_recent(limit=5000)
+    videos = await asyncio.to_thread(store.get_recent, limit=5000)
     for v in videos:
         if not v.thumbnail_path or not Path(v.thumbnail_path).exists():
             # Try to redownload thumbnail only
@@ -179,7 +175,7 @@ async def run_repair():
             from ..core import extract_info
 
             try:
-                info = extract_info(v.url)
+                info = await asyncio.to_thread(extract_info, v.url)
                 if info.get("thumbnail"):
                     import httpx
 
@@ -190,7 +186,7 @@ async def run_repair():
                             with open(thumb_path, "wb") as f:
                                 f.write(resp.content)
                             v.thumbnail_path = str(thumb_path)
-                            store.update_video(v)
+                            await asyncio.to_thread(store.update_video, v)
             except Exception as e:
                 print(f"Failed repair for {v.id}: {e}")
 
@@ -222,7 +218,7 @@ async def bulk_delete_media(request: BulkDeleteRequest):
                     safe_delete(path, use_trash=True)
 
             # Delete thumbnail
-            await delete_thumbnail(video.video_id, video.platform, THUMBNAILS_DIR)
+            delete_thumbnail(video.video_id, video.platform, THUMBNAILS_DIR)
 
             # Delete from DB
             store.delete_video(video_id)
@@ -280,7 +276,7 @@ async def delete_media(id: int):
     # Delete thumbnail
     from ..library.thumbnails import delete_thumbnail
 
-    await delete_thumbnail(video.video_id, video.platform, THUMBNAILS_DIR)
+    delete_thumbnail(video.video_id, video.platform, THUMBNAILS_DIR)
 
     # Delete from DB
     store.delete_video(id)
@@ -313,7 +309,7 @@ async def cleanup_orphans():
             if v.id is None:
                 continue
             # Delete thumbnail if it exists
-            await delete_thumbnail(v.video_id, v.platform, THUMBNAILS_DIR)
+            delete_thumbnail(v.video_id, v.platform, THUMBNAILS_DIR)
             # Delete from DB
             store.delete_video(v.id)
             cleaned += 1
@@ -487,7 +483,7 @@ async def run_library_repair():
     from ..config import THUMBNAILS_DIR
     from ..library.thumbnails import cache_thumbnail
 
-    videos = store.get_recent(limit=5000)
+    videos = await asyncio.to_thread(store.get_recent, limit=5000)
     for v in videos:
         # 1. Check/Repair Thumbnails
         from ..library.thumbnails import get_thumbnail_path

@@ -5,7 +5,6 @@ Enhanced version with format selection, file hashing, and full metadata extracti
 """
 
 import hashlib
-import re
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
@@ -361,32 +360,6 @@ def parse_upload_date(date_str: str | None) -> datetime | None:
         return datetime.strptime(date_str, "%Y%m%d")
     except ValueError:
         return None
-
-
-def sanitize_filename(filename: str, max_length: int = 200) -> str:
-    """
-    Sanitize a filename for use on the filesystem.
-
-    Args:
-        filename: Original filename
-        max_length: Maximum length
-
-    Returns:
-        Sanitized filename
-    """
-    # Remove problematic characters
-    filename = re.sub(r'[<>:"/\\|?*]', "", filename)
-
-    # Replace multiple spaces/underscores with single
-    filename = re.sub(r"[\s_]+", "_", filename)
-
-    # Trim to max length (preserving extension if present)
-    if len(filename) > max_length:
-        name, ext = filename.rsplit(".", 1) if "." in filename else (filename, "")
-        max_name_len = max_length - len(ext) - 1 if ext else max_length
-        filename = name[:max_name_len] + ("." + ext if ext else "")
-
-    return filename.strip("._")
 
 
 def get_recent_videos_from_channel(
