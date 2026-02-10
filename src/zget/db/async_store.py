@@ -5,11 +5,12 @@ Async SQLite operations using aiosqlite for non-blocking FastAPI integration.
 """
 
 import json
-import aiosqlite
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import AsyncGenerator, Optional
+
+import aiosqlite
 
 from .models import Video
 
@@ -38,7 +39,7 @@ class AsyncVideoStore:
     # VIDEO OPERATIONS
     # ========================================================================
 
-    async def get_video(self, video_id: int) -> Optional[Video]:
+    async def get_video(self, video_id: int) -> Video | None:
         """Get a video by its database ID."""
         async with self._connect() as conn:
             cursor = await conn.execute("SELECT * FROM videos WHERE id = ?", (video_id,))
@@ -183,10 +184,10 @@ class AsyncVideoStore:
 # ============================================================================
 
 # Singleton instance for the async store
-_async_store: Optional[AsyncVideoStore] = None
+_async_store: AsyncVideoStore | None = None
 
 
-def get_async_store(db_path: Optional[Path] = None) -> AsyncVideoStore:
+def get_async_store(db_path: Path | None = None) -> AsyncVideoStore:
     """
     Get or create the async video store singleton.
 

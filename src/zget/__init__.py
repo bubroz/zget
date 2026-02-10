@@ -6,23 +6,24 @@ Wraps yt-dlp with a beautiful terminal interface, searchable database,
 and account monitoring capabilities.
 """
 
-from zget.core import (
-    download,
-    extract_info,
-    list_formats,
-    compute_file_hash,
-    get_recent_videos_from_channel,
-)
-from zget.cookies import get_cookies_from_browser
 from zget.config import (
-    ZGET_HOME,
     DB_PATH,
     VIDEOS_DIR,
+    ZGET_HOME,
     detect_platform,
     ensure_directories,
 )
+from zget.cookies import get_cookies_from_browser
+from zget.core import (
+    compute_file_hash,
+    download,
+    extract_info,
+    get_recent_videos_from_channel,
+    list_formats,
+)
+from zget.utils import get_version
 
-__version__ = "0.2.0"
+__version__ = get_version()
 __all__ = [
     # Core download functions
     "download",

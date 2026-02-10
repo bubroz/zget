@@ -29,7 +29,10 @@ class MCPServer:
         return [
             {
                 "name": "zget_search",
-                "description": "Search the zget video library using full-text search. Returns matching videos with titles, uploaders, and file paths.",
+                "description": (
+                    "Search the zget video library using full-text search. "
+                    "Returns matching videos with titles, uploaders, and file paths."
+                ),
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -62,7 +65,10 @@ class MCPServer:
             },
             {
                 "name": "zget_get_local_path",
-                "description": "Get the local file path for a video. Useful for passing to other tools that need the actual file.",
+                "description": (
+                    "Get the local file path for a video. "
+                    "Useful for passing to other tools that need the actual file."
+                ),
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -76,7 +82,10 @@ class MCPServer:
             },
             {
                 "name": "zget_download",
-                "description": "Download a video from a URL to the local library. Returns the new video's metadata including local path.",
+                "description": (
+                    "Download a video from a URL to the local library. "
+                    "Returns the new video's metadata including local path."
+                ),
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -99,7 +108,10 @@ class MCPServer:
             },
             {
                 "name": "zget_extract_info",
-                "description": "Extract metadata from a URL without downloading. Get title, uploader, duration, available formats.",
+                "description": (
+                    "Extract metadata from a URL without downloading. "
+                    "Get title, uploader, duration, available formats."
+                ),
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -113,7 +125,10 @@ class MCPServer:
             },
             {
                 "name": "zget_list_formats",
-                "description": "List available download formats for a URL. Shows resolution, codec, and file size options.",
+                "description": (
+                    "List available download formats for a URL. "
+                    "Shows resolution, codec, and file size options."
+                ),
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -127,7 +142,10 @@ class MCPServer:
             },
             {
                 "name": "zget_check_url",
-                "description": "Check if a URL is already in the library. Use before downloading to avoid duplicates.",
+                "description": (
+                    "Check if a URL is already in the library. "
+                    "Use before downloading to avoid duplicates."
+                ),
                 "inputSchema": {
                     "type": "object",
                     "properties": {

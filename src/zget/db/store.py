@@ -6,13 +6,12 @@ SQLite operations with FTS5 full-text search.
 
 import json
 import sqlite3
+from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Generator, Optional
 
-from .models import Video, WatchedAccount, MonitorRun, DownloadTask
-
+from .models import DownloadTask, Video, WatchedAccount
 
 # ============================================================================
 # SCHEMA
@@ -257,7 +256,7 @@ class VideoStore:
         finally:
             conn.close()
 
-    def get_metadata(self, key: str, default: Optional[str] = None) -> Optional[str]:
+    def get_metadata(self, key: str, default: str | None = None) -> str | None:
         """Get a metadata value by key."""
         with self._connect() as conn:
             row = conn.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
@@ -317,17 +316,36 @@ class VideoStore:
             )
             return cursor.lastrowid  # type: ignore
 
-    def get_video(self, video_id: int) -> Optional[Video]:
+    def get_video(self, video_id: int) -> Video | None:
         """Get a video by its database ID."""
         with self._connect() as conn:
             row = conn.execute("SELECT * FROM videos WHERE id = ?", (video_id,)).fetchone()
             return self._row_to_video(row) if row else None
 
-    def get_video_by_url(self, url: str) -> Optional[Video]:
+    def get_video_by_url(self, url: str) -> Video | None:
         """Get a video by its URL."""
         with self._connect() as conn:
             row = conn.execute("SELECT * FROM videos WHERE url = ?", (url,)).fetchone()
             return self._row_to_video(row) if row else None
+
+    def get_video_by_video_id(self, video_id: str) -> Video | None:
+        """Get a video by its platform-specific video ID."""
+        with self._connect() as conn:
+            row = conn.execute("SELECT * FROM videos WHERE video_id = ?", (video_id,)).fetchone()
+            return self._row_to_video(row) if row else None
+
+    def get_uploaders(self) -> list[dict]:
+        """Get distinct uploaders with their video counts."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT uploader, platform, COUNT(*) as count
+                FROM videos
+                GROUP BY uploader, platform
+                ORDER BY count DESC
+                """
+            ).fetchall()
+            return [{"uploader": row[0], "platform": row[1], "count": row[2]} for row in rows]
 
     def exists_by_url(self, url: str) -> bool:
         """Check if a URL already exists in the library."""
@@ -706,9 +724,9 @@ class VideoStore:
         task_id: int,
         progress_percent: float,
         downloaded_bytes: int,
-        total_bytes: Optional[int],
-        speed: Optional[float],
-        eta: Optional[int],
+        total_bytes: int | None,
+        speed: float | None,
+        eta: int | None,
     ) -> None:
         """Update download progress for a task."""
         with self._connect() as conn:

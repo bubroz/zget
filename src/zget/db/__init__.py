@@ -4,6 +4,7 @@ zget database package.
 SQLite database with FTS5 full-text search for video library management.
 """
 
+from .async_store import AsyncVideoStore, get_db_dependency
 from .models import (
     DownloadTask,
     ExportedVideo,
@@ -12,7 +13,6 @@ from .models import (
     WatchedAccount,
 )
 from .store import VideoStore
-from .async_store import AsyncVideoStore, get_db_dependency
 
 __all__ = [
     "AsyncVideoStore",

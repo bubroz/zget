@@ -4,12 +4,20 @@ Download queue manager.
 Async queue with configurable concurrency for parallel downloads.
 """
 
+from __future__ import annotations
+
 import asyncio
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Callable, Optional
+from typing import TYPE_CHECKING
 from uuid import uuid4
+
+from ..types import ProgressDict
+
+if TYPE_CHECKING:
+    from ..db import VideoStore
 
 
 class QueueStatus(Enum):
@@ -32,36 +40,36 @@ class QueueItem:
     status: QueueStatus = QueueStatus.PENDING
 
     # Pre-fetched metadata
-    title: Optional[str] = None
-    uploader: Optional[str] = None
-    duration_seconds: Optional[int] = None
-    thumbnail_url: Optional[str] = None
+    title: str | None = None
+    uploader: str | None = None
+    duration_seconds: int | None = None
+    thumbnail_url: str | None = None
 
     # Download options
-    format_id: Optional[str] = None
-    output_dir: Optional[str] = None
-    cookies_browser: Optional[str] = None
+    format_id: str | None = None
+    output_dir: str | None = None
+    cookies_browser: str | None = None
 
     # Progress
     progress_percent: float = 0.0
     downloaded_bytes: int = 0
-    total_bytes: Optional[int] = None
-    speed: Optional[float] = None
-    eta_seconds: Optional[int] = None
+    total_bytes: int | None = None
+    speed: float | None = None
+    eta_seconds: int | None = None
 
     # Result
-    video_id: Optional[int] = None  # Database ID of downloaded video
-    error_message: Optional[str] = None
-    local_path: Optional[str] = None
+    video_id: int | None = None  # Database ID of downloaded video
+    error_message: str | None = None
+    local_path: str | None = None
 
     # Metadata preservation
-    collection: Optional[str] = None
+    collection: str | None = None
     tags: list[str] = field(default_factory=list)
 
     # Timestamps
     created_at: datetime = field(default_factory=datetime.now)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
 
 
 class DownloadQueue:
@@ -74,6 +82,7 @@ class DownloadQueue:
     def __init__(
         self,
         max_concurrent: int = 32,
+        store: VideoStore | None = None,
         on_progress: Callable[[QueueItem], None] | None = None,
         on_complete: Callable[[QueueItem], None] | None = None,
         on_error: Callable[[QueueItem, Exception], None] | None = None,
@@ -83,11 +92,13 @@ class DownloadQueue:
 
         Args:
             max_concurrent: Maximum parallel downloads
+            store: Shared VideoStore instance (created if not provided)
             on_progress: Callback for progress updates
             on_complete: Callback when a download completes
             on_error: Callback when a download fails
         """
         self.max_concurrent = max_concurrent
+        self._store = store
         self.on_progress = on_progress
         self.on_complete = on_complete
         self.on_error = on_error
@@ -97,7 +108,7 @@ class DownloadQueue:
         self._semaphore = asyncio.Semaphore(max_concurrent)
         self._tasks: dict[str, asyncio.Task] = {}
         self._running = False
-        self._worker_task: Optional[asyncio.Task] = None
+        self._worker_task: asyncio.Task | None = None
 
     @property
     def items(self) -> list[QueueItem]:
@@ -198,6 +209,14 @@ class DownloadQueue:
 
         return True
 
+    def remove_item(self, item_id: str) -> bool:
+        """Cancel (if active) and fully remove an item from the queue."""
+        self.remove(item_id)
+        if item_id in self._items:
+            del self._items[item_id]
+            return True
+        return False
+
     def clear_completed(self) -> int:
         """Remove all completed and failed items from the queue."""
         to_remove = [
@@ -209,7 +228,22 @@ class DownloadQueue:
             del self._items[item_id]
         return len(to_remove)
 
-    def get(self, item_id: str) -> Optional[QueueItem]:
+    def expire_stale(self, max_age_seconds: float = 300) -> int:
+        """Remove finished items older than max_age_seconds."""
+        from datetime import datetime, timedelta
+
+        now = datetime.now()
+        cutoff = timedelta(seconds=max_age_seconds)
+        to_remove = [
+            item_id
+            for item_id, item in self._items.items()
+            if item.completed_at and (now - item.completed_at) > cutoff
+        ]
+        for item_id in to_remove:
+            del self._items[item_id]
+        return len(to_remove)
+
+    def get(self, item_id: str) -> QueueItem | None:
         """Get a queue item by ID."""
         return self._items.get(item_id)
 
@@ -278,12 +312,17 @@ class DownloadQueue:
 
             # Import here to avoid circular imports
             from ..library.ingest import ingest_video
-            from ..db import VideoStore
-            from ..config import DB_PATH
 
-            store = VideoStore(DB_PATH)
+            # Use shared store, or create one if not provided
+            if self._store is not None:
+                store = self._store
+            else:
+                from ..config import DB_PATH
+                from ..db import VideoStore
 
-            def progress_callback(d: dict):
+                store = VideoStore(DB_PATH)
+
+            def progress_callback(d: ProgressDict):
                 item.downloaded_bytes = d.get("downloaded_bytes", 0)
                 item.total_bytes = d.get("total_bytes")
                 item.speed = d.get("speed")

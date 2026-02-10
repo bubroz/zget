@@ -1,9 +1,10 @@
 import json
 import sys
-from pathlib import Path
+
 from rich.console import Console
 from rich.table import Table
-from zget.config import CONFIG_FILE, CONFIG_DIR
+
+from zget.config import CONFIG_DIR, CONFIG_FILE
 
 console = Console()
 
@@ -39,7 +40,7 @@ def show_config():
         return
 
     try:
-        with open(CONFIG_FILE, "r") as f:
+        with open(CONFIG_FILE) as f:
             config = json.load(f)
     except Exception as e:
         console.print(f"[red]Error reading config: {e}[/red]")
@@ -86,10 +87,10 @@ def set_config(key, value):
     config = {}
     if CONFIG_FILE.exists():
         try:
-            with open(CONFIG_FILE, "r") as f:
+            with open(CONFIG_FILE) as f:
                 config = json.load(f)
-        except:
-            pass
+        except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
+            console.print(f"[yellow]Warning: could not read existing config: {e}[/yellow]")
 
     config[config_key] = typed_value
 
@@ -106,9 +107,10 @@ def unset_config(key):
         return
 
     try:
-        with open(CONFIG_FILE, "r") as f:
+        with open(CONFIG_FILE) as f:
             config = json.load(f)
-    except:
+    except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
+        console.print(f"[yellow]Warning: could not read config: {e}[/yellow]")
         return
 
     if key in config:

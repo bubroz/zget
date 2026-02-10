@@ -4,8 +4,8 @@ Plex NFO sidecar generation.
 Creates .nfo files for videos to ensure Plex/Jellyfin correctly identify social media archival.
 """
 
-from pathlib import Path
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from xml.dom import minidom
 
 from ..db.models import Video

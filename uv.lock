@@ -587,6 +587,6 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8" },
     { name = "send2trash", specifier = ">=1.8" },
     { name = "uvicorn", specifier = ">=0.32.0" },
-    { name = "yt-dlp", specifier = ">=2026.2.1" },
+    { name = "yt-dlp", specifier = ">=2024.0.0" },
 ]
 provides-extras = ["dev"]

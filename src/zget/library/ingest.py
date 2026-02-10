@@ -21,6 +21,7 @@ from ..config import (
 from ..core import compute_file_hash, download, parse_upload_date
 from ..db import Video, VideoStore
 from ..metadata.nfo import generate_nfo
+from ..types import ProgressDict, YtdlpInfo
 from .export import export_video_json
 from .thumbnails import cache_thumbnail
 
@@ -39,7 +40,7 @@ async def ingest_video(
     output_dir: Path | str | None = None,
     format_id: str | None = None,
     cookies_from: str | None = None,
-    on_progress: Callable[[dict], None] | None = None,
+    on_progress: Callable[[ProgressDict], None] | None = None,
     skip_duplicate_check: bool = False,
     tags: list[str] | None = None,
     collection: str | None = None,
@@ -101,147 +102,144 @@ async def ingest_video(
             on_progress,
             True,  # quiet
         )
-    except Exception:
-        # Forward any core download errors
-        raise
 
-    # 5. Get the downloaded file path - try multiple sources
-    file_path = None
+        # 5. Get the downloaded file path - try multiple sources
+        file_path = None
 
-    # Method 1: Our custom field
-    if info.get("_zget_filepath"):
-        file_path = Path(info["_zget_filepath"])
-        if file_path.exists():
-            pass  # Found it
-        else:
-            file_path = None
+        # Method 1: Our custom field
+        if info.get("_zget_filepath"):
+            file_path = Path(info["_zget_filepath"])
+            if file_path.exists():
+                pass  # Found it
+            else:
+                file_path = None
 
-    # Method 2: requested_downloads contains the actual merged output
-    if file_path is None and info.get("requested_downloads"):
-        for rd in info["requested_downloads"]:
-            if rd.get("filepath"):
-                possible = Path(rd["filepath"])
-                if possible.exists():
-                    file_path = possible
+        # Method 2: requested_downloads contains the actual merged output
+        if file_path is None and info.get("requested_downloads"):
+            for rd in info["requested_downloads"]:
+                if rd.get("filepath"):
+                    possible = Path(rd["filepath"])
+                    if possible.exists():
+                        file_path = possible
+                        break
+                if rd.get("filename"):
+                    possible = Path(rd["filename"])
+                    if possible.exists():
+                        file_path = possible
+                        break
+
+        # Method 3: Search output_dir for files matching the title
+        if file_path is None:
+            title = info.get("title", "")
+            upload_date = info.get("upload_date", "")
+            uploader = info.get("uploader", "unknown")
+
+            # Search for mp4 files that might match
+            for ext in ["mp4", "webm", "mkv"]:
+                for mp4 in temp_dir.glob(f"*.{ext}"):
+                    # Check if filename contains key parts
+                    name = mp4.name
+                    if (upload_date in name and uploader in name) or title[:20] in name:
+                        file_path = mp4
+                        break
+                if file_path:
                     break
-            if rd.get("filename"):
-                possible = Path(rd["filename"])
-                if possible.exists():
-                    file_path = possible
-                    break
 
-    # Method 3: Search output_dir for files matching the title
-    if file_path is None:
-        title = info.get("title", "")
-        upload_date = info.get("upload_date", "")
-        uploader = info.get("uploader", "unknown")
+        # Method 4: Just get the most recently modified file
+        if file_path is None:
+            mp4_files = list(temp_dir.glob("*.mp4"))
+            if mp4_files:
+                # Get most recent
+                file_path = max(mp4_files, key=lambda p: p.stat().st_mtime)
 
-        # Search for mp4 files that might match
-        for ext in ["mp4", "webm", "mkv"]:
-            for mp4 in temp_dir.glob(f"*.{ext}"):
-                # Check if filename contains key parts
-                name = mp4.name
-                if (upload_date in name and uploader in name) or title[:20] in name:
-                    file_path = mp4
-                    break
-            if file_path:
-                break
+        if file_path is None or not file_path.exists():
+            raise FileNotFoundError(f"Downloaded file not found in {temp_dir}")
 
-    # Method 4: Just get the most recently modified file
-    if file_path is None:
-        mp4_files = list(temp_dir.glob("*.mp4"))
-        if mp4_files:
-            # Get most recent
-            file_path = max(mp4_files, key=lambda p: p.stat().st_mtime)
+        # Now move it to the final destination (ATOMIC MOVE)
+        final_path = output_dir / file_path.name
+        # Use shutil.move to handle cross-device move if necessary
+        shutil.move(str(file_path), str(final_path))
+        file_path = final_path
 
-    if file_path is None or not file_path.exists():
-        raise FileNotFoundError(f"Downloaded file not found in {temp_dir}")
+        # 6. Compute file hash for deduplication (also in thread)
+        file_hash = await asyncio.to_thread(compute_file_hash, file_path)
 
-    # Now move it to the final destination (ATOMIC MOVE)
-    final_path = output_dir / file_path.name
-    # Use shutil.move to handle cross-device move if necessary
-    shutil.move(str(file_path), str(final_path))
-    file_path = final_path
+        # 7. Check for content duplicates
+        if store.exists_by_hash(file_hash):
+            # Delete the duplicate file we just downloaded
+            file_path.unlink(missing_ok=True)
+            raise DuplicateError(f"File content already in library (hash: {file_hash[:12]}...)")
 
-    # 6. Compute file hash for deduplication (also in thread)
-    file_hash = await asyncio.to_thread(compute_file_hash, file_path)
+        # 8. Cache thumbnail
+        thumbnail_path = await cache_thumbnail(info, THUMBNAILS_DIR)
 
-    # 7. Check for content duplicates
-    if store.exists_by_hash(file_hash):
-        # Delete the duplicate file we just downloaded
-        file_path.unlink(missing_ok=True)
-        raise DuplicateError(f"File content already in library (hash: {file_hash[:12]}...)")
+        # 9. Build Video model
+        # Convert duration to int (X/Twitter returns float)
+        duration = info.get("duration")
+        duration_seconds = int(duration) if duration is not None else None
 
-    # 8. Cache thumbnail
-    thumbnail_path = await cache_thumbnail(info, THUMBNAILS_DIR)
+        # Determine uploader with fallbacks
+        uploader = info.get("uploader")
+        if not uploader or uploader.lower() in ("unknown", "null", "none"):
+            if platform == "c-span":
+                uploader = "C-SPAN"
+            else:
+                uploader = "unknown"
 
-    # 9. Build Video model
-    # Convert duration to int (X/Twitter returns float)
-    duration = info.get("duration")
-    duration_seconds = int(duration) if duration is not None else None
+        video = Video(
+            url=url,
+            platform=platform,
+            video_id=info.get("id", ""),
+            title=info.get("title", "Untitled"),
+            description=info.get("description"),
+            uploader=uploader,
+            uploader_id=info.get("uploader_id"),
+            upload_date=parse_upload_date(info.get("upload_date")),
+            duration_seconds=duration_seconds,
+            view_count=info.get("view_count"),
+            like_count=info.get("like_count"),
+            comment_count=info.get("comment_count"),
+            resolution=f"{info.get('width', '?')}x{info.get('height', '?')}",
+            fps=info.get("fps"),
+            codec=info.get("vcodec"),
+            file_size_bytes=file_path.stat().st_size,
+            file_hash_sha256=file_hash,
+            local_path=str(file_path),
+            thumbnail_path=str(thumbnail_path) if thumbnail_path else None,
+            downloaded_at=datetime.now(),
+            tags=tags or [],
+            collection=collection,
+            raw_metadata=_sanitize_metadata(info),
+        )
 
-    # Determine uploader with fallbacks
-    uploader = info.get("uploader")
-    if not uploader or uploader.lower() in ("unknown", "null", "none"):
-        if platform == "c-span":
-            uploader = "C-SPAN"
-        else:
-            uploader = "unknown"
+        # 10. Save to database
+        video.id = store.insert_video(video)
 
-    video = Video(
-        url=url,
-        platform=platform,
-        video_id=info.get("id", ""),
-        title=info.get("title", "Untitled"),
-        description=info.get("description"),
-        uploader=uploader,
-        uploader_id=info.get("uploader_id"),
-        upload_date=parse_upload_date(info.get("upload_date")),
-        duration_seconds=duration_seconds,
-        view_count=info.get("view_count"),
-        like_count=info.get("like_count"),
-        comment_count=info.get("comment_count"),
-        resolution=f"{info.get('width', '?')}x{info.get('height', '?')}",
-        fps=info.get("fps"),
-        codec=info.get("vcodec"),
-        file_size_bytes=file_path.stat().st_size,
-        file_hash_sha256=file_hash,
-        local_path=str(file_path),
-        thumbnail_path=str(thumbnail_path) if thumbnail_path else None,
-        downloaded_at=datetime.now(),
-        tags=tags or [],
-        collection=collection,
-        raw_metadata=_sanitize_metadata(info),
-    )
+        # 11. Export JSON
+        export_video_json(video, EXPORTS_DIR)
 
-    # 10. Save to database
-    video.id = store.insert_video(video)
+        # 12. PLEX INTEGRATION: Generate NFO and Local Thumbnail
+        # We save these directly next to the video file for media server discovery
+        try:
+            nfo_path = file_path.with_suffix(".nfo")
+            generate_nfo(video, nfo_path)
 
-    # 11. Export JSON
-    await export_video_json(video, EXPORTS_DIR)
+            # Copy thumbnail to video directory as well for Plex/Jellyfin
+            if thumbnail_path and thumbnail_path.exists():
+                local_thumb = file_path.with_suffix(thumbnail_path.suffix)
+                if not local_thumb.exists():
+                    shutil.copy2(thumbnail_path, local_thumb)
+        except Exception as e:
+            # Don't fail the whole ingest if NFO generation fails
+            print(f"Warning: Failed to generate sidecar metadata: {e}")
 
-    # 12. PLEX INTEGRATION: Generate NFO and Local Thumbnail
-    # We save these directly next to the video file for media server discovery
-    try:
-        nfo_path = file_path.with_suffix(".nfo")
-        generate_nfo(video, nfo_path)
-
-        # Copy thumbnail to video directory as well for Plex/Jellyfin
-        if thumbnail_path and thumbnail_path.exists():
-            local_thumb = file_path.with_suffix(thumbnail_path.suffix)
-            if not local_thumb.exists():
-                shutil.copy2(thumbnail_path, local_thumb)
-    except Exception as e:
-        # Don't fail the whole ingest if NFO generation fails
-        print(f"Warning: Failed to generate sidecar metadata: {e}")
+        return video
     finally:
-        # 13. Cleanup temp directory
+        # Always clean up temp directory
         try:
             shutil.rmtree(temp_dir)
         except Exception:
             pass
-
-    return video
 
 
 def ingest_video_sync(
@@ -250,7 +248,7 @@ def ingest_video_sync(
     output_dir: Path | str | None = None,
     format_id: str | None = None,
     cookies_from: str | None = None,
-    on_progress: Callable[[dict], None] | None = None,
+    on_progress: Callable[[ProgressDict], None] | None = None,
     skip_duplicate_check: bool = False,
     tags: list[str] | None = None,
     collection: str | None = None,
@@ -259,25 +257,36 @@ def ingest_video_sync(
     Synchronous version of ingest_video.
 
     Uses asyncio.run internally for non-async contexts.
+    Falls back to thread-pool execution if already inside a running event loop.
     """
     import asyncio
 
-    return asyncio.run(
-        ingest_video(
-            url=url,
-            store=store,
-            output_dir=output_dir,
-            format_id=format_id,
-            cookies_from=cookies_from,
-            on_progress=on_progress,
-            skip_duplicate_check=skip_duplicate_check,
-            tags=tags,
-            collection=collection,
-        )
+    coro = ingest_video(
+        url=url,
+        store=store,
+        output_dir=output_dir,
+        format_id=format_id,
+        cookies_from=cookies_from,
+        on_progress=on_progress,
+        skip_duplicate_check=skip_duplicate_check,
+        tags=tags,
+        collection=collection,
     )
 
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
 
-def _sanitize_metadata(info: dict) -> dict:
+    if loop and loop.is_running():
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            return pool.submit(asyncio.run, coro).result()
+    return asyncio.run(coro)
+
+
+def _sanitize_metadata(info: YtdlpInfo) -> YtdlpInfo:
     """
     Sanitize yt-dlp info dict for JSON storage.
 
