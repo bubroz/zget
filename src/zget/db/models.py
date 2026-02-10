@@ -5,7 +5,6 @@ Pydantic models for type safety and validation.
 """
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -14,7 +13,7 @@ class Video(BaseModel):
     """A downloaded video with all its metadata."""
 
     # Database ID
-    id: Optional[int] = None
+    id: int | None = None
 
     # Source information
     url: str
@@ -23,37 +22,40 @@ class Video(BaseModel):
 
     # Content metadata
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     uploader: str
-    uploader_id: Optional[str] = None
-    upload_date: Optional[datetime] = None
-    duration_seconds: Optional[float] = None
+    uploader_id: str | None = None
+    uploader_url: str | None = None
+    upload_date: datetime | None = None
+    duration_seconds: float | None = None
 
     # Engagement metrics
-    view_count: Optional[int] = None
-    like_count: Optional[int] = None
-    comment_count: Optional[int] = None
+    view_count: int | None = None
+    like_count: int | None = None
+    comment_count: int | None = None
 
     # Technical metadata
-    resolution: Optional[str] = None  # e.g., "1920x1080"
-    fps: Optional[float] = None
-    codec: Optional[str] = None  # e.g., "h264", "vp9"
-    file_size_bytes: Optional[int] = None
-    file_hash_sha256: Optional[str] = None
+    resolution: str | None = None  # e.g., "1920x1080"
+    fps: float | None = None
+    codec: str | None = None  # e.g., "h264", "vp9"
+    format_id: str | None = None
+    file_size_bytes: int | None = None
+    file_hash_sha256: str | None = None
 
     # Local storage
-    local_path: Optional[str] = None
-    thumbnail_path: Optional[str] = None
-    downloaded_at: Optional[datetime] = None
+    local_path: str | None = None
+    thumbnail_path: str | None = None
+    thumbnail_url: str | None = None
+    downloaded_at: datetime | None = None
 
     # User-added metadata
     tags: list[str] = Field(default_factory=list)
-    rating: Optional[int] = Field(default=None, ge=1, le=5)
-    notes: Optional[str] = None
-    collection: Optional[str] = None
+    rating: int | None = Field(default=None, ge=1, le=5)
+    notes: str | None = None
+    collection: str | None = None
 
     # Raw yt-dlp info_dict (stored as JSON in DB)
-    raw_metadata: Optional[dict] = None
+    raw_metadata: dict | None = None
 
     class Config:
         """Pydantic config."""
@@ -65,13 +67,13 @@ class WatchedAccount(BaseModel):
     """An account being monitored for new content."""
 
     # Database ID
-    id: Optional[int] = None
+    id: int | None = None
 
     # Account identification
     platform: str
     account_id: str  # e.g., "@mkbhd", "UC...", "user/..."
     account_url: str  # Full URL to the account/channel
-    display_name: Optional[str] = None
+    display_name: str | None = None
 
     # Monitoring configuration
     check_interval_minutes: int = 120  # Default: 2 hours
@@ -79,17 +81,17 @@ class WatchedAccount(BaseModel):
     auto_download: bool = False  # Default: notify only
 
     # State tracking
-    last_checked_at: Optional[datetime] = None
-    last_new_content_at: Optional[datetime] = None
-    last_known_video_id: Optional[str] = None  # Most recent video we've seen
+    last_checked_at: datetime | None = None
+    last_new_content_at: datetime | None = None
+    last_known_video_id: str | None = None  # Most recent video we've seen
     consecutive_failures: int = 0
 
     # Authentication
     requires_auth: bool = False
-    cookies_browser: Optional[str] = None  # e.g., "chrome", "firefox"
+    cookies_browser: str | None = None  # e.g., "chrome", "firefox"
 
     # Timestamps
-    created_at: Optional[datetime] = None
+    created_at: datetime | None = None
 
     class Config:
         """Pydantic config."""
@@ -100,50 +102,50 @@ class WatchedAccount(BaseModel):
 class MonitorRun(BaseModel):
     """A single run of the account monitor."""
 
-    id: Optional[int] = None
+    id: int | None = None
     watched_account_id: int
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     status: str  # "success", "failed", "auth_required"
     videos_found: int = 0
     new_videos: int = 0
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class DownloadTask(BaseModel):
     """A video download task in the queue."""
 
-    id: Optional[int] = None
+    id: int | None = None
     url: str
     platform: str
     status: str = "pending"  # pending, downloading, complete, failed, cancelled
 
     # Optional pre-fetched info
-    title: Optional[str] = None
-    uploader: Optional[str] = None
-    duration_seconds: Optional[float] = None
-    thumbnail_url: Optional[str] = None
+    title: str | None = None
+    uploader: str | None = None
+    duration_seconds: float | None = None
+    thumbnail_url: str | None = None
 
     # Download options
-    format_id: Optional[str] = None  # Selected format, or None for best
-    output_dir: Optional[str] = None  # Override output directory
-    cookies_browser: Optional[str] = None
+    format_id: str | None = None  # Selected format, or None for best
+    output_dir: str | None = None  # Override output directory
+    cookies_browser: str | None = None
 
     # Progress tracking
     progress_percent: float = 0.0
     downloaded_bytes: int = 0
-    total_bytes: Optional[int] = None
-    speed_bytes_per_sec: Optional[float] = None
-    eta_seconds: Optional[int] = None
+    total_bytes: int | None = None
+    speed_bytes_per_sec: float | None = None
+    eta_seconds: int | None = None
 
     # Result
-    video_id: Optional[int] = None  # ID in videos table after successful download
-    error_message: Optional[str] = None
+    video_id: int | None = None  # ID in videos table after successful download
+    error_message: str | None = None
 
     # Timestamps
-    created_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    created_at: datetime | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
 
     class Config:
         """Pydantic config."""
@@ -158,23 +160,23 @@ class ExportedVideo(BaseModel):
     platform: str
     video_id: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     uploader: str
-    uploader_id: Optional[str] = None
-    upload_date: Optional[str] = None  # ISO format string
-    duration_seconds: Optional[float] = None
-    view_count: Optional[int] = None
-    like_count: Optional[int] = None
-    resolution: Optional[str] = None
-    fps: Optional[float] = None
-    codec: Optional[str] = None
-    file_size_bytes: Optional[int] = None
-    file_hash_sha256: Optional[str] = None
-    local_path: Optional[str] = None
-    downloaded_at: Optional[str] = None  # ISO format string
+    uploader_id: str | None = None
+    upload_date: str | None = None  # ISO format string
+    duration_seconds: float | None = None
+    view_count: int | None = None
+    like_count: int | None = None
+    resolution: str | None = None
+    fps: float | None = None
+    codec: str | None = None
+    file_size_bytes: int | None = None
+    file_hash_sha256: str | None = None
+    local_path: str | None = None
+    downloaded_at: str | None = None  # ISO format string
     tags: list[str] = Field(default_factory=list)
-    rating: Optional[int] = None
-    collection: Optional[str] = None
+    rating: int | None = None
+    collection: str | None = None
 
     @classmethod
     def from_video(cls, video: Video) -> "ExportedVideo":

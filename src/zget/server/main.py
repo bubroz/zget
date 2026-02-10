@@ -1,5 +1,6 @@
-import uvicorn
 import argparse
+
+import uvicorn
 
 
 def main():
@@ -10,7 +11,7 @@ def main():
         "--host", default=PERSISTENT_CONFIG.get("host", "0.0.0.0"), help="Host to bind to"
     )
     parser.add_argument(
-        "--port", type=int, default=PERSISTENT_CONFIG.get("port", 8000), help="Port to listen on"
+        "--port", type=int, default=PERSISTENT_CONFIG.get("port", 9989), help="Port to listen on"
     )
     parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
     parser.add_argument("--open", action="store_true", help="Open browser on startup")
@@ -27,9 +28,10 @@ def main():
 
     # Handle Secure Mode
     if args.secure:
-        from ..net import get_tailscale_ip
         from starlette.middleware.base import BaseHTTPMiddleware
         from starlette.responses import JSONResponse
+
+        from ..net import get_tailscale_ip
         from .app import app
 
         ts_ip = get_tailscale_ip()
@@ -56,7 +58,9 @@ def main():
                     return JSONResponse(
                         status_code=403,
                         content={
-                            "detail": "Access Denied: Secure Mesh Restriction. Connect via Tailscale."
+                            "detail": (
+                                "Access Denied: Secure Mesh Restriction. Connect via Tailscale."
+                            )
                         },
                     )
                 return await call_next(request)
@@ -69,9 +73,9 @@ def main():
         return
 
     if args.open:
-        import webbrowser
         import threading
         import time
+        import webbrowser
 
         def open_browser():
             time.sleep(1.5)  # Give server time to start

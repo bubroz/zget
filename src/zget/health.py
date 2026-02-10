@@ -1,18 +1,20 @@
 import json
 import re
-import httpx
-from typing import Dict, List, Optional, Callable
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import httpx
+
+from .config import HEALTH_LOG_PATH
 from .db.store import VideoStore
 from .smokescreen import (
-    verify_site,
-    verify_sites_batch,
-    save_health_log,
-    load_health_log,
     HealthResult,
     HealthStatus,
+    load_health_log,
+    save_health_log,
+    verify_site,
+    verify_sites_batch,
 )
 
 SUPPORTED_SITES_URL = "https://raw.githubusercontent.com/yt-dlp/yt-dlp/master/supportedsites.md"
@@ -40,263 +42,22 @@ TOP_SITES = [
     "spotify",
 ]
 
-COUNTRY_CODES = {
-    "AF": "Afghanistan",
-    "AX": "Åland Islands",
-    "AL": "Albania",
-    "DZ": "Algeria",
-    "AS": "American Samoa",
-    "AD": "Andorra",
-    "AO": "Angola",
-    "AI": "Anguilla",
-    "AQ": "Antarctica",
-    "AG": "Antigua and Barbuda",
-    "AR": "Argentina",
-    "AM": "Armenia",
-    "AW": "Aruba",
-    "AU": "Australia",
-    "AT": "Austria",
-    "AZ": "Azerbaijan",
-    "BS": "Bahamas",
-    "BH": "Bahrain",
-    "BD": "Bangladesh",
-    "BB": "Barbados",
-    "BY": "Belarus",
-    "BE": "Belgium",
-    "BZ": "Belize",
-    "BJ": "Benin",
-    "BM": "Bermuda",
-    "BT": "Bhutan",
-    "BO": "Bolivia",
-    "BA": "Bosnia and Herzegovina",
-    "BW": "Botswana",
-    "BR": "Brazil",
-    "VG": "British Virgin Islands",
-    "BN": "Brunei",
-    "BG": "Bulgaria",
-    "BF": "Burkina Faso",
-    "BI": "Burundi",
-    "KH": "Cambodia",
-    "CM": "Cameroon",
-    "CA": "Canada",
-    "CV": "Cape Verde",
-    "KY": "Cayman Islands",
-    "CF": "Central African Republic",
-    "TD": "Chad",
-    "CL": "Chile",
-    "CN": "China",
-    "CO": "Colombia",
-    "KM": "Comoros",
-    "CG": "Congo (Brazzaville)",
-    "CD": "Congo (Kinshasa)",
-    "CK": "Cook Islands",
-    "CR": "Costa Rica",
-    "CI": "Côte d'Ivoire",
-    "HR": "Croatia",
-    "CU": "Cuba",
-    "CY": "Cyprus",
-    "CZ": "Czech Republic",
-    "DK": "Denmark",
-    "DJ": "Djibouti",
-    "DM": "Dominica",
-    "DO": "Dominican Republic",
-    "EC": "Ecuador",
-    "EG": "Egypt",
-    "SV": "El Salvador",
-    "GQ": "Equatorial Guinea",
-    "ER": "Eritrea",
-    "EE": "Estonia",
-    "ET": "Ethiopia",
-    "FK": "Falkland Islands",
-    "FO": "Faroe Islands",
-    "FJ": "Fiji",
-    "FI": "Finland",
-    "FR": "France",
-    "GF": "French Guiana",
-    "PF": "French Polynesia",
-    "GA": "Gabon",
-    "GM": "Gambia",
-    "GE": "Georgia",
-    "DE": "Germany",
-    "GH": "Ghana",
-    "GI": "Gibraltar",
-    "GR": "Greece",
-    "GL": "Greenland",
-    "GD": "Grenada",
-    "GP": "Guadeloupe",
-    "GU": "Guam",
-    "GT": "Guatemala",
-    "GG": "Guernsey",
-    "GN": "Guinea",
-    "GW": "Guinea-Bissau",
-    "GY": "Guyana",
-    "HT": "Haiti",
-    "HN": "Honduras",
-    "HK": "Hong Kong",
-    "HU": "Hungary",
-    "IS": "Iceland",
-    "IN": "India",
-    "ID": "Indonesia",
-    "IR": "Iran",
-    "IQ": "Iraq",
-    "IE": "Ireland",
-    "IM": "Isle of Man",
-    "IL": "Israel",
-    "IT": "Italy",
-    "JM": "Jamaica",
-    "JP": "Japan",
-    "JE": "Jersey",
-    "JO": "Jordan",
-    "KZ": "Kazakhstan",
-    "KE": "Kenya",
-    "KI": "Kiribati",
-    "KP": "Korea (North)",
-    "KR": "Korea (South)",
-    "KW": "Kuwait",
-    "KG": "Kyrgyzstan",
-    "LA": "Laos",
-    "LV": "Latvia",
-    "LB": "Lebanon",
-    "LS": "Lesotho",
-    "LR": "Liberia",
-    "LY": "Libya",
-    "LI": "Liechtenstein",
-    "LT": "Lithuania",
-    "LU": "Luxembourg",
-    "MO": "Macao",
-    "MK": "Macedonia",
-    "MG": "Madagascar",
-    "MW": "Malawi",
-    "MY": "Malaysia",
-    "MV": "Maldives",
-    "ML": "Mali",
-    "MT": "Malta",
-    "MH": "Marshall Islands",
-    "MQ": "Martinique",
-    "MR": "Mauritania",
-    "MU": "Mauritius",
-    "YT": "Mayotte",
-    "MX": "Mexico",
-    "FM": "Micronesia",
-    "MD": "Moldova",
-    "MC": "Monaco",
-    "MN": "Mongolia",
-    "ME": "Montenegro",
-    "MS": "Montserrat",
-    "MA": "Morocco",
-    "MZ": "Mozambique",
-    "MM": "Myanmar",
-    "NA": "Namibia",
-    "NR": "Nauru",
-    "NP": "Nepal",
-    "NL": "Netherlands",
-    "NC": "New Caledonia",
-    "NZ": "New Zealand",
-    "NI": "Nicaragua",
-    "NE": "Niger",
-    "NG": "Nigeria",
-    "NU": "Niue",
-    "NF": "Norfolk Island",
-    "MP": "Northern Mariana Islands",
-    "NO": "Norway",
-    "OM": "Oman",
-    "PK": "Pakistan",
-    "PW": "Palau",
-    "PS": "Palestine",
-    "PA": "Panama",
-    "PG": "Papua New Guinea",
-    "PY": "Paraguay",
-    "PE": "Peru",
-    "PH": "Philippines",
-    "PN": "Pitcairn",
-    "PL": "Poland",
-    "PT": "Portugal",
-    "PR": "Puerto Rico",
-    "QA": "Qatar",
-    "RE": "Réunion",
-    "RO": "Romania",
-    "RU": "Russian Federation",
-    "RW": "Rwanda",
-    "BL": "Saint Barthélemy",
-    "SH": "Saint Helena",
-    "KN": "Saint Kitts and Nevis",
-    "LC": "Saint Lucia",
-    "MF": "Saint Martin",
-    "PM": "Saint Pierre and Miquelon",
-    "VC": "Saint Vincent and the Grenadines",
-    "WS": "Samoa",
-    "SM": "San Marino",
-    "ST": "São Tomé and Príncipe",
-    "SA": "Saudi Arabia",
-    "SN": "Senegal",
-    "RS": "Serbia",
-    "SC": "Seychelles",
-    "SL": "Sierra Leone",
-    "SG": "Singapore",
-    "SX": "Sint Maarten",
-    "SK": "Slovakia",
-    "SI": "Slovenia",
-    "SB": "Solomon Islands",
-    "SO": "Somalia",
-    "ZA": "South Africa",
-    "GS": "South Georgia and the South Sandwich Islands",
-    "SS": "South Sudan",
-    "ES": "Spain",
-    "LK": "Sri Lanka",
-    "SD": "Sudan",
-    "SR": "Suriname",
-    "SJ": "Svalbard and Jan Mayen",
-    "SZ": "Swaziland",
-    "SE": "Sweden",
-    "CH": "Switzerland",
-    "SY": "Syria",
-    "TW": "Taiwan",
-    "TJ": "Tajikistan",
-    "TZ": "Tanzania",
-    "TH": "Thailand",
-    "TL": "Timor-Leste",
-    "TG": "Togo",
-    "TK": "Tokelau",
-    "TO": "Tonga",
-    "TT": "Trinidad and Tobago",
-    "TN": "Tunisia",
-    "TR": "Turkey",
-    "TM": "Turkmenistan",
-    "TC": "Turks and Caicos Islands",
-    "TV": "Tuvalu",
-    "UG": "Uganda",
-    "UA": "Ukraine",
-    "AE": "United Arab Emirates",
-    "GB": "United Kingdom",
-    "US": "United States",
-    "UY": "Uruguay",
-    "UZ": "Uzbekistan",
-    "VU": "Vanuatu",
-    "VE": "Venezuela",
-    "VN": "Vietnam",
-    "VI": "Virgin Islands (U.S.)",
-    "WF": "Wallis and Futuna",
-    "EH": "Western Sahara",
-    "YE": "Yemen",
-    "ZM": "Zambia",
-    "ZW": "Zimbabwe",
-    "EU": "Europe",
-    "UN": "United Nations",
-}
+
+
+
 
 
 class SiteHealth:
     """Manages the status and health of supported download sites."""
 
-    def __init__(self, store: VideoStore = None):
+    def __init__(self, store: VideoStore | None = None):
         self.store = store
-        self._matrix: Dict[str, bool] = {}
-        self._metadata: Dict[str, Dict] = {}
-        self._health_log: Dict[str, Dict] = {}
-        self._project_root = Path(__file__).resolve().parent.parent.parent
-        self._health_log_path = self._project_root / "data/health_log.json"
+        self._matrix: dict[str, bool] = {}
+        self._metadata: dict[str, dict] = {}
+        self._health_log: dict[str, dict] = {}
+        self._health_log_path = HEALTH_LOG_PATH
 
-    async def get_working_matrix(self) -> Dict[str, bool]:
+    async def get_working_matrix(self) -> dict[str, bool]:
         """Get the site status matrix, either from cache or fresh."""
         sync_needed = self._check_sync_needed()
 
@@ -337,11 +98,13 @@ class SiteHealth:
                         self._matrix = json.loads(cached_str)
 
             # 2. Load enriched metadata from local file first
-            local_path = self._project_root / "data/enriched_registry.json"
+            local_path = (
+                Path(__file__).resolve().parent.parent.parent / "data/enriched_registry.json"
+            )
 
             if local_path.exists():
                 try:
-                    with open(local_path, "r") as f:
+                    with open(local_path) as f:
                         self._metadata = json.load(f)
                     if self.store:
                         self.store.set_metadata(
@@ -373,7 +136,7 @@ class SiteHealth:
         if self.store:
             self.store.set_metadata("last_registry_sync", datetime.utcnow().isoformat() + "Z")
 
-    def _parse_markdown(self, content: str) -> Dict[str, bool]:
+    def _parse_markdown(self, content: str) -> dict[str, bool]:
         """Parses the yt-dlp Markdown file."""
         results = {}
         lines = content.splitlines()
@@ -390,7 +153,7 @@ class SiteHealth:
             results[site_name] = not is_broken
         return results
 
-    def get_site_info(self, site_name: str) -> Dict:
+    def get_site_info(self, site_name: str) -> dict:
         """Get enriched info (country, lang, etc) for a site."""
         base_info = {
             "name": site_name,
@@ -410,7 +173,7 @@ class SiteHealth:
 
         return base_info
 
-    def get_health_status(self, site_name: str) -> Optional[Dict]:
+    def get_health_status(self, site_name: str) -> dict | None:
         """Get the latest health verification result for a site."""
         return self._health_log.get(site_name.lower())
 
@@ -418,7 +181,7 @@ class SiteHealth:
         self,
         site_id: str,
         force: bool = False,
-        proxy: Optional[str] = None,
+        proxy: str | None = None,
         tested_from: str = "local",
     ) -> HealthResult:
         """
@@ -457,12 +220,12 @@ class SiteHealth:
 
     async def run_smokescreen(
         self,
-        sites: Optional[List[str]] = None,
+        sites: list[str] | None = None,
         concurrency: int = 5,
-        proxy: Optional[str] = None,
+        proxy: str | None = None,
         tested_from: str = "local",
-        on_result: Optional[Callable[[HealthResult], None]] = None,
-    ) -> List[HealthResult]:
+        on_result: Callable[[HealthResult], None] | None = None,
+    ) -> list[HealthResult]:
         """
         Run smokescreen verification on multiple sites.
         """
@@ -493,11 +256,11 @@ class SiteHealth:
 
         return results
 
-    def get_all_health_statuses(self) -> Dict[str, Dict]:
+    def get_all_health_statuses(self) -> dict[str, dict]:
         """Get all health statuses from the log."""
         return self._health_log.copy()
 
-    async def get_archive_snapshot(self, domain: str) -> Optional[Dict]:
+    async def get_archive_snapshot(self, domain: str) -> dict | None:
         """Fetch latest snapshot info from Archive.org Availability API."""
         if not domain or domain == "Unknown":
             return None
@@ -539,7 +302,7 @@ class SiteHealth:
         return None
 
 
-async def get_site_intelligence(store: VideoStore) -> Dict[str, bool]:
+async def get_site_intelligence(store: VideoStore) -> dict[str, bool]:
     """Helper to get site status matrix."""
     health = SiteHealth(store)
     return await health.get_working_matrix()

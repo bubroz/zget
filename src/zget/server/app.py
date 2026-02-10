@@ -1,87 +1,68 @@
-import os
 import json
 import socket
+from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Optional
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
-from fastapi.staticfiles import StaticFiles
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from ..config import (
     DB_PATH,
-    THUMBNAILS_DIR,
-    VIDEOS_DIR,
-    ensure_directories,
+    HEALTH_LOG_PATH,
     PLATFORM_DISPLAY,
-    PERSISTENT_CONFIG,
-    ZGET_HOME,
-    CONFIG_FILE,
+    THUMBNAILS_DIR,
+    ensure_directories,
 )
-from ..db import VideoStore, AsyncVideoStore, get_db_dependency
+from ..db import AsyncVideoStore, VideoStore, get_db_dependency
 from ..queue import DownloadQueue, QueueStatus
-
-import re
-import unicodedata
-
-
-def sanitize_filename(name: str) -> str:
-    """Sanitize a string to be a safe, URL-friendly filename (slug style)."""
-    # Convert to NFKD (separate characters from accents)
-    name = unicodedata.normalize("NFKD", name)
-    # Remove non-ascii characters (emojis, etc)
-    name = name.encode("ascii", "ignore").decode("ascii")
-    # Replace anything not alphanumeric or hyphen with space
-    name = re.sub(r"[^\w-]", " ", name)
-    # Replace multiple spaces/underscores/dots with single underscore, lowercase
-    name = re.sub(r"[\s_.-]+", "_", name).strip("_").lower()
-    # Limit length
-    return name[:100]
-
-
-# Initialize app
-app = FastAPI(title="zget Server", version="0.3.0")
-
-# Enable CORS for local development
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from ..utils import guess_media_type, sanitize_filename
 
 # Global instances
 ensure_directories()
 store = VideoStore(DB_PATH)
-queue = DownloadQueue(max_concurrent=4)  # Default to 4 for server
+queue = DownloadQueue(max_concurrent=4, store=store)
 
 
-# Background startup
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage startup/shutdown lifecycle."""
     await queue.start()
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
+    yield
     await queue.stop()
+
+
+# Initialize app
+app = FastAPI(title="zget Server", version="0.3.0", lifespan=lifespan)
+
+# Enable CORS for local/Tailscale access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:*",
+        "http://127.0.0.1:*",
+        "https://localhost:*",
+        "https://127.0.0.1:*",
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class DownloadRequest(BaseModel):
     url: str
-    collection: Optional[str] = None
-    tags: Optional[list[str]] = None
+    collection: str | None = None
+    tags: list[str] | None = None
 
 
 class SettingsUpdate(BaseModel):
     zget_home: str
-    host: Optional[str] = "0.0.0.0"
-    port: Optional[int] = 8000
-    output_dir: Optional[str] = None
-    flat_output: Optional[bool] = False
+    host: str | None = "0.0.0.0"
+    port: int | None = 8000
+    output_dir: str | None = None
+    flat_output: bool | None = False
 
 
 # Routes
@@ -93,10 +74,8 @@ def health_check():
 @app.get("/api/health/status")
 def health_status():
     """Return smokescreen health check status and statistics."""
-    from pathlib import Path
-    from datetime import datetime
 
-    health_log_path = Path(__file__).parent.parent.parent.parent / "data" / "health_log.json"
+    health_log_path = HEALTH_LOG_PATH
 
     if not health_log_path.exists():
         return {"last_check": None, "total": 0, "working": 0, "broken": 0, "geo_blocked": 0}
@@ -149,7 +128,7 @@ def get_settings():
             s.connect(("8.8.8.8", 80))
             local_ip = s.getsockname()[0]
             s.close()
-        except:
+        except OSError:
             local_ip = "127.0.0.1" if host_setting == "127.0.0.1" else "localhost"
 
     return {
@@ -191,7 +170,6 @@ async def repair_thumbnails(background_tasks: BackgroundTasks):
 
 
 async def run_repair():
-    from ..library.thumbnails import get_thumbnail_path
 
     videos = store.get_recent(limit=5000)
     for v in videos:
@@ -258,17 +236,12 @@ async def bulk_delete_media(request: BulkDeleteRequest):
 @app.get("/api/media/{video_id}")
 @app.head("/api/media/{video_id}")
 async def get_media(video_id: str, download: bool = False):
-    # Search in library
+    # Search by DB id first, then by platform video_id
     video = None
-    try:
-        if video_id.isdigit():
-            video = store.get_video(int(video_id))
-    except:
-        pass
-
+    if video_id.isdigit():
+        video = store.get_video(int(video_id))
     if not video:
-        all_v = store.get_recent(limit=1000)
-        video = next((v for v in all_v if v.video_id == video_id), None)
+        video = store.get_video_by_video_id(video_id)
 
     if not video or not video.local_path:
         raise HTTPException(status_code=404, detail="Video file not found")
@@ -276,6 +249,8 @@ async def get_media(video_id: str, download: bool = False):
     path = Path(video.local_path)
     if not path.exists():
         raise HTTPException(status_code=404, detail="File missing on disk")
+
+    media_type = guess_media_type(str(path))
 
     if download:
         filename = f"{sanitize_filename(video.title)}.mp4" if video.title else f"{video_id}.mp4"
@@ -285,7 +260,7 @@ async def get_media(video_id: str, download: bool = False):
             headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         )
 
-    return FileResponse(path, media_type="video/mp4")
+    return FileResponse(path, media_type=media_type)
 
 
 @app.delete("/api/media/{id}")
@@ -348,14 +323,12 @@ async def cleanup_orphans():
 
 @app.get("/api/thumbnails/{video_id}")
 async def get_thumbnail(video_id: str):
-    # Find video to get platform
+    # Find video by DB id or platform video_id
     video = None
     if video_id.isdigit():
         video = store.get_video(int(video_id))
-
     if not video:
-        all_v = store.get_recent(limit=1000)
-        video = next((v for v in all_v if v.video_id == video_id), None)
+        video = store.get_video_by_video_id(video_id)
 
     if not video:
         raise HTTPException(status_code=404, detail="Video not found")
@@ -376,7 +349,7 @@ async def get_thumbnail(video_id: str):
 @app.get("/api/registry")
 def get_registry():
     """Return the full global site registry with detailed metadata and health."""
-    from ..regions import load_regions, get_sites_for_region, get_popularity_weights
+    from ..regions import get_popularity_weights, get_sites_for_region, load_regions
 
     regions = load_regions()
     weights = get_popularity_weights(store)
@@ -435,10 +408,10 @@ def list_regions():
 def get_region_sites(region_id: str):
     """Return all sites in a region with health status and popularity sorting."""
     from ..regions import (
-        load_regions,
-        get_sites_for_region,
-        get_region_summary,
         get_popularity_weights,
+        get_region_summary,
+        get_sites_for_region,
+        load_regions,
     )
 
     regions = load_regions()
@@ -508,10 +481,11 @@ async def repair_library(background_tasks: BackgroundTasks):
 
 
 async def run_library_repair():
-    """Background task to fix missing thumbnails and transcode incompatible codecs (VP9/AV1 on iOS)."""
+    """Fix missing thumbnails and transcode incompatible codecs (VP9/AV1 on iOS)."""
     import subprocess
-    from ..library.thumbnails import cache_thumbnail
+
     from ..config import THUMBNAILS_DIR
+    from ..library.thumbnails import cache_thumbnail
 
     videos = store.get_recent(limit=5000)
     for v in videos:
@@ -566,22 +540,24 @@ async def run_library_repair():
                             "-y",
                             str(temp_path),
                         ]
-                        subprocess.run(transcode_cmd, capture_output=True)
+                        process = subprocess.run(transcode_cmd, capture_output=True, check=False)
 
-                        if temp_path.exists():
+                        if process.returncode == 0 and temp_path.exists():
                             # Replace original
                             path.unlink()
                             temp_path.rename(path)
-                            # Simple way to update codec in DB if we had the method,
-                            # for now we just fix the file so it plays.
+                        else:
+                            print(f"Error transcoding {v.id}: ffmpeg returned {process.returncode}")
+                            if temp_path.exists():
+                                temp_path.unlink()
                 except Exception as e:
                     print(f"Error repairing {v.id}: {e}")
 
 
 @app.get("/api/library")
 async def get_library(
-    q: Optional[str] = None,
-    uploader: Optional[str] = None,
+    q: str | None = None,
+    uploader: str | None = None,
     limit: int = 50,
     async_store: AsyncVideoStore = Depends(get_db_dependency),
 ):
@@ -612,29 +588,26 @@ async def get_library(
 @app.get("/api/uploaders")
 def list_uploaders():
     """Return all uploaders with video counts."""
-    with store._connect() as conn:
-        rows = conn.execute(
-            """
-            SELECT uploader, platform, COUNT(*) as count 
-            FROM videos 
-            GROUP BY uploader, platform 
-            ORDER BY count DESC
-            """
-        ).fetchall()
-
+    uploaders = store.get_uploaders()
     return [
         {
-            "name": row["uploader"],
-            "platform": row["platform"],
-            "platform_display": PLATFORM_DISPLAY.get(row["platform"], row["platform"].capitalize()),
-            "count": row["count"],
+            "name": u["uploader"],
+            "platform": u["platform"],
+            "platform_display": PLATFORM_DISPLAY.get(u["platform"], u["platform"].capitalize()),
+            "count": u["count"],
         }
-        for row in rows
+        for u in uploaders
     ]
 
 
 @app.post("/api/downloads")
 async def start_download(request: DownloadRequest):
+    """Start a new download."""
+    from urllib.parse import urlparse
+
+    parsed = urlparse(request.url)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        raise HTTPException(status_code=400, detail="Invalid URL")
     item = queue.add(url=request.url, collection=request.collection, tags=request.tags)
     return {"id": item.id, "status": item.status.value}
 
@@ -643,15 +616,10 @@ async def start_download(request: DownloadRequest):
 def list_downloads():
     from datetime import datetime, timedelta
 
-    # Auto-clear items completed/failed more than 5 minutes ago to keep memory clean
-    now = datetime.now()
-    to_delete = []
-    for item_id, item in queue._items.items():
-        if item.completed_at and (now - item.completed_at) > timedelta(minutes=5):
-            to_delete.append(item_id)
+    # Auto-clear items completed/failed more than 5 minutes ago
+    queue.expire_stale(max_age_seconds=300)
 
-    for item_id in to_delete:
-        del queue._items[item_id]
+    now = datetime.now()
 
     # Return items that are:
     # - Still in progress (pending/downloading)
@@ -667,7 +635,7 @@ def list_downloads():
             "eta": item.eta_seconds,
             "error": item.error_message,
         }
-        for item in queue._items.values()
+        for item in queue.items
         if item.status not in (QueueStatus.COMPLETE, QueueStatus.FAILED, QueueStatus.CANCELLED)
         or (item.completed_at and (now - item.completed_at) < timedelta(seconds=60))
     ]
@@ -698,12 +666,8 @@ def cancel_download(item_id: str):
         # Already gone, that's fine
         return {"status": "removed"}
 
-    # Use the queue's remove method which handles cancellation
-    queue.remove(item_id)
-
-    # Also remove from the items dict entirely for clean UI
-    if item_id in queue._items:
-        del queue._items[item_id]
+    # Cancel and fully remove from the queue
+    queue.remove_item(item_id)
 
     return {"status": "removed"}
 

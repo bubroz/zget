@@ -6,20 +6,20 @@ Enhanced version with format selection, file hashing, and full metadata extracti
 
 import hashlib
 import re
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Optional
 
 import yt_dlp
 
 from .config import (
     BROWSER_PROFILE,
-    DEFAULT_COOKIE_BROWSER,
     detect_platform,
     get_cookie_browser,
     get_filename_template,
     get_video_output_dir,
 )
+from .types import ProgressDict, YtdlpInfo
 
 
 def download(
@@ -30,9 +30,9 @@ def download(
     max_quality: str = "best",
     cookies_from: str | None = None,
     cookies_file: str | Path | None = None,
-    progress_callback: Callable[[dict], None] | None = None,
+    progress_callback: Callable[[ProgressDict], None] | None = None,
     quiet: bool = False,
-) -> dict:
+) -> YtdlpInfo:
     """
     Download video/audio from URL.
 
@@ -70,13 +70,20 @@ def download(
         "concurrent_fragment_downloads": 8,
         "restrictfilenames": False,  # Allow unicode in filenames
         "windowsfilenames": True,  # But sanitize for safety
-        "ffmpeg_location": "/opt/homebrew/bin/",  # Homebrew ffmpeg on Apple Silicon
         # IMPORTANT: Only download single video, not entire playlist
         "noplaylist": True,
         # Anti-Bot Headers (Bypass 403 specific blocks)
         "http_headers": {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/130.0.0.0 Safari/537.36"
+            ),
+            "Accept": (
+                "text/html,application/xhtml+xml,"
+                "application/xml;q=0.9,"
+                "image/avif,image/webp,*/*;q=0.8"
+            ),
             "Accept-Language": "en-US,en;q=0.9",
         },
     }
@@ -204,7 +211,7 @@ def extract_info(
     url: str,
     cookies_from: str | None = None,
     cookies_file: str | Path | None = None,
-) -> dict:
+) -> YtdlpInfo:
     """
     Extract video metadata without downloading.
 
@@ -250,7 +257,7 @@ def list_formats(
     url: str,
     cookies_from: str | None = None,
     cookies_file: str | Path | None = None,
-) -> list[dict]:
+) -> list[YtdlpInfo]:
     """
     List available formats for a video.
 
@@ -297,7 +304,7 @@ def list_formats(
     return formats
 
 
-def _build_resolution(f: dict) -> str:
+def _build_resolution(f: YtdlpInfo) -> str:
     """Build resolution string from format dict."""
     width = f.get("width")
     height = f.get("height")
@@ -337,7 +344,7 @@ def compute_file_hash(file_path: Path | str, algorithm: str = "sha256") -> str:
     return hasher.hexdigest()
 
 
-def parse_upload_date(date_str: str | None) -> Optional[datetime]:
+def parse_upload_date(date_str: str | None) -> datetime | None:
     """
     Parse yt-dlp upload_date format (YYYYMMDD) to datetime.
 
@@ -386,7 +393,7 @@ def get_recent_videos_from_channel(
     channel_url: str,
     limit: int = 10,
     cookies_from: str | None = None,
-) -> list[dict]:
+) -> list[YtdlpInfo]:
     """
     Get recent videos from a channel/playlist.
 
@@ -434,7 +441,7 @@ def get_recent_videos_from_channel(
     return videos
 
 
-def _sanitize_info(info: dict) -> dict:
+def _sanitize_info(info: YtdlpInfo) -> YtdlpInfo:
     """
     Recursively sanitize yt-dlp info_dict for JSON serialization.
 

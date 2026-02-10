@@ -6,7 +6,6 @@ Each tool is an async method that interfaces with zget's core functionality.
 
 import asyncio
 from pathlib import Path
-from typing import Any, Optional
 
 from ..config import DB_PATH
 from ..db import VideoStore
@@ -20,7 +19,7 @@ class ZgetTools:
     """
 
     def __init__(self):
-        self._store: Optional[VideoStore] = None
+        self._store: VideoStore | None = None
 
     @property
     def store(self) -> VideoStore:
@@ -123,8 +122,8 @@ class ZgetTools:
     async def download(
         self,
         url: str,
-        collection: Optional[str] = None,
-        tags: Optional[list[str]] = None,
+        collection: str | None = None,
+        tags: list[str] | None = None,
     ) -> dict:
         """
         Download a video to the library.

@@ -1,6 +1,6 @@
 # zget
 
-Personal media archival. Download videos from YouTube, Instagram, TikTok, Reddit, X, Twitch, C-SPAN, and 600+ other sites to your own library.
+The Archival Engine. Download and preserve media from YouTube, Instagram, TikTok, Reddit, X, Twitch, C-SPAN, and 600+ other sites to your own local library.
 
 ![zget demo](assets/demo.gif)
 
@@ -19,7 +19,7 @@ Content disappears constantly—videos get deleted, accounts get banned, platfor
 ## Requirements
 
 - **macOS** (Apple Silicon or Intel) or **Linux**
-- **Python 3.11+**
+- **Python 3.10+**
 - **[uv](https://docs.astral.sh/uv/)** (fast Python package manager)
 - **ffmpeg** (for video processing)
 
@@ -42,76 +42,46 @@ git clone https://github.com/bubroz/zget.git
 cd zget
 ```
 
-### 3. First Run
+### 3. First Run (Setup)
 
 ```bash
 # This installs all Python dependencies automatically
-uv run zget-server --open
+./zget-start.command
 ```
 
-Your browser will open to `http://localhost:8000`. You're ready to archive!
+Your browser will open to `http://localhost:9989`. You're ready to archive!
 
-## Quick Start
+## Quick Start (Robust Launcher)
 
-### Option A: Background Service (Recommended)
+We recommend using the included **Launcher Script** for daily use.
 
-Run zget silently in the background, starting automatically when you log in:
+### 1. Daily Use
 
-```bash
-# Copy and customize the launch agent
-cp com.bubroz.zget.plist.template ~/Library/LaunchAgents/com.bubroz.zget.plist
+Double-click `zget-start.command` in Finder.
 
-# Edit the file to set YOUR path (replace YOUR_USERNAME)
-nano ~/Library/LaunchAgents/com.bubroz.zget.plist
+This will:
 
-# Start the service
-launchctl load ~/Library/LaunchAgents/com.bubroz.zget.plist
-```
+1. Open a terminal window (keep this open!)
+2. Start the server on port **9989**
+3. Securely bind to your Tailscale network
+4. Launch your browser automatically
 
-**Verification:** Open `http://localhost:8000` in your browser.
+> **Why keep the window open?**
+> Running in a visible terminal ensures zget has permission to use your browser's cookies. This is critical for downloading from sites like TikTok and YouTube which block background bots.
 
-### Option B: Manual Launcher
+### 2. Mobile Access (Tailscale)
 
-Double-click `zget-start.command` in Finder to run temporarily.
+To access your library from your phone (e.g. while away from home), use [Tailscale](https://tailscale.com).
 
-### Option C: Terminal
+1. **Install Tailscale** on both your Mac and your Phone.
+2. **Log in** to the same account.
+3. **Visit** the server IP from your phone:
 
-```bash
-uv run zget-server --open
-```
+    ```
+    http://100.x.y.z:9989
+    ```
 
-## Mobile Access (From Your Phone)
-
-zget includes a **Secure Mesh** feature that lets you access your library from your phone—even when you're not at home.
-
-### How It Works
-
-zget uses [Tailscale](https://tailscale.com) (a free VPN) to create a private network between your devices. Your server is invisible to public Wi-Fi but fully accessible to your authenticated devices.
-
-### Setup
-
-1. **Install Tailscale on your Mac:**
-
-   ```bash
-   brew install tailscale
-   tailscale up --hostname=zget
-   ```
-
-2. **Install Tailscale on your phone:**
-   - [iOS App Store](https://apps.apple.com/app/tailscale/id1470499037)
-   - [Google Play Store](https://play.google.com/store/apps/details?id=com.tailscale.ipn)
-
-3. **Log in with the same account** on both devices.
-
-4. **Access zget:**
-   - From your phone's browser: `http://zget:8000`
-   - Tap "Add to Home Screen" for a native app experience
-
-### Security Notes
-
-- **Localhost always works:** You can always access zget at `http://localhost:8000` from the Mac itself.
-- **Tailscale required for remote:** Your phone needs Tailscale connected to reach the server.
-- **Public networks blocked:** Anyone on public Wi-Fi cannot see your server.
+    *(Find your Mac's Tailscale IP in the Tailscale menu bar icon)*
 
 ## Features
 
@@ -250,10 +220,10 @@ If TikTok downloads fail with `0.0.0.0` or `Connection Refused`, check your Pi-h
 
 ### Server Not Starting
 
-Check if another process is using port 8000:
+Check if another process is using port 9989:
 
 ```bash
-lsof -i :8000
+lsof -i :9989
 ```
 
 Kill the conflicting process or use a different port:
@@ -266,7 +236,7 @@ uv run zget-server --port 8080
 
 1. Verify Tailscale is running: `tailscale status`
 2. Ensure both devices are logged into the same Tailscale account
-3. Try accessing via IP instead of hostname: `http://100.x.y.z:8000`
+3. Try accessing via IP instead of hostname: `http://100.x.y.z:9989`
 
 ## Architecture
 
@@ -274,11 +244,15 @@ uv run zget-server --port 8080
 src/zget/
 ├── server/       # FastAPI backend + Web Components frontend
 ├── mcp/          # Model Context Protocol server
-├── library/      # Video ingest pipeline
-├── db/           # SQLite FTS5 database
-├── metadata/     # NFO generation
+├── library/      # Video ingest pipeline (ingest, export, thumbnails)
+├── queue/        # Async download queue manager
+├── db/           # SQLite FTS5 database + Pydantic models
+├── metadata/     # NFO sidecar generation
 ├── commands/     # CLI subcommands
-├── core.py       # yt-dlp wrapper
+├── core.py       # yt-dlp wrapper (download, extract_info)
+├── config.py     # Centralized configuration and path constants
+├── health.py     # Self-diagnostics and health logging
+├── utils.py      # Shared utilities (sanitize_filename, MIME)
 └── cli.py        # Main CLI entry point
 ```
 

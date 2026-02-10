@@ -8,13 +8,12 @@ Supports proxies and multi-region testing.
 
 import asyncio
 import json
-import subprocess
 import time
-from dataclasses import dataclass, asdict
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List, Dict, Callable
 
 
 class HealthStatus(str, Enum):
@@ -35,9 +34,9 @@ class HealthResult:
     site: str
     status: HealthStatus
     latency_ms: int
-    error: Optional[str]
+    error: str | None
     verified_at: str
-    test_url: Optional[str] = None
+    test_url: str | None = None
     tested_from: str = "local"  # e.g., 'local', 'us', 'nl', 'se'
 
     def to_dict(self) -> dict:
@@ -70,7 +69,7 @@ async def verify_site(
     site_id: str,
     test_url: str,
     timeout: int = 15,
-    proxy: Optional[str] = None,
+    proxy: str | None = None,
     tested_from: str = "local",
 ) -> HealthResult:
     """
@@ -205,12 +204,12 @@ async def verify_site(
 
 
 async def verify_sites_batch(
-    sites: List[Dict[str, str]],
+    sites: list[dict[str, str]],
     concurrency: int = 5,
-    proxy: Optional[str] = None,
+    proxy: str | None = None,
     tested_from: str = "local",
-    on_result: Optional[Callable[[HealthResult], None]] = None,
-) -> List[HealthResult]:
+    on_result: Callable[[HealthResult], None] | None = None,
+) -> list[HealthResult]:
     """
     Verify multiple sites concurrently.
 
@@ -226,7 +225,7 @@ async def verify_sites_batch(
     """
     semaphore = asyncio.Semaphore(concurrency)
 
-    async def verify_with_semaphore(site_info: Dict[str, str]) -> HealthResult:
+    async def verify_with_semaphore(site_info: dict[str, str]) -> HealthResult:
         async with semaphore:
             result = await verify_site(
                 site_id=site_info["site"],
@@ -244,7 +243,7 @@ async def verify_sites_batch(
     return list(results)
 
 
-def save_health_log(results: List[HealthResult], path: Path) -> None:
+def save_health_log(results: list[HealthResult], path: Path) -> None:
     """Save health results to JSON file, merging with existing data."""
     # Load existing results
     existing = {}
@@ -252,7 +251,7 @@ def save_health_log(results: List[HealthResult], path: Path) -> None:
         try:
             with open(path) as f:
                 existing = json.load(f)
-        except (json.JSONDecodeError, IOError):
+        except (OSError, json.JSONDecodeError):
             existing = {}
 
     # Update with new results
@@ -270,7 +269,7 @@ def save_health_log(results: List[HealthResult], path: Path) -> None:
         json.dump(existing, f, indent=2)
 
 
-def load_health_log(path: Path) -> Dict[str, dict]:
+def load_health_log(path: Path) -> dict[str, dict]:
     """Load health log from JSON file, with auto-migration for legacy list format."""
     if not path.exists():
         return {}
@@ -300,13 +299,12 @@ def load_health_log(path: Path) -> Dict[str, dict]:
             return migrated
 
         return data
-    except (json.JSONDecodeError, IOError):
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
 # Quick test utility
 if __name__ == "__main__":
-    import sys
 
     async def test_sites():
         # Test a few known sites

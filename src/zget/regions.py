@@ -9,8 +9,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
-
 
 # Paths - go up 3 levels: regions.py -> zget/ -> src/ -> project_root/
 DATA_DIR = Path(__file__).parent.parent.parent / "data"
@@ -27,7 +25,7 @@ class Region:
     name: str
     emoji: str
     countries: list[str]
-    notes: Optional[str]
+    notes: str | None
 
 
 @dataclass
@@ -37,9 +35,9 @@ class SiteInfo:
     name: str
     country: str
     category: str
-    description: Optional[str]
+    description: str | None
     status: str  # "working", "failed", "geo-blocked", "untested"
-    test_url: Optional[str]
+    test_url: str | None
     is_adult: bool
 
 
@@ -124,7 +122,7 @@ def get_popularity_weights(store) -> dict[str, int]:
 
 
 def get_sites_for_region(
-    region_id: str, weights: Optional[dict[str, int]] = None
+    region_id: str, weights: dict[str, int] | None = None
 ) -> list[SiteInfo]:
     """Get all sites belonging to a region with their health status and popularity sorting."""
     regions = load_regions()
@@ -181,7 +179,7 @@ def get_sites_for_region(
     return sites
 
 
-def get_region_summary(region_id: str) -> Optional[RegionSummary]:
+def get_region_summary(region_id: str) -> RegionSummary | None:
     """Get summary statistics for a region."""
     regions = load_regions()
     if region_id not in regions:

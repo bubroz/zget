@@ -5,8 +5,8 @@ Provides cross-platform trash support using send2trash, with graceful
 fallback to hard delete when trash is unavailable.
 """
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 # Try to import send2trash, fall back to None if unavailable
 try:

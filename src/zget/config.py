@@ -4,11 +4,10 @@ zget configuration module.
 Central configuration for all paths and settings.
 """
 
-from pathlib import Path
-import os
 import json
+import os
 import platform
-
+from pathlib import Path
 
 # ============================================================================
 # BROWSER DETECTION
@@ -76,7 +75,7 @@ CONFIG_FILE = CONFIG_DIR / "config.json"
 def load_persistent_config():
     if CONFIG_FILE.exists():
         try:
-            with open(CONFIG_FILE, "r") as f:
+            with open(CONFIG_FILE) as f:
                 return json.load(f)
         except Exception:
             return {}
@@ -102,6 +101,7 @@ THUMBNAILS_DIR = ZGET_HOME / "thumbnails"
 # Exports and logs
 EXPORTS_DIR = ZGET_HOME / "exports"
 LOGS_DIR = ZGET_HOME / "logs"
+HEALTH_LOG_PATH = LOGS_DIR / "health_log.json"
 
 # ============================================================================
 # DOWNLOAD SETTINGS
@@ -141,7 +141,8 @@ FLAT_OUTPUT_STRUCTURE = os.getenv("ZGET_FLAT_OUTPUT", "").lower() in (
 
 # Custom filename template (yt-dlp format)
 # Default uses existing FILENAME_TEMPLATE_SAFE
-# Plex-friendly example: "%(upload_date>%Y-%m-%d)s %(extractor)s - %(uploader).50s - %(title).100s.%(ext)s"
+# Plex-friendly example:
+# "%(upload_date>%Y-%m-%d)s %(extractor)s - %(uploader).50s - %(title).100s.%(ext)s"
 CUSTOM_FILENAME_TEMPLATE: str | None = os.getenv(
     "ZGET_FILENAME_TEMPLATE", PERSISTENT_CONFIG.get("filename_template", None)
 )
@@ -274,7 +275,7 @@ PLATFORM_DISPLAY = {
 def detect_platform(url: str) -> str:
     """Detect the platform from a URL."""
     url_lower = url.lower()
-    for platform, patterns in PLATFORM_PATTERNS.items():
+    for plat, patterns in PLATFORM_PATTERNS.items():
         for pattern in patterns:
             # Check for proper domain boundary: pattern must be followed by / or end of domain
             # This prevents 't.co' from matching in 'combatfootage'
@@ -283,7 +284,7 @@ def detect_platform(url: str) -> str:
                 end_idx = idx + len(pattern)
                 # Check that pattern is at domain boundary (followed by /, :, or end)
                 if end_idx >= len(url_lower) or url_lower[end_idx] in ("/", ":", "?", "#"):
-                    return platform
+                    return plat
     return "other"
 
 

@@ -2,13 +2,12 @@
 Network utilities for zget.
 """
 
-import subprocess
-import shutil
 import ipaddress
-from typing import Optional
+import shutil
+import subprocess
 
 
-def get_tailscale_ip() -> Optional[str]:
+def get_tailscale_ip() -> str | None:
     """
     Get the local Tailscale IPv4 address.
 

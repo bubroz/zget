@@ -4,17 +4,19 @@ Thumbnail caching.
 Download and cache thumbnails for offline browsing.
 """
 
-import hashlib
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Optional
 
 import httpx
 
+from ..types import YtdlpInfo
+
 
 async def cache_thumbnail(
-    info: dict,
+    info: YtdlpInfo,
     thumbnails_dir: Path,
-) -> Optional[Path]:
+) -> Path | None:
     """
     Download and cache a video's thumbnail.
 
@@ -94,12 +96,23 @@ async def cache_thumbnail(
 
 
 def cache_thumbnail_sync(
-    info: dict,
+    info: YtdlpInfo,
     thumbnails_dir: Path,
-) -> Optional[Path]:
+) -> Path | None:
     """Synchronous version of cache_thumbnail."""
     import asyncio
 
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # Already in an event loop -- run in a new thread
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            return pool.submit(asyncio.run, cache_thumbnail(info, thumbnails_dir)).result()
     return asyncio.run(cache_thumbnail(info, thumbnails_dir))
 
 
@@ -107,7 +120,7 @@ def get_thumbnail_path(
     video_id: str,
     platform: str,
     thumbnails_dir: Path,
-) -> Optional[Path]:
+) -> Path | None:
     """
     Get path to cached thumbnail if it exists.
 
@@ -128,7 +141,7 @@ def get_thumbnail_path(
     return None
 
 
-async def delete_thumbnail(
+def delete_thumbnail(
     video_id: str,
     platform: str,
     thumbnails_dir: Path,

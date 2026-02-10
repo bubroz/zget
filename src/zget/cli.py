@@ -6,7 +6,6 @@ Routes to direct download when URL provided, or shows information about The Port
 
 import argparse
 import sys
-from typing import Optional
 
 from rich.console import Console
 from rich.panel import Panel
@@ -18,7 +17,6 @@ from rich.progress import (
     TimeRemainingColumn,
     TransferSpeedColumn,
 )
-
 
 console = Console()
 
@@ -198,9 +196,10 @@ def main():
 
 async def handle_health(args):
     """Handle smokescreen health verification from CLI."""
-    from zget.health import SiteHealth
     from rich.live import Live
     from rich.table import Table
+
+    from zget.health import SiteHealth
 
     health = SiteHealth()
     # Ensure metadata is loaded
@@ -254,7 +253,7 @@ def show_welcome():
         hostname = socket.gethostname()
         local_ip = socket.gethostbyname(hostname)
         webport_url = f"http://{local_ip}:8000"
-    except:
+    except OSError:
         webport_url = "http://localhost:8000"
 
     console.print(
@@ -275,12 +274,12 @@ def show_welcome():
 
 def handle_download(args):
     """Handle direct download from CLI."""
-    from zget.core import download
-    from zget.config import detect_platform, get_video_output_dir, DB_PATH, ensure_directories
-    from zget.db import VideoStore, Video
-    from zget.core import compute_file_hash, parse_upload_date
-    from pathlib import Path
     from datetime import datetime
+    from pathlib import Path
+
+    from zget.config import DB_PATH, detect_platform, ensure_directories, get_video_output_dir
+    from zget.core import compute_file_hash, download, parse_upload_date
+    from zget.db import Video, VideoStore
 
     ensure_directories()
 
@@ -351,8 +350,8 @@ def handle_download(args):
             file_size = None
 
         # Cache thumbnail from metadata
-        from zget.library.thumbnails import cache_thumbnail_sync
         from zget.config import THUMBNAILS_DIR
+        from zget.library.thumbnails import cache_thumbnail_sync
 
         thumbnail_path = cache_thumbnail_sync(result, THUMBNAILS_DIR)
 
@@ -398,9 +397,10 @@ def handle_download(args):
             # PLEX INTEGRATION: Generate NFO sidecar and local thumbnail
             if filepath.exists():
                 try:
-                    from zget.metadata.nfo import generate_nfo
-                    from zget.config import THUMBNAILS_DIR
                     import shutil
+
+                    from zget.config import THUMBNAILS_DIR
+                    from zget.metadata.nfo import generate_nfo
 
                     # Generate NFO
                     nfo_path = filepath.with_suffix(".nfo")
@@ -435,8 +435,9 @@ def handle_download(args):
 
 def handle_list_formats(args):
     """List available formats for a URL."""
-    from zget.core import list_formats
     from rich.table import Table
+
+    from zget.core import list_formats
 
     try:
         console.print(f"[dim]Fetching formats for: {args.url}[/dim]\n")
@@ -482,9 +483,10 @@ def handle_list_formats(args):
 
 def handle_search(query: str):
     """Search library and print results."""
-    from zget.db import VideoStore
-    from zget.config import DB_PATH, ensure_directories, PLATFORM_DISPLAY
     from rich.table import Table
+
+    from zget.config import DB_PATH, PLATFORM_DISPLAY, ensure_directories
+    from zget.db import VideoStore
 
     ensure_directories()
     store = VideoStore(DB_PATH)
@@ -521,16 +523,16 @@ def handle_search(query: str):
 
 def handle_stats():
     """Show library statistics."""
-    from zget.db import VideoStore
-    from zget.config import (
-        DB_PATH,
-        VIDEOS_DIR,
-        THUMBNAILS_DIR,
-        ensure_directories,
-        PLATFORM_DISPLAY,
-    )
     from rich.panel import Panel
     from rich.table import Table
+
+    from zget.config import (
+        DB_PATH,
+        PLATFORM_DISPLAY,
+        VIDEOS_DIR,
+        ensure_directories,
+    )
+    from zget.db import VideoStore
 
     ensure_directories()
     store = VideoStore(DB_PATH)
@@ -651,7 +653,7 @@ def handle_doctor(args):
         if args.dry_run:
             console.print("[yellow]DRY RUN - No changes will be made[/yellow]")
             console.print(f"  Would remove {len(orphaned)} orphaned database record(s)")
-            console.print(f"  Would clean up associated thumbnails")
+            console.print("  Would clean up associated thumbnails")
         else:
             # Actually fix
             console.print("[bold]Cleaning up orphaned records...[/bold]")
@@ -680,8 +682,14 @@ def handle_doctor(args):
     console.print(
         Panel(
             f"  Healthy Records:  [green]{healthy}[/green]\n"
-            f"  Orphaned Records: [{'red' if orphaned else 'green'}]{len(orphaned)}[/{'red' if orphaned else 'green'}]\n"
-            f"  Trash Available:  [{'green' if TRASH_AVAILABLE else 'yellow'}]{'Yes' if TRASH_AVAILABLE else 'No'}[/{'green' if TRASH_AVAILABLE else 'yellow'}]",
+            f"  Orphaned Records: "
+            f"[{'red' if orphaned else 'green'}]"
+            f"{len(orphaned)}"
+            f"[/{'red' if orphaned else 'green'}]\n"
+            f"  Trash Available:  "
+            f"[{'green' if TRASH_AVAILABLE else 'yellow'}]"
+            f"{'Yes' if TRASH_AVAILABLE else 'No'}"
+            f"[/{'green' if TRASH_AVAILABLE else 'yellow'}]",
             title="Summary",
             border_style="blue",
         )
