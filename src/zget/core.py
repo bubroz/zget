@@ -71,6 +71,8 @@ def download(
         "windowsfilenames": True,  # But sanitize for safety
         # IMPORTANT: Only download single video, not entire playlist
         "noplaylist": True,
+        # Enable EJS challenge solver for YouTube's n parameter
+        "remote_components": ["ejs:github"],
         # Anti-Bot Headers (Bypass 403 specific blocks)
         "http_headers": {
             "User-Agent": (
@@ -110,7 +112,13 @@ def download(
             # Best available video+audio, merged to mp4
             # Force/Prefer H.264 (avc1) for maximum iOS/PWA compatibility
             # This avoids the 'VP9 in MP4' issue that causes black screens on Safari
-            opts["format"] = "bv*[ext=mp4][vcodec^=avc]+ba[ext=m4a]/bv*[ext=mp4]+ba[ext=m4a]/b"
+            opts["format"] = (
+                "bv*[ext=mp4][vcodec^=avc]+ba[ext=m4a]"  # Best: H.264 + AAC
+                "/bv*[ext=mp4]+ba[ext=m4a]"  # Any mp4 video + AAC
+                "/bv*[vcodec^=avc]+ba"  # H.264 + any audio
+                "/bv*+ba"  # Any video + any audio
+                "/b"  # Single best (pre-merged)
+            )
             opts["merge_output_format"] = "mp4"
     else:
         # Constrain to max height, still prioritizing compatible codecs

@@ -90,7 +90,7 @@ To access your library from your phone (e.g. while away from home), use [Tailsca
 - **Multi-Platform Downloads**: YouTube, Instagram, TikTok, Reddit, Twitch, X, and 600+ sites via yt-dlp
 - **Full-Text Search**: Find videos by title, uploader, or description (SQLite FTS5)
 - **Metadata Preservation**: Original titles, upload dates, view counts, descriptions
-- **H.264 Transcoding**: Automatic conversion for iOS/Safari compatibility
+- **H.264 Transcoding**: Conversion for iOS/Safari compatibility (when enabled in settings)
 - **Duplicate Detection**: By URL and file hash
 
 ### Media Server Integration (Plex / Jellyfin)
@@ -242,18 +242,24 @@ uv run zget-server --port 8080
 
 ```
 src/zget/
-├── server/       # FastAPI backend + Web Components frontend
-├── mcp/          # Model Context Protocol server
-├── library/      # Video ingest pipeline (ingest, export, thumbnails)
-├── queue/        # Async download queue manager
-├── db/           # SQLite FTS5 database + Pydantic models
-├── metadata/     # NFO sidecar generation
-├── commands/     # CLI subcommands
-├── core.py       # yt-dlp wrapper (download, extract_info)
-├── config.py     # Centralized configuration and path constants
-├── health.py     # Self-diagnostics and health logging
-├── utils.py      # Shared utilities (sanitize_filename, MIME)
-└── cli.py        # Main CLI entry point
+├── server/           # FastAPI backend + Web Components frontend
+├── mcp/              # Model Context Protocol server
+├── library/          # Video ingest pipeline (ingest, export, thumbnails)
+├── queue/            # Async download queue manager
+├── db/               # SQLite FTS5 database (async_store, store, models)
+├── metadata/         # NFO sidecar generation
+├── commands/         # CLI subcommands
+├── core.py           # yt-dlp wrapper (download, extract_info)
+├── config.py         # Centralized configuration and path constants
+├── types.py          # Project-local yt-dlp type aliases (YtdlpInfo, ProgressDict)
+├── cookies.py        # Browser cookie extraction for yt-dlp
+├── net.py            # Tailscale IP detection for Secure Mesh
+├── health.py         # Self-diagnostics and health logging
+├── smokescreen.py    # Platform health verification engine (yt-dlp --simulate)
+├── regions.py        # Geographic site filtering and regional collections
+├── safe_delete.py    # Trash-based file deletion (send2trash wrapper)
+├── utils.py          # Shared utilities (sanitize_filename, MIME)
+└── cli.py            # Main CLI entry point
 ```
 
 ## Acknowledgments

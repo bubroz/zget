@@ -10,6 +10,12 @@ export class ZgetVault extends ZgetBase {
     this.orphanedCount = 0; // Orphan detection state
     this.orphanedIds = []; // IDs of orphaned records
 
+    // Sort/filter state
+    this.sortField = 'downloaded_at';
+    this.sortOrder = 'desc';
+    this.uploaderFilter = null;
+    this.uploaders = [];
+
     // Platform Color Intelligence (Arc Raiders Radiant Alignment)
     this.PLATFORM_COLORS = {
       'youtube': { bg: '#FF0000', fg: '#FFFFFF' },
@@ -41,6 +47,7 @@ export class ZgetVault extends ZgetBase {
     this.loadStyles();
     this.renderTemplate();
     this.fetchVideos();
+    this.fetchUploaders();
     // Listen for Escape key to clear selection
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this.clearSelection();
@@ -52,9 +59,18 @@ export class ZgetVault extends ZgetBase {
     this.updateList();
 
     try {
-      const url = this.searchQuery
-        ? `/api/library?q=${encodeURIComponent(this.searchQuery)}`
-        : '/api/library?limit=100';
+      let url;
+      if (this.searchQuery) {
+        url = `/api/library?q=${encodeURIComponent(this.searchQuery)}`;
+      } else {
+        const params = new URLSearchParams({
+          limit: '100',
+          sort: this.sortField,
+          order: this.sortOrder,
+        });
+        if (this.uploaderFilter) params.set('uploader', this.uploaderFilter);
+        url = `/api/library?${params}`;
+      }
 
       const res = await fetch(url);
       this.videos = await res.json();
@@ -66,6 +82,16 @@ export class ZgetVault extends ZgetBase {
     } finally {
       this.loading = false;
       this.updateList();
+    }
+  }
+
+  async fetchUploaders() {
+    try {
+      const res = await fetch('/api/uploaders');
+      this.uploaders = await res.json();
+      this.renderSidebar();
+    } catch (err) {
+      console.error('Failed to fetch uploaders:', err);
     }
   }
 
@@ -200,6 +226,106 @@ export class ZgetVault extends ZgetBase {
           outline: none;
           flex: 1;
           letter-spacing: 0.05em;
+        }
+
+        .vault-body {
+          display: flex;
+          gap: 0;
+          min-height: 0;
+        }
+
+        .vault-sidebar {
+          width: 220px;
+          flex-shrink: 0;
+          border-right: 1px solid var(--border-color);
+          padding: 0 16px 16px 0;
+          overflow-y: auto;
+          max-height: calc(100vh - 120px);
+        }
+
+        .sidebar-section {
+          margin-bottom: 24px;
+        }
+
+        .sidebar-label {
+          font-size: 0.6rem;
+          font-weight: 700;
+          color: var(--text-muted);
+          letter-spacing: 0.15em;
+          font-family: var(--font-mono);
+          margin-bottom: 8px;
+        }
+
+        .sort-controls {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .sort-btn, .order-toggle, .uploader-btn {
+          background: transparent;
+          border: 1px solid transparent;
+          border-radius: 4px;
+          padding: 6px 10px;
+          color: var(--text-muted);
+          font-size: 0.75rem;
+          font-family: var(--font-mono);
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.15s ease;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .sort-btn:hover, .order-toggle:hover, .uploader-btn:hover {
+          background: rgba(255,255,255,0.04);
+          color: var(--text-color);
+        }
+
+        .sort-btn.active, .uploader-btn.active {
+          background: rgba(255,255,255,0.06);
+          color: var(--primary-color);
+          border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .order-toggle {
+          margin-top: 4px;
+          width: 100%;
+          font-size: 0.7rem;
+        }
+
+        .uploader-list {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .uploader-name-text {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          flex: 1;
+        }
+
+        .uploader-count {
+          font-size: 0.65rem;
+          color: var(--text-muted);
+          opacity: 0.6;
+        }
+
+        .upload-date {
+          color: var(--text-muted);
+          font-size: 0.7rem;
+          opacity: 0.7;
+        }
+
+        .vault-grid-wrapper {
+          flex: 1;
+          min-width: 0;
+          padding-left: 24px;
+          overflow-y: auto;
+          max-height: calc(100vh - 120px);
         }
 
         .video-grid {
@@ -351,6 +477,39 @@ export class ZgetVault extends ZgetBase {
         @media (max-width: 768px) {
           :host {
             padding: 0 16px 40px 16px;
+          }
+
+          .vault-sidebar {
+            display: none;
+          }
+
+          .vault-mobile-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+          }
+
+          .vault-mobile-bar button {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 4px 10px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            white-space: nowrap;
+            cursor: pointer;
+          }
+
+          .vault-mobile-bar button.active {
+            color: var(--primary-color);
+            border-color: rgba(16, 185, 129, 0.3);
+          }
+
+          .vault-grid-wrapper {
+            padding-left: 0;
           }
 
           .search-container {
@@ -580,8 +739,14 @@ export class ZgetVault extends ZgetBase {
         </div>
       </div>
       <div id="orphanBanner"></div>
-      <div class="video-grid" id="grid">
-        <!-- Videos injected here -->
+      <div id="mobileBar" class="vault-mobile-bar" style="display:none;"></div>
+      <div class="vault-body">
+        <div class="vault-sidebar" id="sidebar"></div>
+        <div class="vault-grid-wrapper">
+          <div class="video-grid" id="grid">
+            <!-- Videos injected here -->
+          </div>
+        </div>
       </div>
       <div id="actionBar"></div>
     `;
@@ -713,6 +878,7 @@ export class ZgetVault extends ZgetBase {
                   </svg>
                 </button>
               </div>
+              ${this.formatDate(v.upload_date) ? `<div class="upload-date">${this.formatDate(v.upload_date)}</div>` : ''}
             </div>
         `;
 
@@ -778,6 +944,94 @@ export class ZgetVault extends ZgetBase {
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
     return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  formatDate(dateStr) {
+    if (!dateStr) return null;
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    } catch { return null; }
+  }
+
+  #orderLabel() {
+    const labels = {
+      downloaded_at: ['↑ Oldest', '↓ Newest'],
+      upload_date: ['↑ Oldest', '↓ Newest'],
+      duration_seconds: ['↑ Shortest', '↓ Longest'],
+      title: ['↑ A–Z', '↓ Z–A'],
+    };
+    const pair = labels[this.sortField] || ['↑ Ascending', '↓ Descending'];
+    return this.sortOrder === 'desc' ? pair[1] : pair[0];
+  }
+
+  renderSidebar() {
+    const sidebar = this.shadowRoot.getElementById('sidebar');
+    if (!sidebar) return;
+
+    const sortOptions = [
+      { field: 'downloaded_at', label: 'Downloaded' },
+      { field: 'upload_date', label: 'Upload date' },
+      { field: 'duration_seconds', label: 'Duration' },
+      { field: 'title', label: 'Title' },
+    ];
+
+    sidebar.innerHTML = `
+      <div class="sidebar-section">
+        <div class="sidebar-label">SORT</div>
+        <div class="sort-controls">
+          ${sortOptions.map(opt => `
+            <button class="sort-btn ${this.sortField === opt.field ? 'active' : ''}" data-sort="${opt.field}">
+              ${opt.label}
+            </button>
+          `).join('')}
+        </div>
+        <button class="order-toggle" title="Toggle order">
+          ${this.#orderLabel()}
+        </button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">UPLOADERS</div>
+        <div class="uploader-list">
+          <button class="uploader-btn ${!this.uploaderFilter ? 'active' : ''}" data-uploader="">
+            All <span class="uploader-count">${this.uploaders.reduce((sum, u) => sum + u.count, 0)}</span>
+          </button>
+          ${this.uploaders.map(u => `
+            <button class="uploader-btn ${this.uploaderFilter === u.name ? 'active' : ''}" data-uploader="${u.name}">
+              <span class="uploader-name-text">${u.name}</span>
+              <span class="uploader-count">${u.count}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Wire sort buttons
+    sidebar.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.onclick = () => {
+        this.sortField = btn.dataset.sort;
+        this.renderSidebar();
+        this.fetchVideos();
+      };
+    });
+
+    // Wire order toggle
+    sidebar.querySelector('.order-toggle').onclick = () => {
+      this.sortOrder = this.sortOrder === 'desc' ? 'asc' : 'desc';
+      this.renderSidebar();
+      this.fetchVideos();
+    };
+
+    // Wire uploader buttons
+    sidebar.querySelectorAll('.uploader-btn').forEach(btn => {
+      btn.onclick = () => {
+        this.uploaderFilter = btn.dataset.uploader || null;
+        this.renderSidebar();
+        this.fetchVideos();
+      };
+    });
   }
 }
 

@@ -46,17 +46,41 @@ class AsyncVideoStore:
             row = await cursor.fetchone()
             return self._row_to_video(row) if row else None
 
+    # Columns the API is allowed to sort by (prevents SQL injection)
+    VALID_SORT_COLUMNS = {"downloaded_at", "upload_date", "duration_seconds", "title"}
+
     async def get_recent(self, limit: int = 100) -> list[Video]:
         """Get the most recently downloaded videos."""
+        return await self.get_sorted(limit=limit)
+
+    async def get_sorted(
+        self,
+        sort: str = "downloaded_at",
+        order: str = "desc",
+        uploader: str | None = None,
+        limit: int = 100,
+    ) -> list[Video]:
+        """Get videos with configurable sort order and optional uploader filter."""
+        if sort not in self.VALID_SORT_COLUMNS:
+            sort = "downloaded_at"
+        if order.lower() not in ("asc", "desc"):
+            order = "desc"
+
+        # NULLS LAST: SQLite doesn't support NULLS LAST natively,
+        # so we use a CASE expression to push NULLs to the end.
+        order_clause = (
+            f"ORDER BY CASE WHEN {sort} IS NULL THEN 1 ELSE 0 END, {sort} {order.upper()}"
+        )
+
+        if uploader:
+            query = f"SELECT * FROM videos WHERE uploader = ? {order_clause} LIMIT ?"
+            params: tuple[str | int, ...] = (uploader, limit)
+        else:
+            query = f"SELECT * FROM videos {order_clause} LIMIT ?"
+            params = (limit,)
+
         async with self._connect() as conn:
-            cursor = await conn.execute(
-                """
-                SELECT * FROM videos
-                ORDER BY downloaded_at DESC
-                LIMIT ?
-                """,
-                (limit,),
-            )
+            cursor = await conn.execute(query, params)
             rows = await cursor.fetchall()
             return [self._row_to_video(row) for row in rows]
 

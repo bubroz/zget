@@ -554,16 +554,18 @@ async def run_library_repair():
 async def get_library(
     q: str | None = None,
     uploader: str | None = None,
+    sort: str = "downloaded_at",
+    order: str = "desc",
     limit: int = 50,
     async_store: AsyncVideoStore = Depends(get_db_dependency),
 ):
-    """Get library videos with optional search/filter - now async!"""
+    """Get library videos with optional search/filter/sort."""
     if q:
         videos = await async_store.search(q, limit=limit)
-    elif uploader:
-        videos = await async_store.get_by_uploader(uploader, limit=limit)
     else:
-        videos = await async_store.get_recent(limit=limit)
+        videos = await async_store.get_sorted(
+            sort=sort, order=order, uploader=uploader, limit=limit
+        )
 
     # Enrich with display names and uploader links
     results = []
