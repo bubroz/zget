@@ -18,6 +18,12 @@ from .config import (
     get_filename_template,
     get_video_output_dir,
 )
+from .platforms.cspan import (
+    cspan_http_headers,
+    is_cspan_program_url,
+    merge_cspan_meta,
+    prepare_cspan_url,
+)
 from .types import ProgressDict, YtdlpInfo
 
 
@@ -51,8 +57,12 @@ def download(
     Returns:
         dict with full yt-dlp info_dict including downloaded file info
     """
-    # Auto-detect platform and output directory
+    # Auto-detect platform and output directory (before C-SPAN program rewrite)
     platform = detect_platform(url)
+    original_url = url
+    cspan_meta = None
+    if is_cspan_program_url(url):
+        url, cspan_meta = prepare_cspan_url(url)
 
     if output_dir is None:
         output_dir = get_video_output_dir(platform)
@@ -62,8 +72,34 @@ def download(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Build yt-dlp options
+    http_headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/130.0.0.0 Safari/537.36"
+        ),
+        "Accept": (
+            "text/html,application/xhtml+xml,"
+            "application/xml;q=0.9,"
+            "image/avif,image/webp,*/*;q=0.8"
+        ),
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    if cspan_meta:
+        # HLS fragments 403 without C-SPAN Referer/Origin
+        http_headers.update(cspan_http_headers())
+
+    outtmpl = str(output_dir / get_filename_template())
+    if cspan_meta:
+        # m3u8 extracts often lack useful title/uploader; pin a stable name
+        raw_title = cspan_meta.get("title") or f"program_{cspan_meta.get('program_id')}"
+        safe_title = "".join(
+            ch if (ch.isalnum() or ch in " -_.") else "_" for ch in raw_title
+        ).strip()[:100]
+        outtmpl = str(output_dir / f"NA_C-SPAN_{safe_title}.%(ext)s")
+
     opts = {
-        "outtmpl": str(output_dir / get_filename_template()),
+        "outtmpl": outtmpl,
         "quiet": quiet,
         "no_warnings": quiet,
         "retries": 3,
@@ -76,19 +112,7 @@ def download(
         # Enable EJS challenge solver for YouTube's n parameter
         "remote_components": ["ejs:github"],
         # Anti-Bot Headers (Bypass 403 specific blocks)
-        "http_headers": {
-            "User-Agent": (
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/130.0.0.0 Safari/537.36"
-            ),
-            "Accept": (
-                "text/html,application/xhtml+xml,"
-                "application/xml;q=0.9,"
-                "image/avif,image/webp,*/*;q=0.8"
-            ),
-            "Accept-Language": "en-US,en;q=0.9",
-        },
+        "http_headers": http_headers,
     }
 
     # Format selection
@@ -187,9 +211,10 @@ def download(
 
         opts["progress_hooks"] = [progress_hook]
 
-    # Download
+    # Download (url may be a resolved m3u8 for C-SPAN /program/ pages)
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
+        info = merge_cspan_meta(info, cspan_meta)
 
         # Get the final filename
         # requested_downloads is the most reliable source for the final merged file path
@@ -213,11 +238,15 @@ def download(
 
     # Sanitize metadata for database (remove non-JSON-serializable objects)
     info = _sanitize_info(info)
+    info = merge_cspan_meta(info, cspan_meta)
 
     # Add our metadata
     info["_zget_filepath"] = downloaded_filepath
     info["_zget_platform"] = platform
     info["_zget_downloaded_at"] = datetime.now().isoformat()
+    if cspan_meta:
+        info["webpage_url"] = original_url
+        info["original_url"] = original_url
 
     return info
 
@@ -239,11 +268,17 @@ def extract_info(
         dict with full yt-dlp info_dict
     """
     platform = detect_platform(url)
+    original_url = url
+    cspan_meta = None
+    if is_cspan_program_url(url):
+        url, cspan_meta = prepare_cspan_url(url)
 
-    opts = {
+    opts: dict = {
         "quiet": True,
         "no_warnings": True,
     }
+    if cspan_meta:
+        opts["http_headers"] = cspan_http_headers()
 
     if cookies_from:
         opts["cookiesfrombrowser"] = (cookies_from,)
@@ -263,8 +298,11 @@ def extract_info(
 
     # Sanitize metadata
     info = _sanitize_info(info)
-
+    info = merge_cspan_meta(info, cspan_meta)
     info["_zget_platform"] = platform
+    if cspan_meta:
+        info["webpage_url"] = original_url
+        info["original_url"] = original_url
     return info
 
 
@@ -523,7 +561,14 @@ def _sanitize_info(info: YtdlpInfo) -> YtdlpInfo:
             str(k): _sanitize_info(v)
             for k, v in info.items()
             if not str(k).startswith("_")
-            or k in ("_zget_filepath", "_zget_platform", "_zget_downloaded_at")
+            or k
+            in (
+                "_zget_filepath",
+                "_zget_platform",
+                "_zget_downloaded_at",
+                "_zget_cspan_program",
+                "_zget_cspan_m3u8",
+            )
         }
     elif isinstance(info, list):
         return [_sanitize_info(i) for i in info]

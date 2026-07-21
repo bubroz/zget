@@ -131,9 +131,11 @@ To access your library from your phone (e.g. while away from home), use [Tailsca
 | TikTok    | ✅ Verified |
 | Reddit    | ✅ Verified |
 | Twitch    | ✅ Verified |
-| C-SPAN    | ✅ Verified |
+| C-SPAN    | ✅ Verified (including `/program/.../{id}` pages via HLS) |
 
 Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are not officially tested.
+
+C-SPAN **program** URLs (`c-span.org/program/...`) are resolved to public HLS streams with the required Referer headers when yt-dlp’s native extractor does not support the page. Classic `c-span.org/video/?…` URLs still use the normal yt-dlp path.
 
 ## CLI Reference
 
