@@ -126,12 +126,18 @@ def main():
     parser.add_argument(
         "--doctor",
         action="store_true",
-        help="Run library health check (detect orphaned records)",
+        help="Run library health check (paths, relocatable, orphans)",
     )
     parser.add_argument(
         "--fix",
         action="store_true",
-        help="Auto-fix issues found by --doctor (clean orphaned records)",
+        help="With --doctor: rewrite stale ZGET_HOME paths (safe). "
+        "Does not delete orphans unless --purge-orphans.",
+    )
+    parser.add_argument(
+        "--purge-orphans",
+        action="store_true",
+        help="With --doctor --fix: also delete records whose media file is truly missing",
     )
     parser.add_argument(
         "--dry-run",
@@ -171,6 +177,10 @@ def main():
 
     if len(sys.argv) > 1 and sys.argv[1] in ("list-channel", "ls-channel"):
         handle_list_channel_cmd(sys.argv[2:])
+        return
+
+    if len(sys.argv) > 1 and sys.argv[1] == "paths":
+        handle_paths_cmd(sys.argv[2:])
         return
 
     args = parser.parse_args()
@@ -742,15 +752,156 @@ def handle_stats():
     console.print(table)
 
 
-def handle_doctor(args):
-    """Run library health check and optionally fix issues."""
+def handle_paths_cmd(argv: list[str]) -> None:
+    """Subcommand: zget paths rewrite|check — migrate stale library paths."""
+    import argparse
     from pathlib import Path
 
     from rich.panel import Panel
+
+    from zget.config import DB_PATH, ZGET_HOME, ensure_directories
+    from zget.db import VideoStore
+    from zget.library.paths import (
+        DEFAULT_LEGACY_HOME,
+        assess_library,
+        rewrite_stale_paths,
+    )
+
+    p = argparse.ArgumentParser(
+        prog="zget paths",
+        description="Inspect or rewrite library media paths after ZGET_HOME moves.",
+    )
+    sub = p.add_subparsers(dest="action", required=True)
+    check_p = sub.add_parser("check", help="Classify path health (no writes)")
+    check_p.add_argument(
+        "--from",
+        dest="legacy_from",
+        default=str(DEFAULT_LEGACY_HOME),
+        help=f"Legacy library root (default: {DEFAULT_LEGACY_HOME})",
+    )
+    rw = sub.add_parser("rewrite", help="Rewrite stale paths under current ZGET_HOME")
+    rw.add_argument(
+        "--from",
+        dest="legacy_from",
+        default=str(DEFAULT_LEGACY_HOME),
+        help=f"Legacy library root (default: {DEFAULT_LEGACY_HOME})",
+    )
+    rw.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show planned rewrites without writing",
+    )
+    rw.add_argument(
+        "--no-backup",
+        action="store_true",
+        help="Skip timestamped library.db backup (not recommended)",
+    )
+    args = p.parse_args(argv)
+
+    ensure_directories()
+    store = VideoStore(DB_PATH)
+    legacy = [Path(args.legacy_from).expanduser()]
+    console.print(
+        Panel(
+            f"[bold]ZGET_HOME[/bold]  {ZGET_HOME}\n"
+            f"[bold]Database[/bold]   {DB_PATH}\n"
+            f"[bold]Legacy[/bold]     {legacy[0]}",
+            title="paths",
+            border_style="blue",
+        )
+    )
+
+    if args.action == "check":
+        report = assess_library(
+            store.list_all_videos(), current_home=ZGET_HOME, legacy_homes=legacy
+        )
+        _print_path_report(report, verbose=True)
+        return
+
+    # rewrite
+    dry = bool(args.dry_run)
+    report, plans, backup_path = rewrite_stale_paths(
+        store,
+        current_home=ZGET_HOME,
+        legacy_homes=legacy,
+        dry_run=dry,
+        backup=not args.no_backup and not dry,
+        db_path=DB_PATH,
+    )
+    _print_path_report(report, verbose=False)
+    if not plans:
+        console.print("[green]No relocatable paths to rewrite.[/green]")
+        return
+    console.print(f"\n[bold]Planned rewrites:[/bold] {len(plans)}")
+    for plan in plans[:15]:
+        console.print(f"  id={plan.video_id}")
+        console.print(f"    [dim]{plan.old_local_path}[/dim]")
+        console.print(f"    → {plan.new_local_path}")
+    if len(plans) > 15:
+        console.print(f"  … and {len(plans) - 15} more")
+    if dry:
+        console.print("\n[yellow]DRY RUN — no changes written. Re-run without --dry-run to apply.[/yellow]")
+        return
+    if backup_path:
+        console.print(f"\n[dim]Backup:[/dim] {backup_path}")
+    console.print(f"[green]✓ Rewrote {len(plans)} record(s).[/green]")
+
+
+def _print_path_report(report, *, verbose: bool) -> None:
     from rich.table import Table
 
-    from zget.config import DB_PATH, THUMBNAILS_DIR, ensure_directories
+    from zget.library.paths import PathStatus
+
+    console.print(
+        f"\n  Healthy:      [green]{len(report.healthy)}[/green]\n"
+        f"  Relocatable:  [yellow]{len(report.relocatable)}[/yellow]  "
+        f"[dim](stale home; file found under ZGET_HOME)[/dim]\n"
+        f"  Off-home:     [cyan]{len(report.off_home)}[/cyan]  "
+        f"[dim](exists outside ZGET_HOME; not orphans)[/dim]\n"
+        f"  Orphans:      [red]{len(report.orphans)}[/red]\n"
+        f"  Empty path:   {len(report.empty)}\n"
+    )
+    if not verbose:
+        return
+    if report.relocatable:
+        table = Table(title="Relocatable (sample)", show_header=True)
+        table.add_column("ID", style="cyan")
+        table.add_column("Stored → Resolved", style="dim")
+        for a in report.relocatable[:12]:
+            table.add_row(
+                str(a.video.id),
+                f"{a.stored_path} → {a.resolved_path}",
+            )
+        console.print(table)
+    if report.orphans:
+        table = Table(title="Orphans (sample)", show_header=True)
+        table.add_column("ID", style="cyan")
+        table.add_column("Title")
+        table.add_column("Path", style="dim")
+        for a in report.orphans[:12]:
+            title = a.video.title or "?"
+            table.add_row(
+                str(a.video.id),
+                (title[:40] + "…") if len(title) > 40 else title,
+                str(a.stored_path or "?")[:60],
+            )
+        console.print(table)
+
+
+def handle_doctor(args):
+    """Run library health check and optionally fix path / orphan issues."""
+    from rich.panel import Panel
+    from rich.table import Table
+
+    from zget.config import DB_PATH, THUMBNAILS_DIR, ZGET_HOME, ensure_directories
     from zget.db import VideoStore
+    from zget.library.paths import (
+        PathStatus,
+        assess_library,
+        backup_database,
+        plan_rewrites,
+        apply_rewrites,
+    )
     from zget.safe_delete import TRASH_AVAILABLE, safe_delete
 
     ensure_directories()
@@ -758,52 +909,70 @@ def handle_doctor(args):
 
     console.print(
         Panel(
-            "[bold]🩺 Library Health Check[/bold]",
+            f"[bold]🩺 Library Health Check[/bold]\n"
+            f"[dim]ZGET_HOME={ZGET_HOME}[/dim]",
             border_style="blue",
         )
     )
 
-    # Get all videos from database
-    all_videos = store.get_recent(limit=10000)
-    total_records = len(all_videos)
-
-    orphaned = []
-    healthy = 0
-    orphan_size = 0
-
+    videos = store.list_all_videos()
+    total_records = len(videos)
     console.print(f"\n[dim]Scanning {total_records} records...[/dim]\n")
 
-    for v in all_videos:
-        file_exists = False
-        if v.local_path:
-            path = Path(v.local_path)
-            file_exists = path.exists()
+    report = assess_library(videos, current_home=ZGET_HOME)
+    relocatable = report.relocatable
+    orphans = report.orphans
+    off_home = report.off_home
+    healthy = len(report.healthy)
+    orphan_size = sum(a.video.file_size_bytes or 0 for a in orphans)
 
-        if file_exists:
-            healthy += 1
-            if args.verbose:
-                console.print(f"  [green]✓[/green] {v.id}: {v.title[:50]}")
-        else:
-            orphaned.append(v)
-            if v.file_size_bytes:
-                orphan_size += v.file_size_bytes
-            if args.verbose:
-                console.print(f"  [red]✗[/red] {v.id}: {v.title[:50]} [dim](file missing)[/dim]")
+    if args.verbose:
+        for a in report.assessments:
+            title = (a.video.title or "?")[:50]
+            if a.status == PathStatus.HEALTHY:
+                console.print(f"  [green]✓[/green] {a.video.id}: {title}")
+            elif a.status == PathStatus.RELOCATABLE:
+                console.print(
+                    f"  [yellow]↪[/yellow] {a.video.id}: {title} "
+                    f"[dim](relocatable)[/dim]"
+                )
+            elif a.status == PathStatus.OFF_HOME:
+                console.print(
+                    f"  [cyan]◦[/cyan] {a.video.id}: {title} [dim](off-home)[/dim]"
+                )
+            elif a.status == PathStatus.ORPHAN:
+                console.print(
+                    f"  [red]✗[/red] {a.video.id}: {title} [dim](missing)[/dim]"
+                )
+            else:
+                console.print(f"  [dim]· {a.video.id}: {title} (no path)[/dim]")
 
-    # Summary
     console.print()
-    if orphaned:
+    if relocatable:
+        console.print(
+            f"[yellow]⚠ {len(relocatable)} relocatable path(s)[/yellow] "
+            f"— stale home prefix; media found under current ZGET_HOME"
+        )
+        console.print(
+            "  Fix with: [bold]zget --doctor --fix[/bold] "
+            "or [bold]zget paths rewrite[/bold]"
+        )
+    if off_home:
+        console.print(
+            f"[cyan]ℹ {len(off_home)} off-home path(s)[/cyan] "
+            f"— file exists outside ZGET_HOME (pipeline outputs; not orphans)"
+        )
+    if orphans:
         size_str = _format_size(orphan_size)
-        console.print(f"[yellow]⚠ Found {len(orphaned)} orphaned record(s)[/yellow]")
-        console.print(f"  Recoverable space: [cyan]{size_str}[/cyan]")
-
-        if args.verbose or len(orphaned) <= 10:
+        console.print(f"[yellow]⚠ {len(orphans)} true orphan(s)[/yellow] (file missing)")
+        console.print(f"  Claimed size: [cyan]{size_str}[/cyan]")
+        if args.verbose or len(orphans) <= 10:
             table = Table(title="Orphaned Records", show_header=True)
             table.add_column("ID", style="cyan")
             table.add_column("Title")
             table.add_column("Former Path", style="dim")
-
-            for v in orphaned[:20]:  # Limit display
+            for a in orphans[:20]:
+                v = a.video
                 table.add_row(
                     str(v.id),
                     (v.title[:40] + "...") if len(v.title or "") > 40 else (v.title or "?"),
@@ -811,54 +980,65 @@ def handle_doctor(args):
                     if v.local_path and len(v.local_path) > 50
                     else (v.local_path or "?"),
                 )
-
-            if len(orphaned) > 20:
-                table.add_row("...", f"({len(orphaned) - 20} more)", "...")
-
+            if len(orphans) > 20:
+                table.add_row("...", f"({len(orphans) - 20} more)", "...")
             console.print(table)
-    else:
-        console.print("[green]✓ No issues found. Library is healthy![/green]")
+    if not relocatable and not orphans:
+        console.print("[green]✓ No path issues requiring action.[/green]")
 
-    # Handle fix
-    if args.fix and orphaned:
+    # Fixes
+    if args.fix:
         console.print()
-        if args.dry_run:
-            console.print("[yellow]DRY RUN - No changes will be made[/yellow]")
-            console.print(f"  Would remove {len(orphaned)} orphaned database record(s)")
-            console.print("  Would clean up associated thumbnails")
+        plans = plan_rewrites(report, current_home=ZGET_HOME)
+        if plans:
+            if args.dry_run:
+                console.print("[yellow]DRY RUN — path rewrite[/yellow]")
+                console.print(f"  Would rewrite {len(plans)} relocatable record(s)")
+            else:
+                backup = backup_database(DB_PATH)
+                console.print(f"[dim]Backup:[/dim] {backup}")
+                n = apply_rewrites(store, plans)
+                console.print(f"[green]✓ Rewrote {n} path(s) to current ZGET_HOME[/green]")
         else:
-            # Actually fix
-            console.print("[bold]Cleaning up orphaned records...[/bold]")
-            cleaned = 0
-            for v in orphaned:
-                try:
-                    # Delete thumbnail if exists
-                    if v.video_id and v.platform:
-                        thumb_path = THUMBNAILS_DIR / f"{v.platform}_{v.video_id}.jpg"
-                        if thumb_path.exists():
-                            safe_delete(thumb_path, use_trash=True)
+            console.print("[dim]No relocatable paths to rewrite.[/dim]")
 
-                    # Delete from database
-                    store.delete_video(v.id)
-                    cleaned += 1
-                except Exception as e:
-                    console.print(f"  [red]Error cleaning {v.id}: {e}[/red]")
+        purge = getattr(args, "purge_orphans", False)
+        if purge and orphans:
+            if args.dry_run:
+                console.print("[yellow]DRY RUN — purge orphans[/yellow]")
+                console.print(f"  Would remove {len(orphans)} orphaned database record(s)")
+            else:
+                console.print("[bold]Purging true orphan records...[/bold]")
+                cleaned = 0
+                for a in orphans:
+                    v = a.video
+                    try:
+                        if v.video_id and v.platform:
+                            thumb_path = THUMBNAILS_DIR / f"{v.platform}_{v.video_id}.jpg"
+                            if thumb_path.exists():
+                                safe_delete(thumb_path, use_trash=True)
+                        store.delete_video(v.id)
+                        cleaned += 1
+                    except Exception as e:
+                        console.print(f"  [red]Error cleaning {v.id}: {e}[/red]")
+                trash_note = " (thumbnails moved to trash)" if TRASH_AVAILABLE else ""
+                console.print(
+                    f"[green]✓ Purged {cleaned} orphaned record(s){trash_note}[/green]"
+                )
+        elif orphans and not purge:
+            console.print(
+                f"[dim]{len(orphans)} true orphan(s) left untouched. "
+                f"Use --purge-orphans to delete them (after path rewrite).[/dim]"
+            )
 
-            trash_note = " (thumbnails moved to trash)" if TRASH_AVAILABLE else ""
-            console.print(f"[green]✓ Cleaned {cleaned} orphaned record(s){trash_note}[/green]")
-
-    elif args.fix and not orphaned:
-        console.print("\n[dim]Nothing to fix.[/dim]")
-
-    # Final summary
     console.print(
         Panel(
-            f"  Healthy Records:  [green]{healthy}[/green]\n"
-            f"  Orphaned Records: "
-            f"[{'red' if orphaned else 'green'}]"
-            f"{len(orphaned)}"
-            f"[/{'red' if orphaned else 'green'}]\n"
-            f"  Trash Available:  "
+            f"  Healthy:      [green]{healthy}[/green]\n"
+            f"  Relocatable:  [yellow]{len(relocatable)}[/yellow]\n"
+            f"  Off-home:     [cyan]{len(off_home)}[/cyan]\n"
+            f"  Orphans:      "
+            f"[{'red' if orphans else 'green'}]{len(orphans)}[/{'red' if orphans else 'green'}]\n"
+            f"  Trash:        "
             f"[{'green' if TRASH_AVAILABLE else 'yellow'}]"
             f"{'Yes' if TRASH_AVAILABLE else 'No'}"
             f"[/{'green' if TRASH_AVAILABLE else 'yellow'}]",

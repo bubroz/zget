@@ -463,6 +463,34 @@ class VideoStore:
                 ),
             )
 
+    def update_media_paths(
+        self,
+        video_id: int,
+        *,
+        local_path: str | None = None,
+        thumbnail_path: str | None = None,
+    ) -> bool:
+        """Update stored media/thumbnail paths after a library home move."""
+        with self._connect() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE videos SET
+                    local_path = COALESCE(?, local_path),
+                    thumbnail_path = COALESCE(?, thumbnail_path)
+                WHERE id = ?
+                """,
+                (local_path, thumbnail_path, video_id),
+            )
+            return cursor.rowcount > 0
+
+    def list_all_videos(self) -> list[Video]:
+        """Return every video row (for doctor / path migration)."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM videos ORDER BY id ASC"
+            ).fetchall()
+            return [self._row_to_video(row) for row in rows]
+
     def delete_video(self, video_id: int) -> bool:
         """Delete a video from the library. Returns True if deleted."""
         with self._connect() as conn:

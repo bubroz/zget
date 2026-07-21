@@ -150,8 +150,11 @@ uv run zget <url> --flat             # Skip platform subdirectory
 ```bash
 uv run zget search <query>           # Full-text search
 uv run zget stats                    # Library statistics
-uv run zget doctor                   # Health check (find orphans, verify files)
-uv run zget doctor --fix             # Auto-fix issues
+uv run zget doctor                   # Health check (paths, relocatable, orphans)
+uv run zget doctor --fix             # Rewrite stale ZGET_HOME paths (safe)
+uv run zget doctor --fix --purge-orphans  # Also delete truly missing records
+uv run zget paths check              # Classify path health
+uv run zget paths rewrite --dry-run  # Preview path migration after moving the library
 uv run zget --list-formats <url>     # List available formats without downloading
 ```
 
