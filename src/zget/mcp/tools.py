@@ -97,8 +97,8 @@ class ZgetTools:
         """
         Get the local file path for a video.
 
-        This is the key handoff point for downstream tool integration -
-        it gets the actual file path for local media analysis.
+        This is the key handoff point for other tools (transcription,
+        analysis, etc.) that need the on-disk media path.
 
         Args:
             video_id: Database ID

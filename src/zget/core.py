@@ -26,6 +26,7 @@ def download(
     output_dir: str | Path | None = None,
     format_id: str | None = None,
     audio_only: bool = False,
+    audio_format: str | None = None,  # "mp3", "m4a", "opus", etc. for audio_only
     max_quality: str = "best",
     cookies_from: str | None = None,
     cookies_file: str | Path | None = None,
@@ -39,7 +40,8 @@ def download(
         url: Video URL (YouTube, Instagram, TikTok, Twitter, etc.)
         output_dir: Output directory (default: auto-detect from platform)
         format_id: Specific format ID to download (from list_formats)
-        audio_only: Extract audio only (M4A/MP3)
+        audio_only: Extract audio only
+        audio_format: Desired audio codec when audio_only (e.g. "mp3", "m4a", "opus"). Defaults to mp3.
         max_quality: Maximum video height (e.g., "1080", "720") or "best"
         cookies_from: Browser to extract cookies from ("chrome", "firefox", "safari")
         cookies_file: Path to cookies.txt file
@@ -93,14 +95,20 @@ def download(
     if format_id:
         # User explicitly selected a format
         opts["format"] = format_id
-    elif audio_only:
-        opts["format"] = "bestaudio[ext=m4a]/bestaudio/best"
+    elif audio_only or audio_format:
+        codec = (audio_format or "mp3").lower()
+        # For direct audio files or bestaudio, let yt-dlp pick best audio
+        opts["format"] = "bestaudio/best"
         opts["postprocessors"] = [
             {
                 "key": "FFmpegExtractAudio",
-                "preferredcodec": "m4a",
+                "preferredcodec": codec,
             }
         ]
+        # Embed metadata (very useful for podcasts)
+        opts["postprocessors"].append({"key": "FFmpegMetadata"})
+        # Write thumbnail if available
+        opts["writethumbnail"] = True
     elif max_quality == "best":
         # Platform-specific format selection
         if platform == "twitter":
@@ -374,52 +382,132 @@ def get_recent_videos_from_channel(
     channel_url: str,
     limit: int = 10,
     cookies_from: str | None = None,
+    cookies_file: str | Path | None = None,
+    since: str | None = None,
+    until: str | None = None,
 ) -> list[YtdlpInfo]:
     """
-    Get recent videos from a channel/playlist.
+    List videos from a channel/playlist/tab without downloading.
 
-    Used for monitoring accounts for new content.
+    Used for monitoring accounts and research-side source enumeration.
 
     Args:
-        channel_url: URL to channel, playlist, or user page
-        limit: Maximum number of videos to fetch
+        channel_url: URL to channel, playlist, user page, or tab (e.g. /videos)
+        limit: Maximum number of videos to fetch (None or 0 = no limit)
         cookies_from: Browser to extract cookies from
+        cookies_file: Path to cookies.txt file
+        since: Inclusive lower bound as YYYY-MM-DD or YYYYMMDD (filters when date known)
+        until: Inclusive upper bound as YYYY-MM-DD or YYYYMMDD (filters when date known)
 
     Returns:
-        List of video info dicts (without full download)
+        List of lightweight video info dicts (flat extract; no media download)
     """
-    opts = {
+    opts: dict = {
         "quiet": True,
         "no_warnings": True,
-        "extract_flat": True,  # Don't extract each video fully
-        "playlistend": limit,
+        "extract_flat": "in_playlist",  # flat listing; keep playlist structure
+        "ignoreerrors": True,
+        # YouTube tab listings often lack upload_date; approximate from tab metadata
+        "extractor_args": {"youtubetab": {"approximate_date": ["True"]}},
     }
+
+    if limit and limit > 0:
+        opts["playlistend"] = limit
 
     if cookies_from:
         opts["cookiesfrombrowser"] = (cookies_from,)
+    elif cookies_file:
+        opts["cookiefile"] = str(cookies_file)
 
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(channel_url, download=False)
 
-    entries = info.get("entries", [])
+    if not info:
+        return []
 
-    videos = []
+    # Single-video URL: treat as one-entry list
+    entries = info.get("entries")
+    if entries is None:
+        entries = [info]
+
+    since_dt = _parse_bound_date(since)
+    until_dt = _parse_bound_date(until)
+    platform = detect_platform(channel_url)
+    channel_uploader = info.get("uploader") or info.get("channel") or info.get("title")
+
+    videos: list[YtdlpInfo] = []
     for entry in entries:
         if entry is None:
             continue
+
+        upload_date = entry.get("upload_date")
+        timestamp = entry.get("timestamp") or entry.get("release_timestamp")
+        entry_dt = parse_upload_date(upload_date) if upload_date else None
+        if entry_dt is None and timestamp is not None:
+            try:
+                entry_dt = datetime.utcfromtimestamp(int(timestamp))
+                upload_date = entry_dt.strftime("%Y%m%d")
+            except (TypeError, ValueError, OSError, OverflowError):
+                entry_dt = None
+
+        # Flat extract sometimes still omits date; keep undated rows (don't drop).
+        if entry_dt is not None:
+            if since_dt and entry_dt.date() < since_dt.date():
+                continue
+            if until_dt and entry_dt.date() > until_dt.date():
+                continue
+
+        vid = entry.get("id")
+        url = entry.get("webpage_url") or entry.get("url")
+        if not url and vid:
+            url = _guess_watch_url(platform, vid, entry)
+
+        # Skip bare relative / non-http leftovers from flat extract
+        if url and not str(url).startswith(("http://", "https://")):
+            if vid:
+                url = _guess_watch_url(platform, vid, entry)
+            else:
+                url = None
+
         videos.append(
             {
-                "id": entry.get("id"),
+                "id": vid,
                 "title": entry.get("title"),
-                "url": entry.get("url") or entry.get("webpage_url"),
-                "uploader": entry.get("uploader") or info.get("uploader"),
-                "upload_date": entry.get("upload_date"),
+                "url": url,
+                "uploader": entry.get("uploader") or entry.get("channel") or channel_uploader,
+                "upload_date": upload_date,
+                "timestamp": timestamp,
                 "duration": entry.get("duration"),
                 "view_count": entry.get("view_count"),
+                "description": entry.get("description"),
+                "live_status": entry.get("live_status"),
+                "was_live": entry.get("was_live"),
+                "_zget_platform": platform,
             }
         )
 
     return videos
+
+
+def _parse_bound_date(date_str: str | None) -> datetime | None:
+    """Parse YYYY-MM-DD or YYYYMMDD into datetime, or None."""
+    if not date_str:
+        return None
+    s = date_str.strip().replace("-", "")
+    if len(s) != 8 or not s.isdigit():
+        raise ValueError(f"Invalid date bound (use YYYY-MM-DD or YYYYMMDD): {date_str}")
+    return datetime.strptime(s, "%Y%m%d")
+
+
+def _guess_watch_url(platform: str, video_id: str, entry: dict) -> str | None:
+    """Build a canonical watch URL when flat extract only provides an id."""
+    if platform == "youtube":
+        return f"https://www.youtube.com/watch?v={video_id}"
+    if platform in ("c-span", "cspan"):
+        # C-SPAN ids vary; prefer webpage_url when present
+        return entry.get("webpage_url")
+    # Generic: some extractors put ie_key-specific urls in original_url
+    return entry.get("original_url") or entry.get("webpage_url")
 
 
 def _sanitize_info(info: YtdlpInfo) -> YtdlpInfo:

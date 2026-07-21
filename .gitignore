@@ -20,6 +20,21 @@ data/
 openspec/
 libs/
 
+# Local media / research captures (never ship)
+exports/
+*.mp3
+*.mp4
+*.mkv
+*.webm
+*.m4a
+
+# Operator / private notes that must not hit the public repo
+Web Scraping Framework for Media Assets.md
+docs/FUTURE_*.md
+*.local.md
+OPERATOR*.md
+HANDOFF*.md
+
 # PWA Assets (handled by build)
 src/zget/server/static/icon.png
 *.png
@@ -31,3 +46,4 @@ zget-icon.jpeg
 
 # Build artifacts
 zget.app/
+

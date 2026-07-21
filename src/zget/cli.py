@@ -48,6 +48,12 @@ def main():
         help="Extract audio only",
     )
     parser.add_argument(
+        "--audio-format",
+        default=None,
+        choices=["mp3", "m4a", "opus", "wav", "flac"],
+        help="Audio codec to use with --audio-only (default: mp3)",
+    )
+    parser.add_argument(
         "-q",
         "--quality",
         default="best",
@@ -138,7 +144,7 @@ def main():
         help="Show detailed status for each item",
     )
 
-    # Special handling for 'config' subcommand before general parsing
+    # Special handling for subcommands before general parsing
     # This avoids conflicts with the positional 'url' argument
     if len(sys.argv) > 1 and sys.argv[1] == "config":
         from zget.commands.config import handle_config
@@ -157,6 +163,14 @@ def main():
 
         config_args = config_parser.parse_args(sys.argv[2:])
         handle_config(config_args)
+        return
+
+    if len(sys.argv) > 1 and sys.argv[1] == "info":
+        handle_info_cmd(sys.argv[2:])
+        return
+
+    if len(sys.argv) > 1 and sys.argv[1] in ("list-channel", "ls-channel"):
+        handle_list_channel_cmd(sys.argv[2:])
         return
 
     args = parser.parse_args()
@@ -264,12 +278,169 @@ def show_welcome():
             f"🌐 [bold]PWA Status:[/bold] Production Ready\n\n"
             f"To download a one-off video via CLI:\n"
             f"[dim]zget <url>[/dim]\n\n"
+            f"Metadata without downloading:\n"
+            f"[dim]zget info <url> --json[/dim]\n"
+            f"[dim]zget list-channel <channel-or-playlist-url> --since 2020-01-01 --json[/dim]\n\n"
             f"To start the archival server:\n"
             f"[dim]zget-server --port 8000[/dim]",
             title="Welcome",
             border_style="gold1",
         )
     )
+
+
+def handle_info_cmd(argv: list[str]) -> None:
+    """Extract metadata for a single URL without downloading."""
+    import json
+
+    from zget.core import extract_info
+
+    p = argparse.ArgumentParser(
+        prog="zget info",
+        description="Extract media metadata without downloading.",
+    )
+    p.add_argument("url", help="Video / media URL")
+    p.add_argument(
+        "--json",
+        action="store_true",
+        help="Print full JSON (default: compact human summary)",
+    )
+    p.add_argument("--cookies-from", metavar="BROWSER", help="Browser for cookies")
+    p.add_argument("--cookies", metavar="FILE", help="Path to cookies.txt")
+    p.add_argument(
+        "--compact",
+        action="store_true",
+        help="With --json: only id/title/url/date/duration/uploader fields",
+    )
+    args = p.parse_args(argv)
+
+    try:
+        info = extract_info(
+            args.url,
+            cookies_from=args.cookies_from,
+            cookies_file=args.cookies,
+        )
+    except Exception as e:
+        console.print(f"[red]error:[/red] {e}")
+        sys.exit(1)
+
+    if args.json:
+        if args.compact:
+            payload = {
+                "id": info.get("id"),
+                "title": info.get("title"),
+                "url": info.get("webpage_url") or info.get("original_url") or args.url,
+                "uploader": info.get("uploader") or info.get("channel"),
+                "upload_date": info.get("upload_date"),
+                "duration": info.get("duration"),
+                "platform": info.get("_zget_platform"),
+                "live_status": info.get("live_status"),
+                "was_live": info.get("was_live"),
+                "description": (info.get("description") or "")[:500] or None,
+            }
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
+        else:
+            print(json.dumps(info, ensure_ascii=False, indent=2, default=str))
+        return
+
+    upload = info.get("upload_date") or "?"
+    if upload and len(str(upload)) == 8 and str(upload).isdigit():
+        upload = f"{upload[0:4]}-{upload[4:6]}-{upload[6:8]}"
+    dur = info.get("duration")
+    dur_s = f"{int(dur)}s" if isinstance(dur, (int, float)) else "?"
+    console.print(f"[bold]{info.get('title') or '(no title)'}[/bold]")
+    console.print(f"  id:       {info.get('id')}")
+    console.print(f"  url:      {info.get('webpage_url') or args.url}")
+    console.print(f"  uploader: {info.get('uploader') or info.get('channel') or '?'}")
+    console.print(f"  date:     {upload}")
+    console.print(f"  duration: {dur_s}")
+    console.print(f"  platform: {info.get('_zget_platform') or '?'}")
+
+
+def handle_list_channel_cmd(argv: list[str]) -> None:
+    """List videos on a channel/playlist without downloading."""
+    import json
+
+    from zget.core import get_recent_videos_from_channel
+
+    p = argparse.ArgumentParser(
+        prog="zget list-channel",
+        description="List videos from a channel, playlist, or tab (metadata only).",
+    )
+    p.add_argument("url", help="Channel, playlist, user, or tab URL")
+    p.add_argument(
+        "--since",
+        metavar="DATE",
+        help="Keep items on/after this date (YYYY-MM-DD); only when upload_date known",
+    )
+    p.add_argument(
+        "--until",
+        metavar="DATE",
+        help="Keep items on/before this date (YYYY-MM-DD); only when upload_date known",
+    )
+    p.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Max items (0 = no limit; default 0)",
+    )
+    p.add_argument(
+        "--json",
+        action="store_true",
+        help="Print JSON array (one object per video)",
+    )
+    p.add_argument(
+        "--jsonl",
+        action="store_true",
+        help="Print JSON Lines (one object per line)",
+    )
+    p.add_argument("--cookies-from", metavar="BROWSER", help="Browser for cookies")
+    p.add_argument("--cookies", metavar="FILE", help="Path to cookies.txt")
+    args = p.parse_args(argv)
+
+    try:
+        videos = get_recent_videos_from_channel(
+            channel_url=args.url,
+            limit=args.limit if args.limit and args.limit > 0 else 0,
+            cookies_from=args.cookies_from,
+            cookies_file=args.cookies,
+            since=args.since,
+            until=args.until,
+        )
+    except Exception as e:
+        console.print(f"[red]error:[/red] {e}")
+        sys.exit(1)
+
+    # Normalize upload_date to YYYY-MM-DD for consumers
+    for v in videos:
+        ud = v.get("upload_date")
+        if ud and isinstance(ud, str) and len(ud) == 8 and ud.isdigit():
+            v["upload_date"] = f"{ud[0:4]}-{ud[4:6]}-{ud[6:8]}"
+
+    if args.jsonl:
+        for v in videos:
+            print(json.dumps(v, ensure_ascii=False, default=str))
+        return
+
+    if args.json:
+        print(json.dumps(videos, ensure_ascii=False, indent=2, default=str))
+        return
+
+    if not videos:
+        console.print("[dim]No videos found (or all filtered out).[/dim]")
+        return
+
+    for v in videos:
+        date = v.get("upload_date") or "????-??-??"
+        dur = v.get("duration")
+        dur_s = f"{int(dur):>6}s" if isinstance(dur, (int, float)) else "      ?"
+        title = (v.get("title") or "(no title)").replace("\n", " ")
+        url = v.get("url") or ""
+        console.print(f"{date}  {dur_s}  {title}")
+        if url:
+            console.print(f"           {url}")
+
+    console.print(f"\n[dim]{len(videos)} item(s)[/dim]")
 
 
 def handle_download(args):
@@ -333,6 +504,7 @@ def handle_download(args):
                 output_dir=output_dir,
                 format_id=args.format,
                 audio_only=args.audio_only,
+                audio_format=args.audio_format,
                 max_quality=args.quality,
                 cookies_from=args.cookies_from,
                 cookies_file=args.cookies,

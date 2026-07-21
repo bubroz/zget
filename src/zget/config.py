@@ -70,6 +70,8 @@ def detect_installed_browser() -> str | None:
 # Standard config location
 CONFIG_DIR = Path.home() / ".config" / "zget"
 CONFIG_FILE = CONFIG_DIR / "config.json"
+# Library root (ZGET_HOME): media + library.db. Override via env ZGET_HOME or
+# config key zget_home (see README "Library location").
 
 
 def load_persistent_config():

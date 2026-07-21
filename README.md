@@ -23,6 +23,27 @@ Content disappears constantly—videos get deleted, accounts get banned, platfor
 - **[uv](https://docs.astral.sh/uv/)** (fast Python package manager)
 - **ffmpeg** (for video processing)
 
+
+## Library location
+
+zget stores the video library under **`ZGET_HOME`** (see `src/zget/config.py`).
+
+| Layer | Path |
+|-------|------|
+| Config | `~/.config/zget/config.json` → key `zget_home` |
+| Env override | `ZGET_HOME=...` |
+| Default (code) | `~/Downloads/zget` if unset |
+
+Example custom location:
+
+```json
+{
+  "zget_home": "/Volumes/Media/zget"
+}
+```
+
+After upgrades or reinstalls, re-check `config.json` so a reset does not recreate the default path unexpectedly.
+
 ## Installation
 
 ### 1. Install Dependencies
@@ -131,8 +152,24 @@ uv run zget search <query>           # Full-text search
 uv run zget stats                    # Library statistics
 uv run zget doctor                   # Health check (find orphans, verify files)
 uv run zget doctor --fix             # Auto-fix issues
-uv run zget formats <url>            # List available formats without downloading
+uv run zget --list-formats <url>     # List available formats without downloading
 ```
+
+### Metadata / Research (no download)
+
+```bash
+# Single URL metadata
+uv run zget info <url>
+uv run zget info <url> --json
+uv run zget info <url> --json --compact
+
+# Enumerate a channel, playlist, or tab (flat extract)
+uv run zget list-channel <channel-or-playlist-url>
+uv run zget list-channel <url> --since 2020-01-01 --json
+uv run zget list-channel <url> --since 2020-01-01 --until 2026-12-31 --jsonl --limit 500
+```
+
+`--since` / `--until` filter only when `upload_date` is present on the flat listing (YouTube often has it; some sites do not — undated rows are kept).
 
 ### Configuration
 
