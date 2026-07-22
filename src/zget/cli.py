@@ -1,7 +1,7 @@
 """
 Command-line interface for zget.
 
-Routes to direct download when URL provided, or shows information about The Portal.
+Agent- and operator-facing entry: download, library, path health, metadata.
 """
 
 import argparse
@@ -33,7 +33,7 @@ def main():
         "url",
         nargs="?",
         default=None,
-        help="Video URL to download (if omitted, shows Portal info)",
+        help="Video URL to download (if omitted, shows usage summary)",
     )
     parser.add_argument(
         "-o",
@@ -270,31 +270,30 @@ async def handle_health(args):
 
 
 def show_welcome():
-    """Show welcome information and Webport status."""
-    import socket
-
-    try:
-        hostname = socket.gethostname()
-        local_ip = socket.gethostbyname(hostname)
-        webport_url = f"http://{local_ip}:8000"
-    except OSError:
-        webport_url = "http://localhost:8000"
+    """Show CLI / agent usage when no URL is given."""
+    from zget.utils import get_version
 
     console.print(
         Panel(
-            f"[bold gold1]zget v0.4.0[/bold gold1]\n\n"
-            f"The interactive TUI has been retired in favor of [bold]The Portal[/bold].\n\n"
-            f"📱 [bold]Mobile Access:[/bold] [link={webport_url}]{webport_url}[/link]\n"
-            f"🌐 [bold]PWA Status:[/bold] Production Ready\n\n"
-            f"To download a one-off video via CLI:\n"
-            f"[dim]zget <url>[/dim]\n\n"
-            f"Metadata without downloading:\n"
-            f"[dim]zget info <url> --json[/dim]\n"
-            f"[dim]zget list-channel <channel-or-playlist-url> --since 2020-01-01 --json[/dim]\n\n"
-            f"To start the archival server:\n"
-            f"[dim]zget-server --port 8000[/dim]",
-            title="Welcome",
-            border_style="gold1",
+            f"[bold]zget v{get_version()}[/bold]\n\n"
+            f"Agentic media capture: download, library, path handoff.\n\n"
+            f"[bold]Download[/bold]\n"
+            f"  zget <url>\n"
+            f"  zget <url> --quiet\n"
+            f"  zget <url> --flat  |  -o DIR  |  --audio-only\n\n"
+            f"[bold]Metadata (no download)[/bold]\n"
+            f"  zget info <url> [--json]\n"
+            f"  zget list-channel <url> --since YYYY-MM-DD --jsonl\n\n"
+            f"[bold]Library[/bold]\n"
+            f"  zget --search <query>\n"
+            f"  zget --stats\n"
+            f"  zget --doctor\n"
+            f"  zget paths check | paths rewrite\n\n"
+            f"[bold]Agents[/bold]\n"
+            f"  zget-mcp\n"
+            f"  See docs/INTEGRATION.md\n",
+            title="zget",
+            border_style="cyan",
         )
     )
 

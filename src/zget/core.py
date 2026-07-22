@@ -142,8 +142,8 @@ def download(
             opts["merge_output_format"] = "mp4"
         else:
             # Best available video+audio, merged to mp4
-            # Force/Prefer H.264 (avc1) for maximum iOS/PWA compatibility
-            # This avoids the 'VP9 in MP4' issue that causes black screens on Safari
+            # Prefer H.264 (avc1) for broad player compatibility
+            # Avoids VP9-in-MP4 issues on some clients
             opts["format"] = (
                 "bv*[ext=mp4][vcodec^=avc]+ba[ext=m4a]"  # Best: H.264 + AAC
                 "/bv*[ext=mp4]+ba[ext=m4a]"  # Any mp4 video + AAC

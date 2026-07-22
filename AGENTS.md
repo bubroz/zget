@@ -21,23 +21,22 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 # AI Assistant Instructions: zget
 
-zget is the local media capture front-end (CLI first, optional web UI, MCP). Downstream tools should not call yt-dlp directly.
+zget is **agentic media capture**: CLI + MCP over yt-dlp. No web UI. Downstream tools must not call yt-dlp directly.
 
-**Contract for other projects:** `docs/INTEGRATION.md`
+**Contract:** `docs/INTEGRATION.md`
 
-## Key paths
+## Key files
 
 | Path | Role |
 |------|------|
 | `src/zget/core.py` | download / extract_info |
 | `src/zget/platforms/cspan.py` | C-SPAN `/program/` HLS |
 | `src/zget/library/paths.py` | path health / rewrite |
-| `src/zget/library/ingest.py` | ingest pipeline |
+| `src/zget/library/ingest.py` | ingest |
 | `src/zget/cli.py` | CLI |
-| `src/zget/config.py` | ZGET_HOME and settings |
-| `src/zget/server/` | FastAPI + `static/` Web Components |
-| `src/zget/mcp/` | MCP server |
-| `src/zget/db/` | SQLite |
+| `src/zget/mcp/` | MCP stdio server |
+| `src/zget/db/store.py` | sync SQLite |
+| `src/zget/config.py` | ZGET_HOME |
 
 ## Run
 
@@ -47,22 +46,13 @@ uv run zget <url>
 uv run zget info <url>
 uv run zget --doctor
 uv run zget paths check
-uv run zget-server --port 9989 --open
+uv run zget-mcp
 uv run pytest
 ```
 
-## Library rules
+## Rules
 
-- Resolve home: `ZGET_HOME` → `~/.config/zget/config.json` `zget_home` → `~/Downloads/zget`
-- Do not hardcode machine-specific library roots in the public repo
-- After home or volume renames: `paths rewrite` / `--doctor --fix` before purging
-- `--purge-orphans` only for true missing files
-
-## C-SPAN
-
-- `video/?…` native yt-dlp
-- `/program/.../{id}` via `platforms/cspan.py`
-
-## Public hygiene
-
-No operator volume names, private corpus paths, or real network IDs in commits.
+- Home: `ZGET_HOME` → config `zget_home` → `~/Downloads/zget`
+- No public commits with operator volume names or private corpus paths
+- Path rewrite before orphan purge
+- C-SPAN program pages are supported in-tree

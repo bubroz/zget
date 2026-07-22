@@ -1,8 +1,8 @@
-.PHONY: bootstrap serve
+.PHONY: bootstrap test
 
 bootstrap:
 	chmod +x bootstrap.sh
 	./bootstrap.sh
 
-serve:
-	uv run zget-server --port 9989 --open
+test:
+	uv run --extra dev pytest

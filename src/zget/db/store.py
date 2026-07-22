@@ -240,6 +240,9 @@ class VideoStore:
             conn.execute(
                 "INSERT OR REPLACE INTO schema_version (version) VALUES (?)", (SCHEMA_VERSION,)
             )
+            # Drop unused legacy tables from earlier experiments (empty shells)
+            for legacy in ("video", "downloadqueueitem"):
+                conn.execute(f"DROP TABLE IF EXISTS {legacy}")
 
     @contextmanager
     def _connect(self) -> Generator[sqlite3.Connection, None, None]:

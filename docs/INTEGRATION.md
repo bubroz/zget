@@ -1,104 +1,75 @@
-# zget integration guide (librarian · Chimera · agents)
+# zget integration (agents · librarian · Chimera)
 
-How other projects should call zget after the 2026-07 path, doctor, and C-SPAN work.
+zget is the **only capture front-end**. No web UI. Use CLI or MCP.
 
 ## Library location
 
-Never hardcode `~/Downloads/zget`. Resolve the library root in this order:
+Never hardcode `~/Downloads/zget`. Resolve in order:
 
-1. **`ZGET_HOME`** environment variable  
-2. **`~/.config/zget/config.json`** → key `zget_home`  
-3. Fallback: `~/Downloads/zget` (zget default only)
+1. `ZGET_HOME`
+2. `~/.config/zget/config.json` → `zget_home`
+3. Fallback: `~/Downloads/zget`
 
-Python helper (librarian): `librarian.utils.zget_paths.default_zget_home()`.
+Python (librarian): `librarian.utils.zget_paths.default_zget_home()`.
 
 ```bash
-# Confirm where media will land
 cd ~/Projects/zget && uv run zget --stats
 cd ~/Projects/zget && uv run zget config show
 ```
 
-Layout under the home:
-
-```text
-$ZGET_HOME/
-  library.db
-  videos/<platform>/   # youtube, c-span, …
-  thumbnails/
-  exports/
-  logs/
-```
-
-## Capture (always zget, never raw yt-dlp)
+## Capture
 
 ```bash
 cd ~/Projects/zget
 uv run zget "<URL>" --quiet
-uv run zget "<URL>" -o /path/to/dir --flat   # pipeline drop; still prefer default home when possible
-uv run zget info "<URL>" --json --compact    # metadata only
+uv run zget "<URL>" -o /path/to/dir --flat
+uv run zget info "<URL>" --json --compact
 uv run zget list-channel "<channel-url>" --since 2020-01-01 --jsonl
 ```
 
 ## C-SPAN
 
-| URL shape | Support |
-|-----------|---------|
-| `c-span.org/video/?…` | Native yt-dlp (unchanged) |
-| `c-span.org/program/.../{id}` | **Supported** — resolves public HLS + Referer headers (`src/zget/platforms/cspan.py`) |
+| URL | Support |
+|-----|---------|
+| `c-span.org/video/?…` | yt-dlp |
+| `c-span.org/program/.../{id}` | zget HLS resolve + Referer |
 
 ```bash
 uv run zget info 'https://www.c-span.org/program/.../NNNNN'
 uv run zget 'https://www.c-span.org/program/.../NNNNN' --quiet
 ```
 
-No separate recover script is required for free public program streams.
-
-## Path health (doctor)
+## Path health
 
 ```bash
-uv run zget --doctor                 # classify only
-uv run zget paths check              # same taxonomy
-uv run zget --doctor --fix           # rewrite stale home paths only (safe)
-uv run zget paths rewrite --dry-run  # preview migration after moving ZGET_HOME
-# DANGEROUS — only after reviewing true orphans:
+uv run zget --doctor
+uv run zget paths check
+uv run zget --doctor --fix           # rewrite only
+uv run zget paths rewrite --dry-run
+# only after review:
 uv run zget --doctor --fix --purge-orphans
 ```
 
-### Path classes
+| Class | Purge? |
+|-------|--------|
+| healthy / relocatable / off-home | No (fix rewrites relocatable) |
+| offline volume | No until remount or sibling rewrite |
+| orphan | Only with `--purge-orphans` |
 
-| Class | Meaning | Purge? |
-|-------|---------|--------|
-| **healthy** | File exists at stored path under `ZGET_HOME` | No |
-| **relocatable** | Stale absolute home; file found under current `ZGET_HOME` | No — use `--fix` / `paths rewrite` |
-| **off-home** | File exists outside `ZGET_HOME` (pipeline `-o`) | No |
-| **offline volume** | Path under `/Volumes/X/...`, `X` unmounted, and no same relative path on another mounted volume | Remount **or** rename-rewrite; do not purge blindly |
-| **orphan** | File missing and (if volume path) the volume root is present | Only with explicit `--purge-orphans` |
+Volume renames: unmounted `/Volumes/Old/rest` can resolve to `/Volumes/New/rest` when that path exists.
 
-### Volume renames (not “remount the old name”)
-
-If the disk label changed (e.g. media still at  
-`/Volumes/NewName/candidate_research/...` but DB still says  
-`/Volumes/OldName/candidate_research/...`), zget treats matching relative paths
-on **other mounted volumes** as **relocatable**. Run:
+## Agents
 
 ```bash
-uv run zget paths rewrite --dry-run
-uv run zget paths rewrite   # or: zget --doctor --fix
+uv run zget-mcp
 ```
 
-Do not hunt for the old volume name if the data already lives on the current volume.
+Prefer paths from tool results or config, not guessed Downloads paths.
 
-After moving the library home or renaming a volume, always run `paths rewrite`
-(or `doctor --fix`) before trusting orphan counts.
+## Invoke pattern for skills
 
-## Agent / skill contract
+```bash
+cd /path/to/zget && uv run zget "URL" --quiet
+```
 
-- Invoke: `cd ~/Projects/zget && uv run zget "URL" --quiet`  
-- Report the path **zget prints** or from `--stats` / search — do not guess Downloads  
-- Librarian ingest defaults follow the same home resolution  
-- Chimera A/V collection should use `zget` for program and video URLs alike  
-
-## Public vs operator notes
-
-- **Public zget repo:** generic docs only (this file, README, AGENTS)  
-- **Operator machine paths** (volume names): private skills / `~/.grok/operator-os/zget-OPERATOR.md` only  
+Report the path zget prints (or from `--stats` / search).

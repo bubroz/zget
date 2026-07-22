@@ -1,8 +1,8 @@
 # zget
 
-Download and archive media from YouTube, Instagram, TikTok, Reddit, X, Twitch, C-SPAN, and other sites yt-dlp supports. Local library, metadata, CLI, optional web UI, MCP for agents.
+Agentic local media capture. Download and archive media from YouTube, Instagram, TikTok, Reddit, X, Twitch, C-SPAN, and other sites yt-dlp supports. Library with metadata, dedupe, path health, CLI, and MCP for agents and pipelines.
 
-This is a **capture tool** (the front end for projects like personal research pipelines). Prefer the CLI; the browser UI is optional.
+There is **no web UI**. Use the CLI or MCP.
 
 ## Requirements
 
@@ -44,7 +44,7 @@ $ZGET_HOME/
   logs/
 ```
 
-## CLI (primary)
+## CLI
 
 ```bash
 # download
@@ -55,7 +55,7 @@ uv run zget <url> -o /path/to/dir
 uv run zget <url> --audio-only
 uv run zget <url> --quality 720
 
-# inspect without download
+# metadata only
 uv run zget info <url>
 uv run zget info <url> --json --compact
 uv run zget --list-formats <url>
@@ -65,7 +65,7 @@ uv run zget list-channel <channel-or-playlist-url> --since 2020-01-01 --jsonl
 uv run zget --search "query"
 uv run zget --stats
 uv run zget --doctor
-uv run zget --doctor --fix                 # rewrite stale paths only
+uv run zget --doctor --fix
 uv run zget paths check
 uv run zget paths rewrite --dry-run
 uv run zget paths rewrite
@@ -77,29 +77,20 @@ uv run zget config set flat true
 
 ### C-SPAN
 
-- `c-span.org/video/?...` works via yt-dlp as usual.
-- `c-span.org/program/.../{id}` is supported: zget resolves public HLS and uses the required Referer headers.
+- `c-span.org/video/?...` via yt-dlp
+- `c-span.org/program/.../{id}` via public HLS + Referer (`src/zget/platforms/cspan.py`)
 
 ### Path health
 
 | Class | Meaning |
 |-------|---------|
 | healthy | File exists under ZGET_HOME |
-| relocatable | Stale absolute path; file found after home/volume rename |
-| off-home | File exists outside ZGET_HOME (e.g. `-o` pipeline output) |
-| offline volume | Path on an unmounted `/Volumes/...` with no sibling match |
+| relocatable | Stale path; file found after home or volume rename |
+| off-home | File exists outside ZGET_HOME (pipeline `-o`) |
+| offline volume | Unmounted `/Volumes/...` with no sibling match |
 | orphan | File missing |
 
-`--doctor --fix` rewrites relocatable paths. `--purge-orphans` deletes orphan DB rows only after you mean it.
-
-## Web UI (optional)
-
-```bash
-uv run zget-server --port 9989 --open
-# or double-click zget-start.command on macOS
-```
-
-Default: http://localhost:9989. Use `--secure` to allow localhost + Tailscale only when binding for LAN/mesh access.
+`--doctor --fix` rewrites relocatable paths only. Use `--purge-orphans` only when you intend to drop missing rows.
 
 ## Agents (MCP)
 
@@ -120,11 +111,23 @@ uv run zget-mcp
 }
 ```
 
-Tools include download, search, get local path, extract info. Full contract for other projects: [docs/INTEGRATION.md](docs/INTEGRATION.md).
+| Tool | Role |
+|------|------|
+| `zget_download` | Download URL into the library |
+| `zget_search` | Full-text search |
+| `zget_get_video` | Metadata by id |
+| `zget_get_local_path` | Filesystem path for other tools |
+| `zget_extract_info` | Metadata without download |
+| `zget_list_formats` | Formats |
+| `zget_check_url` | Already archived? |
+| `zget_get_recent` | Recent downloads |
+| `zget_get_by_uploader` | By channel |
+
+Full contract for other repos: [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## Platforms
 
-Verified in practice: YouTube, Instagram, X, TikTok, Reddit, Twitch, C-SPAN (including program pages). Many more via yt-dlp, untested.
+Verified: YouTube, Instagram, X, TikTok, Reddit, Twitch, C-SPAN (including program pages). Many more via yt-dlp.
 
 ## Layout
 
@@ -132,11 +135,11 @@ Verified in practice: YouTube, Instagram, X, TikTok, Reddit, Twitch, C-SPAN (inc
 src/zget/
   core.py           # yt-dlp download / extract
   platforms/        # adapters (C-SPAN program HLS)
-  library/          # ingest, path migration, thumbnails
+  library/          # ingest, paths, thumbnails
   cli.py            # CLI
-  server/           # FastAPI + static Web Components UI
-  mcp/              # MCP server
+  mcp/              # MCP (stdio)
   db/               # SQLite FTS5
+  metadata/         # NFO sidecars
   ...
 ```
 
