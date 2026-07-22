@@ -1,6 +1,6 @@
 # zget
 
-The Archival Engine. Download and preserve media from YouTube, Instagram, TikTok, Reddit, X, Twitch, C-SPAN, and 600+ other sites to your own local library.
+The Archival Engine. Download and preserve media from YouTube, Instagram, TikTok, Reddit, X, Twitch, C-SPAN, and 600+ other sites in a local library you control.
 
 ![zget demo](assets/demo.gif)
 
@@ -8,33 +8,33 @@ The Archival Engine. Download and preserve media from YouTube, Instagram, TikTok
 
 **The internet is ephemeral. Your library isn't.**
 
-Content disappears constantly—videos get deleted, accounts get banned, platforms shut down. zget lets you build a personal archive that you control.
+Content disappears constantly—videos get deleted, accounts get banned, platforms shut down. zget builds a personal archive with metadata, search, and optional media-server layout.
 
-- **Save before it's gone.** That tutorial you keep referencing, that interview, that viral clip
-- **Share without barriers.** Send videos to people who can't access the original (geo-blocks, login walls)
-- **Watch offline.** Download for flights, road trips, anywhere with bad connectivity
-- **Research and journalism.** Archive footage before it gets altered or removed
-- **Family media server.** One household library accessible from every device
+- **Save before it's gone** — tutorials, interviews, hearings, clips
+- **Share without barriers** — offline copies past geo-blocks and login walls
+- **Watch offline** — flights, travel, weak connectivity
+- **Research** — archive footage before it changes or disappears
+- **Household library** — one vault, optional Plex/Jellyfin-friendly layout
+- **Agent-friendly** — CLI + MCP for handoff to transcription and analysis tools
 
 ## Requirements
 
 - **macOS** (Apple Silicon or Intel) or **Linux**
 - **Python 3.10+**
-- **[uv](https://docs.astral.sh/uv/)** (fast Python package manager)
-- **ffmpeg** (for video processing)
-
+- **[uv](https://docs.astral.sh/uv/)**
+- **ffmpeg** (processing / HLS)
 
 ## Library location
 
-zget stores the video library under **`ZGET_HOME`** (see `src/zget/config.py`).
+Media and `library.db` live under **`ZGET_HOME`**:
 
 | Layer | Path |
 |-------|------|
 | Config | `~/.config/zget/config.json` → key `zget_home` |
-| Env override | `ZGET_HOME=...` |
-| Default (code) | `~/Downloads/zget` if unset |
+| Env | `ZGET_HOME=...` |
+| Default | `~/Downloads/zget` if unset |
 
-Example custom location:
+Example:
 
 ```json
 {
@@ -42,193 +42,154 @@ Example custom location:
 }
 ```
 
-After upgrades or reinstalls, re-check `config.json` so a reset does not recreate the default path unexpectedly.
+After upgrades, re-check config so a reset does not recreate the default unexpectedly.
+
+Layout:
+
+```text
+$ZGET_HOME/
+  library.db
+  videos/<platform>/
+  thumbnails/
+  exports/
+  logs/
+```
 
 ## Installation
 
-### 1. Install Dependencies
-
 ```bash
-# Install uv (if you don't have it)
+# uv (if needed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install ffmpeg (macOS)
+# ffmpeg (macOS)
 brew install ffmpeg
-```
 
-### 2. Clone the Repository
-
-```bash
 git clone https://github.com/bubroz/zget.git
 cd zget
+./zget-start.command   # installs deps, starts server, opens browser
 ```
 
-### 3. First Run (Setup)
+Browser opens at `http://localhost:9989`.
+
+## Daily use
+
+### Web UI
+
+Double-click **`zget-start.command`** (macOS) or run:
 
 ```bash
-# This installs all Python dependencies automatically
-./zget-start.command
+uv run zget-server --port 9989 --secure --open
 ```
 
-Your browser will open to `http://localhost:9989`. You're ready to archive!
+Keep the terminal open so the process can use browser cookies (important for YouTube/TikTok).
 
-## Quick Start (Robust Launcher)
+Optional: access from phone via [Tailscale](https://tailscale.com) at `http://100.x.y.z:9989` (same account on both devices; use your Tailscale IPv4).
 
-We recommend using the included **Launcher Script** for daily use.
+### CLI download
 
-### 1. Daily Use
-
-Double-click `zget-start.command` in Finder.
-
-This will:
-
-1. Open a terminal window (keep this open!)
-2. Start the server on port **9989**
-3. Securely bind to your Tailscale network
-4. Launch your browser automatically
-
-> **Why keep the window open?**
-> Running in a visible terminal ensures zget has permission to use your browser's cookies. This is critical for downloading from sites like TikTok and YouTube which block background bots.
-
-### 2. Mobile Access (Tailscale)
-
-To access your library from your phone (e.g. while away from home), use [Tailscale](https://tailscale.com).
-
-1. **Install Tailscale** on both your Mac and your Phone.
-2. **Log in** to the same account.
-3. **Visit** the server IP from your phone:
-
-    ```
-    http://100.x.y.z:9989
-    ```
-
-    *(Find your Mac's Tailscale IP in the Tailscale menu bar icon)*
+```bash
+uv run zget <url>
+uv run zget <url> --output /path/to/dir
+uv run zget <url> --flat              # no platform subdirectory
+uv run zget <url> --audio-only -a
+uv run zget <url> --quality 720
+uv run zget <url> --quiet
+```
 
 ## Features
 
-### Core
+- **Multi-platform download** via yt-dlp (600+ sites)
+- **C-SPAN program pages** — `c-span.org/program/.../{id}` via public HLS when needed
+- **Full-text search** (SQLite FTS5)
+- **Metadata + NFO + thumbnails** for archival / Plex / Jellyfin
+- **Dedup** by URL and file hash
+- **Path health** — migrate after moving `ZGET_HOME` or renaming volumes
+- **MCP tools** for AI agents (search, download, local path handoff)
 
-- **Multi-Platform Downloads**: YouTube, Instagram, TikTok, Reddit, Twitch, X, C-SPAN, and 600+ sites via yt-dlp
-- **C-SPAN program pages**: `c-span.org/program/.../{id}` resolved to public HLS when needed
-- **Full-Text Search**: Find videos by title, uploader, or description (SQLite FTS5)
-- **Metadata Preservation**: Original titles, upload dates, view counts, descriptions
-- **H.264 Transcoding**: Conversion for iOS/Safari compatibility (when enabled in settings)
-- **Duplicate Detection**: By URL and file hash
-- **Path migration**: `zget paths rewrite` / `doctor --fix` after moving `ZGET_HOME`
-- **Agent handoff**: MCP tools + local path resolution for downstream tools (e.g. transcription)
+Downstream / agent integration: **[docs/INTEGRATION.md](docs/INTEGRATION.md)**.
 
-See **[docs/INTEGRATION.md](docs/INTEGRATION.md)** for librarian / Chimera / agent contracts.
-
-### Media Server Integration (Plex / Jellyfin)
-
-- **Custom Output Directory**: Point downloads directly at your library folder
-- **Flat Structure**: Skip platform subdirectories for watch-folder scanning
-- **NFO Sidecar Generation**: Kodi-style XML metadata files
-- **Local Thumbnails**: Poster images placed alongside videos
-
-## Verified Platforms
+## Verified platforms
 
 | Platform  | Status |
 |-----------|--------|
-| YouTube   | ✅ Verified |
-| Instagram | ✅ Verified |
-| X         | ✅ Verified |
-| TikTok    | ✅ Verified |
-| Reddit    | ✅ Verified |
-| Twitch    | ✅ Verified |
-| C-SPAN    | ✅ Verified (including `/program/.../{id}` pages via HLS) |
+| YouTube   | Verified |
+| Instagram | Verified |
+| X         | Verified |
+| TikTok    | Verified |
+| Reddit    | Verified |
+| Twitch    | Verified |
+| C-SPAN    | Verified, including `/program/.../{id}` HLS |
 
-Additional sites may work via [yt-dlp](https://github.com/yt-dlp/yt-dlp) but are not officially tested.
+Other sites may work via yt-dlp without being formally tested.
 
-C-SPAN **program** URLs (`c-span.org/program/...`) are resolved to public HLS streams with the required Referer headers when yt-dlp’s native extractor does not support the page. Classic `c-span.org/video/?…` URLs still use the normal yt-dlp path.
+**C-SPAN notes:** classic `c-span.org/video/?…` uses yt-dlp. Program pages are resolved to public HLS with required Referer headers when the native extractor cannot handle the page.
 
-## CLI Reference
+## CLI reference
 
-### Download a Video
+### Library
 
 ```bash
-uv run zget <url>                    # Download to default location
-uv run zget <url> --output /path     # Download to specific directory
-uv run zget <url> --flat             # Skip platform subdirectory
+uv run zget --search "<query>"       # full-text search
+uv run zget --stats                  # counts and size
+uv run zget --doctor                 # path health (healthy / relocatable / off-home / offline volume / orphan)
+uv run zget --doctor --fix           # rewrite stale paths only (safe)
+uv run zget --doctor --fix --purge-orphans   # also drop truly missing records
+uv run zget --doctor --fix --purge-orphans --dry-run
+uv run zget paths check
+uv run zget paths rewrite --dry-run
+uv run zget paths rewrite            # apply; creates a library.db backup first
 ```
 
-### Library Commands
+**Path classes (important):**
+
+| Class | Meaning |
+|-------|---------|
+| healthy | File exists at stored path under `ZGET_HOME` |
+| relocatable | Stale path; file found under current home or renamed volume |
+| off-home | File exists outside `ZGET_HOME` (intentional pipeline `-o`) |
+| offline volume | `/Volumes/X/...` unmounted and no sibling match — do not purge blindly |
+| orphan | File missing (only these are removed by `--purge-orphans`) |
+
+### Metadata (no download)
 
 ```bash
-uv run zget search <query>           # Full-text search
-uv run zget stats                    # Library statistics
-uv run zget doctor                   # Health check (paths, relocatable, orphans)
-uv run zget doctor --fix             # Rewrite stale ZGET_HOME paths (safe)
-uv run zget doctor --fix --purge-orphans  # Also delete truly missing records
-uv run zget paths check              # Classify path health
-uv run zget paths rewrite --dry-run  # Preview path migration after moving the library
-uv run zget --list-formats <url>     # List available formats without downloading
-```
-
-### Metadata / Research (no download)
-
-```bash
-# Single URL metadata
 uv run zget info <url>
 uv run zget info <url> --json
 uv run zget info <url> --json --compact
-
-# Enumerate a channel, playlist, or tab (flat extract)
+uv run zget --list-formats <url>
 uv run zget list-channel <channel-or-playlist-url>
-uv run zget list-channel <url> --since 2020-01-01 --json
-uv run zget list-channel <url> --since 2020-01-01 --until 2026-12-31 --jsonl --limit 500
+uv run zget list-channel <url> --since 2020-01-01 --jsonl --limit 500
 ```
-
-`--since` / `--until` filter only when `upload_date` is present on the flat listing (YouTube often has it; some sites do not — undated rows are kept).
 
 ### Configuration
 
-Persistent settings stored in `~/.config/zget/config.json`:
-
 ```bash
-uv run zget config show              # View current settings
-uv run zget config set <key> <value> # Set a value
-uv run zget config unset <key>       # Remove a value
+uv run zget config show
+uv run zget config set <key> <value>
+uv run zget config unset <key>
 ```
-
-Common keys:
 
 | Key | Description | Example |
 |-----|-------------|---------|
-| `output_dir` | Custom output path | `/Volumes/Media/Videos` |
-| `flat` | Skip platform subdirs | `true` |
-| `template` | Filename format | `%(upload_date>%Y-%m-%d)s %(title)s.%(ext)s` |
+| `zget_home` | Library root | `/Volumes/Media/zget` |
+| `output_dir` | Override download directory | `/Volumes/Media/Videos` |
+| `flat` / flat structure | Skip platform subdirs | `true` |
+| `template` | Filename template | `%(upload_date>%Y-%m-%d)s %(title)s.%(ext)s` |
 
-### Plex Setup Example
+Plex-style flat library:
 
 ```bash
 uv run zget config set output_dir "/Volumes/Media/Social Videos"
 uv run zget config set flat true
 ```
 
-Videos will now download directly to your Plex library with proper metadata (NFO) and artwork generated automatically.
+## AI agents (MCP)
 
-## AI Agent Integration (MCP)
+```bash
+uv run zget-mcp
+```
 
-zget exposes tools for AI agents via the Model Context Protocol.
-
-### Available Tools
-
-| Tool | Description |
-|------|-------------|
-| `zget_download` | Download a video from URL |
-| `zget_search` | Full-text search the library |
-| `zget_get_video` | Get metadata by video ID |
-| `zget_get_local_path` | Get filesystem path for a video |
-| `zget_extract_info` | Extract metadata without downloading |
-| `zget_list_formats` | List available formats |
-| `zget_check_url` | Check if URL exists in library |
-| `zget_get_recent` | Get recently downloaded videos |
-| `zget_get_by_uploader` | Get videos by uploader/channel |
-
-### Configuration
-
-Add this to your agent's MCP config (e.g., `claude_desktop_config.json`):
+Example agent config:
 
 ```json
 {
@@ -245,73 +206,91 @@ Add this to your agent's MCP config (e.g., `claude_desktop_config.json`):
 }
 ```
 
-Replace `/path/to/your/zget` with the actual path where you cloned the repository.
+| Tool | Description |
+|------|-------------|
+| `zget_download` | Download from URL |
+| `zget_search` | Full-text search |
+| `zget_get_video` | Metadata by DB id |
+| `zget_get_local_path` | On-disk path for other tools |
+| `zget_extract_info` | Metadata without download |
+| `zget_list_formats` | Formats list |
+| `zget_check_url` | Already in library? |
+| `zget_get_recent` | Recent downloads |
+| `zget_get_by_uploader` | By channel/uploader |
 
-### Run Standalone
-
-```bash
-uv run zget-mcp
-```
+Prefer resolving library paths via config/`ZGET_HOME`, not hardcoded `~/Downloads/zget`. Details: [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## Troubleshooting
 
-### "Connection Refused" on TikTok
+### TikTok connection refused
 
-If TikTok downloads fail with `0.0.0.0` or `Connection Refused`, check your Pi-hole or router. TikTok uses CNAME chains that may be blocked.
-
-**Required whitelist domains:**
+Router/Pi-hole may block TikTok CDN CNAMEs. Whitelist as needed, e.g.:
 
 - `vm.tiktok.com.edgesuite.net`
 - `www.tiktok.com.edgesuite.net`
 - `a2047.r.akamai.net`
 
-### Server Not Starting
-
-Check if another process is using port 9989:
+### Port in use
 
 ```bash
 lsof -i :9989
-```
-
-Kill the conflicting process or use a different port:
-
-```bash
 uv run zget-server --port 8080
 ```
 
-### Mobile Can't Connect
+### Mobile / Tailscale
 
-1. Verify Tailscale is running: `tailscale status`
-2. Ensure both devices are logged into the same Tailscale account
-3. Try accessing via IP instead of hostname: `http://100.x.y.z:9989`
+1. `tailscale status` on both devices  
+2. Same account  
+3. Open `http://100.x.y.z:9989` (your machine’s Tailscale IPv4)
+
+### Library moved or disk renamed
+
+```bash
+uv run zget paths check
+uv run zget paths rewrite --dry-run
+uv run zget paths rewrite
+```
+
+Do not run `--purge-orphans` until offline volumes and path rewrites are sorted out.
 
 ## Architecture
 
-```
+```text
 src/zget/
-├── server/           # FastAPI backend + Web Components frontend
+├── server/           # FastAPI + native Web Components UI (static/)
 ├── mcp/              # Model Context Protocol server
-├── library/          # Video ingest pipeline (ingest, export, thumbnails)
-├── queue/            # Async download queue manager
-├── db/               # SQLite FTS5 database (async_store, store, models)
-├── metadata/         # NFO sidecar generation
-├── commands/         # CLI subcommands
-├── core.py           # yt-dlp wrapper (download, extract_info)
-├── config.py         # Centralized configuration and path constants
-├── types.py          # Project-local yt-dlp type aliases (YtdlpInfo, ProgressDict)
-├── cookies.py        # Browser cookie extraction for yt-dlp
-├── net.py            # Tailscale IP detection for Secure Mesh
-├── health.py         # Self-diagnostics and health logging
-├── smokescreen.py    # Platform health verification engine (yt-dlp --simulate)
-├── regions.py        # Geographic site filtering and regional collections
-├── safe_delete.py    # Trash-based file deletion (send2trash wrapper)
-├── utils.py          # Shared utilities (sanitize_filename, MIME)
-└── cli.py            # Main CLI entry point
+├── library/          # ingest, paths, export, thumbnails
+├── platforms/        # platform adapters (e.g. C-SPAN program HLS)
+├── queue/            # async download queue
+├── db/               # SQLite FTS5 (async + sync stores)
+├── metadata/         # NFO sidecars
+├── commands/         # CLI subcommands (config, …)
+├── core.py           # yt-dlp download / extract_info
+├── config.py         # paths and settings
+├── types.py          # YtdlpInfo, ProgressDict
+├── cookies.py        # browser cookie extraction
+├── net.py            # Tailscale IP for secure mesh
+├── health.py         # diagnostics
+├── smokescreen.py    # site health checks
+├── regions.py        # regional collections
+├── safe_delete.py    # trash-based deletes
+├── utils.py
+└── cli.py
+```
+
+Web UI is **framework-free** (native Web Components, no frontend build step).
+
+## Development
+
+```bash
+uv sync --extra dev
+uv run pytest
+uv run ruff check src
 ```
 
 ## Acknowledgments
 
-zget is built on [yt-dlp](https://github.com/yt-dlp/yt-dlp) and was developed with assistance from Gemini.
+Built on [yt-dlp](https://github.com/yt-dlp/yt-dlp).
 
 ## License
 

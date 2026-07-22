@@ -41,6 +41,7 @@ zget downloads videos from social media platforms (YouTube, Instagram, TikTok, C
 | `src/zget/config.py` | Paths, `zget_home`, platform detection |
 | `src/zget/types.py` | yt-dlp type aliases (`YtdlpInfo`, `ProgressDict`) |
 | `src/zget/server/app.py` | FastAPI backend, settings API |
+| `src/zget/server/static/` | Web Components UI (no build step) |
 | `src/zget/db/async_store.py` | Async SQLite (server) |
 | `src/zget/db/store.py` | Sync SQLite (CLI) |
 | `src/zget/mcp/server.py` | MCP server for agent integration |
