@@ -8,6 +8,8 @@ __pycache__/
 
 # Storage
 *.db
+*.db.bak.*
+library.db.bak.*
 Downloads/
 .model_cache/
 

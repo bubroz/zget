@@ -188,6 +188,39 @@ def volume_mount_root(path: Path) -> Path | None:
     return None
 
 
+def try_sibling_volume_resolve(stored: Path) -> Path | None:
+    """
+    If ``stored`` is ``/Volumes/<old>/rest/...`` and ``<old>`` is not mounted,
+    look for the same ``rest/...`` under any other mounted volume.
+
+    Covers volume renames (e.g. old name → new disk label) without hardcoding
+    operator volume names in code.
+    """
+    parts = stored.expanduser().parts
+    if len(parts) < 4 or parts[1] != "Volumes":
+        return None
+    old_root = Path("/") / "Volumes" / parts[2]
+    if old_root.exists():
+        # Volume is mounted; missing file is not a rename problem
+        return None
+    rest = Path(*parts[3:])
+    volumes = Path("/Volumes")
+    if not volumes.is_dir():
+        return None
+    try:
+        for vol in sorted(volumes.iterdir()):
+            if not vol.is_dir() or vol.name.startswith("."):
+                continue
+            if vol.name == parts[2]:
+                continue
+            candidate = vol / rest
+            if candidate.exists():
+                return candidate
+    except OSError:
+        return None
+    return None
+
+
 def assess_video(
     video: Video,
     *,
@@ -245,7 +278,23 @@ def assess_video(
             note="stale home prefix; file found under current ZGET_HOME",
         )
 
-    # Unmounted external volume → not a true orphan (media may still exist offline)
+    # Volume rename: /Volumes/old/rest → /Volumes/new/rest when old is unmounted
+    sibling = try_sibling_volume_resolve(stored)
+    if sibling is not None:
+        thumb_sib = (
+            try_sibling_volume_resolve(thumb_stored) if thumb_stored is not None else None
+        )
+        return PathAssessment(
+            video=video,
+            status=PathStatus.RELOCATABLE,
+            stored_path=stored,
+            resolved_path=sibling,
+            stored_thumbnail=thumb_stored,
+            resolved_thumbnail=thumb_sib or thumb_reloc or thumb_existing,
+            note="volume rename; same relative path on another mounted volume",
+        )
+
+    # Unmounted external volume, no sibling match → offline (do not purge)
     vol = volume_mount_root(stored)
     if vol is not None and not vol.exists():
         return PathAssessment(
@@ -313,6 +362,11 @@ def plan_rewrites(
             if reloc is not None:
                 new_local = str(reloc)
                 changed = True
+            else:
+                sib = try_sibling_volume_resolve(Path(v.local_path))
+                if sib is not None:
+                    new_local = str(sib)
+                    changed = True
 
         if v.thumbnail_path:
             _existing, reloc = resolve_under_homes(
@@ -321,6 +375,11 @@ def plan_rewrites(
             if reloc is not None:
                 new_thumb = str(reloc)
                 changed = True
+            else:
+                sib = try_sibling_volume_resolve(Path(v.thumbnail_path))
+                if sib is not None:
+                    new_thumb = str(sib)
+                    changed = True
 
         if changed:
             plans.append(

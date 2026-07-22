@@ -71,10 +71,25 @@ uv run zget --doctor --fix --purge-orphans
 | **healthy** | File exists at stored path under `ZGET_HOME` | No |
 | **relocatable** | Stale absolute home; file found under current `ZGET_HOME` | No — use `--fix` / `paths rewrite` |
 | **off-home** | File exists outside `ZGET_HOME` (pipeline `-o`) | No |
-| **offline volume** | Path under `/Volumes/X/...` and `X` is not mounted | **Never** until remount + re-check |
+| **offline volume** | Path under `/Volumes/X/...`, `X` unmounted, and no same relative path on another mounted volume | Remount **or** rename-rewrite; do not purge blindly |
 | **orphan** | File missing and (if volume path) the volume root is present | Only with explicit `--purge-orphans` |
 
-After moving the library, always run `paths rewrite` (or `doctor --fix`) before trusting orphan counts.
+### Volume renames (not “remount the old name”)
+
+If the disk label changed (e.g. media still at  
+`/Volumes/NewName/candidate_research/...` but DB still says  
+`/Volumes/OldName/candidate_research/...`), zget treats matching relative paths
+on **other mounted volumes** as **relocatable**. Run:
+
+```bash
+uv run zget paths rewrite --dry-run
+uv run zget paths rewrite   # or: zget --doctor --fix
+```
+
+Do not hunt for the old volume name if the data already lives on the current volume.
+
+After moving the library home or renaming a volume, always run `paths rewrite`
+(or `doctor --fix`) before trusting orphan counts.
 
 ## Agent / skill contract
 

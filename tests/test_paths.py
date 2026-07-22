@@ -147,11 +147,9 @@ def test_doctor_does_not_treat_off_home_as_orphan(tmp_path: Path):
 
 def test_offline_volume_not_orphan(monkeypatch, tmp_path: Path):
     """Paths under a missing /Volumes/name are offline, not orphans."""
-    from zget.library import paths as paths_mod
-
     home = tmp_path / "zget"
     home.mkdir()
-    # Fake a volume path that isn't mounted
+    # Fake a volume path that isn't mounted and has no sibling match
     stored = Path("/Volumes/DoesNotExist_zget_test/media/clip.mp4")
     assert not Path("/Volumes/DoesNotExist_zget_test").exists()
 
@@ -162,3 +160,35 @@ def test_offline_volume_not_orphan(monkeypatch, tmp_path: Path):
     )
     assert a.status == PathStatus.OFFLINE_VOLUME
     assert "not mounted" in a.note
+
+
+def test_sibling_volume_resolve(tmp_path: Path, monkeypatch):
+    """Unmounted /Volumes/old/rest resolves to /Volumes/new/rest when present."""
+    from zget.library import paths as paths_mod
+
+    fake_volumes = tmp_path / "Volumes"
+    old = fake_volumes / "oldlabel"
+    new = fake_volumes / "newlabel"
+    rest = Path("candidate_research/2026_midterms/media/x.mp4")
+    (new / rest).parent.mkdir(parents=True)
+    (new / rest).write_bytes(b"ok")
+    # old volume not created → unmounted
+
+    def fake_sibling(stored: Path):
+        parts = stored.parts
+        if len(parts) < 4 or parts[1] != "Volumes":
+            return None
+        rest_p = Path(*parts[3:])
+        cand = new / rest_p
+        return cand if cand.exists() else None
+
+    monkeypatch.setattr(paths_mod, "try_sibling_volume_resolve", fake_sibling)
+    home = tmp_path / "zget"
+    home.mkdir()
+    a = assess_video(
+        _video(id=1, local_path=str(Path("/Volumes/oldlabel") / rest)),
+        current_home=home,
+        legacy_homes=[],
+    )
+    assert a.status == PathStatus.RELOCATABLE
+    assert a.resolved_path == new / rest
