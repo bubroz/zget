@@ -143,3 +143,22 @@ def test_doctor_does_not_treat_off_home_as_orphan(tmp_path: Path):
     )
     assert len(report.orphans) == 0
     assert len(report.off_home) == 1
+
+
+def test_offline_volume_not_orphan(monkeypatch, tmp_path: Path):
+    """Paths under a missing /Volumes/name are offline, not orphans."""
+    from zget.library import paths as paths_mod
+
+    home = tmp_path / "zget"
+    home.mkdir()
+    # Fake a volume path that isn't mounted
+    stored = Path("/Volumes/DoesNotExist_zget_test/media/clip.mp4")
+    assert not Path("/Volumes/DoesNotExist_zget_test").exists()
+
+    a = assess_video(
+        _video(id=1, local_path=str(stored)),
+        current_home=home,
+        legacy_homes=[],
+    )
+    assert a.status == PathStatus.OFFLINE_VOLUME
+    assert "not mounted" in a.note

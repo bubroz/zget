@@ -34,7 +34,8 @@ class PathStatus(str, Enum):
     HEALTHY = "healthy"  # stored path exists
     RELOCATABLE = "relocatable"  # missing at stored path, found under current home
     OFF_HOME = "off_home"  # exists outside ZGET_HOME (pipeline -o); not an orphan
-    ORPHAN = "orphan"  # no file found
+    OFFLINE_VOLUME = "offline_volume"  # path is under /Volumes/X and X is not mounted
+    ORPHAN = "orphan"  # no file found (and volume root is present if applicable)
     EMPTY = "empty"  # no local_path set
 
 
@@ -79,6 +80,10 @@ class LibraryPathReport:
     @property
     def orphans(self) -> list[PathAssessment]:
         return [a for a in self.assessments if a.status == PathStatus.ORPHAN]
+
+    @property
+    def offline_volume(self) -> list[PathAssessment]:
+        return [a for a in self.assessments if a.status == PathStatus.OFFLINE_VOLUME]
 
     @property
     def empty(self) -> list[PathAssessment]:
@@ -171,6 +176,18 @@ def is_under_home(path: Path, home: Path) -> bool:
             return False
 
 
+def volume_mount_root(path: Path) -> Path | None:
+    """
+    If path is under /Volumes/<name>/..., return /Volumes/<name>.
+    Otherwise None (not a volume path).
+    """
+    parts = path.expanduser().parts
+    # ('/', 'Volumes', 'waypoint', ...)
+    if len(parts) >= 3 and parts[1] == "Volumes":
+        return Path("/") / "Volumes" / parts[2]
+    return None
+
+
 def assess_video(
     video: Video,
     *,
@@ -226,6 +243,19 @@ def assess_video(
             stored_thumbnail=thumb_stored,
             resolved_thumbnail=thumb_reloc if thumb_reloc else thumb_existing,
             note="stale home prefix; file found under current ZGET_HOME",
+        )
+
+    # Unmounted external volume → not a true orphan (media may still exist offline)
+    vol = volume_mount_root(stored)
+    if vol is not None and not vol.exists():
+        return PathAssessment(
+            video=video,
+            status=PathStatus.OFFLINE_VOLUME,
+            stored_path=stored,
+            resolved_path=None,
+            stored_thumbnail=thumb_stored,
+            resolved_thumbnail=None,
+            note=f"volume not mounted: {vol}",
         )
 
     return PathAssessment(

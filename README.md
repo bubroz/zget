@@ -108,11 +108,16 @@ To access your library from your phone (e.g. while away from home), use [Tailsca
 
 ### Core
 
-- **Multi-Platform Downloads**: YouTube, Instagram, TikTok, Reddit, Twitch, X, and 600+ sites via yt-dlp
+- **Multi-Platform Downloads**: YouTube, Instagram, TikTok, Reddit, Twitch, X, C-SPAN, and 600+ sites via yt-dlp
+- **C-SPAN program pages**: `c-span.org/program/.../{id}` resolved to public HLS when needed
 - **Full-Text Search**: Find videos by title, uploader, or description (SQLite FTS5)
 - **Metadata Preservation**: Original titles, upload dates, view counts, descriptions
 - **H.264 Transcoding**: Conversion for iOS/Safari compatibility (when enabled in settings)
 - **Duplicate Detection**: By URL and file hash
+- **Path migration**: `zget paths rewrite` / `doctor --fix` after moving `ZGET_HOME`
+- **Agent handoff**: MCP tools + local path resolution for downstream tools (e.g. transcription)
+
+See **[docs/INTEGRATION.md](docs/INTEGRATION.md)** for librarian / Chimera / agent contracts.
 
 ### Media Server Integration (Plex / Jellyfin)
 

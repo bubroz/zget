@@ -853,13 +853,15 @@ def _print_path_report(report, *, verbose: bool) -> None:
     from zget.library.paths import PathStatus
 
     console.print(
-        f"\n  Healthy:      [green]{len(report.healthy)}[/green]\n"
-        f"  Relocatable:  [yellow]{len(report.relocatable)}[/yellow]  "
+        f"\n  Healthy:         [green]{len(report.healthy)}[/green]\n"
+        f"  Relocatable:     [yellow]{len(report.relocatable)}[/yellow]  "
         f"[dim](stale home; file found under ZGET_HOME)[/dim]\n"
-        f"  Off-home:     [cyan]{len(report.off_home)}[/cyan]  "
+        f"  Off-home:        [cyan]{len(report.off_home)}[/cyan]  "
         f"[dim](exists outside ZGET_HOME; not orphans)[/dim]\n"
-        f"  Orphans:      [red]{len(report.orphans)}[/red]\n"
-        f"  Empty path:   {len(report.empty)}\n"
+        f"  Offline volume:  [magenta]{len(report.offline_volume)}[/magenta]  "
+        f"[dim](/Volumes/… not mounted; do not purge)[/dim]\n"
+        f"  Orphans:         [red]{len(report.orphans)}[/red]\n"
+        f"  Empty path:      {len(report.empty)}\n"
     )
     if not verbose:
         return
@@ -923,6 +925,7 @@ def handle_doctor(args):
     relocatable = report.relocatable
     orphans = report.orphans
     off_home = report.off_home
+    offline = report.offline_volume
     healthy = len(report.healthy)
     orphan_size = sum(a.video.file_size_bytes or 0 for a in orphans)
 
@@ -939,6 +942,11 @@ def handle_doctor(args):
             elif a.status == PathStatus.OFF_HOME:
                 console.print(
                     f"  [cyan]◦[/cyan] {a.video.id}: {title} [dim](off-home)[/dim]"
+                )
+            elif a.status == PathStatus.OFFLINE_VOLUME:
+                console.print(
+                    f"  [magenta]∅[/magenta] {a.video.id}: {title} "
+                    f"[dim](offline volume)[/dim]"
                 )
             elif a.status == PathStatus.ORPHAN:
                 console.print(
@@ -961,6 +969,11 @@ def handle_doctor(args):
         console.print(
             f"[cyan]ℹ {len(off_home)} off-home path(s)[/cyan] "
             f"— file exists outside ZGET_HOME (pipeline outputs; not orphans)"
+        )
+    if offline:
+        console.print(
+            f"[magenta]ℹ {len(offline)} offline-volume path(s)[/magenta] "
+            f"— under /Volumes/… that is not mounted (do not purge; remount and re-check)"
         )
     if orphans:
         size_str = _format_size(orphan_size)
@@ -1033,12 +1046,14 @@ def handle_doctor(args):
 
     console.print(
         Panel(
-            f"  Healthy:      [green]{healthy}[/green]\n"
-            f"  Relocatable:  [yellow]{len(relocatable)}[/yellow]\n"
-            f"  Off-home:     [cyan]{len(off_home)}[/cyan]\n"
-            f"  Orphans:      "
-            f"[{'red' if orphans else 'green'}]{len(orphans)}[/{'red' if orphans else 'green'}]\n"
-            f"  Trash:        "
+            f"  Healthy:         [green]{healthy}[/green]\n"
+            f"  Relocatable:     [yellow]{len(relocatable)}[/yellow]\n"
+            f"  Off-home:        [cyan]{len(off_home)}[/cyan]\n"
+            f"  Offline volume:  [magenta]{len(offline)}[/magenta]\n"
+            f"  Orphans:         "
+            f"[{'red' if orphans else 'green'}]{len(orphans)}"
+            f"[/{'red' if orphans else 'green'}]\n"
+            f"  Trash:           "
             f"[{'green' if TRASH_AVAILABLE else 'yellow'}]"
             f"{'Yes' if TRASH_AVAILABLE else 'No'}"
             f"[/{'green' if TRASH_AVAILABLE else 'yellow'}]",
