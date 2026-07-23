@@ -218,11 +218,23 @@ async def ingest_video(
         # 11. Export JSON
         export_video_json(video, EXPORTS_DIR)
 
-        # 12. PLEX INTEGRATION: Generate NFO and Local Thumbnail
+        # 12. Sidecars: NFO (Plex) + librarian.json (provenance; core also writes)
         # We save these directly next to the video file for media server discovery
         try:
+            from ..metadata.librarian_json import generate_librarian_json_from_info
+
             nfo_path = file_path.with_suffix(".nfo")
             generate_nfo(video, nfo_path)
+
+            side_info = dict(info)
+            side_info["title"] = video.title
+            side_info["uploader"] = video.uploader
+            side_info["_zget_platform"] = platform
+            if video.upload_date:
+                side_info["upload_date"] = video.upload_date.strftime("%Y%m%d")
+            generate_librarian_json_from_info(
+                file_path, side_info, sha256=file_hash
+            )
 
             # Copy thumbnail to video directory as well for Plex/Jellyfin
             if thumbnail_path and thumbnail_path.exists():
@@ -230,7 +242,7 @@ async def ingest_video(
                 if not local_thumb.exists():
                     shutil.copy2(thumbnail_path, local_thumb)
         except Exception as e:
-            # Don't fail the whole ingest if NFO generation fails
+            # Don't fail the whole ingest if sidecar generation fails
             print(f"Warning: Failed to generate sidecar metadata: {e}")
 
         return video

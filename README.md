@@ -79,6 +79,15 @@ uv run zget config set flat true
 
 - `c-span.org/video/?...` via yt-dlp
 - `c-span.org/program/.../{id}` via public HLS + Referer (`src/zget/platforms/cspan.py`)
+- `c-span.org/event/.../{id}` via C-SPAN API → child programs (multi-segment events download each)
+- If `/api/events/…` is WAF-blocked: open c-span.org in a browser, then `--cookies-from chrome`
+
+### Sidecars
+
+Each successful download writes:
+
+- `{stem}.librarian.json` — capture provenance (url, sha256, duration, C-SPAN ids)
+- `{stem}.nfo` — Plex/Jellyfin (CLI and MCP ingest)
 
 ### Path health
 
@@ -127,14 +136,15 @@ Full contract for other repos: [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## Platforms
 
-Verified: YouTube, Instagram, X, TikTok, Reddit, Twitch, C-SPAN (including program pages). Many more via yt-dlp.
+Verified: YouTube, Instagram, X, TikTok, Reddit, Twitch, C-SPAN (program + event pages). Many more via yt-dlp.
 
 ## Layout
 
 ```text
 src/zget/
   core.py           # yt-dlp download / extract
-  platforms/        # adapters (C-SPAN program HLS)
+  platforms/        # adapters (C-SPAN program/event HLS)
+  metadata/         # .nfo + .librarian.json sidecars
   library/          # ingest, paths, thumbnails
   cli.py            # CLI
   mcp/              # MCP (stdio)

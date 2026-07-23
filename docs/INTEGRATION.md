@@ -27,16 +27,33 @@ uv run zget info "<URL>" --json --compact
 uv run zget list-channel "<channel-url>" --since 2020-01-01 --jsonl
 ```
 
+### Sidecars (every successful download)
+
+| File | Role |
+|------|------|
+| `{stem}.nfo` | Plex/Jellyfin + source URL (`uniqueid type=zget`) |
+| `{stem}.librarian.json` | Capture provenance (url, title, platform, duration, sha256, dates, C-SPAN program/event ids) |
+
+`.librarian.json` is written by **core.download** (CLI, MCP ingest, multi-program `/event/` expands). Optional extras (e.g. `person_id`) may be merged by callers after download.
+
 ## C-SPAN
 
 | URL | Support |
 |-----|---------|
 | `c-span.org/video/?…` | yt-dlp |
 | `c-span.org/program/.../{id}` | zget HLS resolve + Referer |
+| `c-span.org/event/.../{id}` | API → child programs → HLS (speech + presser each download) |
+
+Event pages are containers. Public VOD is on **program** ids (not `event/event.N.m3u8`).
+Multi-segment events expand to every child program. If AWS WAF blocks
+`/api/events/…`, open c-span.org in a browser once and retry with
+`--cookies-from chrome` (needs `aws-waf-token`).
 
 ```bash
 uv run zget info 'https://www.c-span.org/program/.../NNNNN'
 uv run zget 'https://www.c-span.org/program/.../NNNNN' --quiet
+uv run zget 'https://www.c-span.org/event/.../NNNNN' --quiet
+uv run zget 'https://www.c-span.org/event/.../NNNNN' --cookies-from chrome -o /path/to/dir --flat
 ```
 
 ## Path health

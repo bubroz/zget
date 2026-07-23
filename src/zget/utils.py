@@ -16,7 +16,7 @@ def get_version() -> str:
 
         return version("zget")
     except Exception:
-        return "0.4.0"
+        return "0.6.0"
 
 
 def sanitize_filename(name: str, max_length: int = 100) -> str:

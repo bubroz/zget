@@ -29,8 +29,10 @@ zget is **agentic media capture**: CLI + MCP over yt-dlp. No web UI. Downstream 
 
 | Path | Role |
 |------|------|
-| `src/zget/core.py` | download / extract_info |
-| `src/zget/platforms/cspan.py` | C-SPAN `/program/` HLS |
+| `src/zget/core.py` | download / extract_info (writes `.librarian.json`) |
+| `src/zget/platforms/cspan.py` | C-SPAN `/program/` + `/event/` HLS |
+| `src/zget/metadata/librarian_json.py` | provenance sidecar |
+| `src/zget/metadata/nfo.py` | Plex/Jellyfin `.nfo` |
 | `src/zget/library/paths.py` | path health / rewrite |
 | `src/zget/library/ingest.py` | ingest |
 | `src/zget/cli.py` | CLI |
@@ -55,4 +57,5 @@ uv run pytest
 - Home: `ZGET_HOME` → config `zget_home` → `~/Downloads/zget`
 - No public commits with operator volume names or private corpus paths
 - Path rewrite before orphan purge
-- C-SPAN program pages are supported in-tree
+- C-SPAN `/program/` and `/event/` supported in-tree (events expand to child programs)
+- Every successful download writes `{stem}.librarian.json` (+ CLI/MCP also `.nfo`)

@@ -20,58 +20,40 @@ from .config import (
 )
 from .platforms.cspan import (
     cspan_http_headers,
-    is_cspan_program_url,
+    is_cspan_hls_url,
     merge_cspan_meta,
-    prepare_cspan_url,
+    prepare_cspan_downloads,
 )
 from .types import ProgressDict, YtdlpInfo
 
 
-def download(
+def _cspan_outtmpl(output_dir: Path, cspan_meta: dict) -> str:
+    """Stable filename for C-SPAN HLS (m3u8 extracts often lack title/uploader)."""
+    raw_title = cspan_meta.get("title") or f"program_{cspan_meta.get('program_id')}"
+    safe_title = "".join(
+        ch if (ch.isalnum() or ch in " -_.") else "_" for ch in raw_title
+    ).strip()[:100]
+    date_prefix = cspan_meta.get("upload_date") or "NA"
+    return str(output_dir / f"{date_prefix}_C-SPAN_{safe_title}.%(ext)s")
+
+
+def _download_one(
     url: str,
-    output_dir: str | Path | None = None,
-    format_id: str | None = None,
-    audio_only: bool = False,
-    audio_format: str | None = None,  # "mp3", "m4a", "opus", etc. for audio_only
-    max_quality: str = "best",
-    cookies_from: str | None = None,
-    cookies_file: str | Path | None = None,
-    progress_callback: Callable[[ProgressDict], None] | None = None,
-    quiet: bool = False,
+    *,
+    platform: str,
+    original_url: str,
+    output_dir: Path,
+    cspan_meta: dict | None,
+    format_id: str | None,
+    audio_only: bool,
+    audio_format: str | None,
+    max_quality: str,
+    cookies_from: str | None,
+    cookies_file: str | Path | None,
+    progress_callback: Callable[[ProgressDict], None] | None,
+    quiet: bool,
 ) -> YtdlpInfo:
-    """
-    Download video/audio from URL.
-
-    Args:
-        url: Video URL (YouTube, Instagram, TikTok, Twitter, etc.)
-        output_dir: Output directory (default: auto-detect from platform)
-        format_id: Specific format ID to download (from list_formats)
-        audio_only: Extract audio only
-        audio_format: Desired audio codec when audio_only (e.g. "mp3", "m4a", "opus"). Defaults to mp3.
-        max_quality: Maximum video height (e.g., "1080", "720") or "best"
-        cookies_from: Browser to extract cookies from ("chrome", "firefox", "safari")
-        cookies_file: Path to cookies.txt file
-        progress_callback: Callback for progress updates
-        quiet: Suppress yt-dlp output
-
-    Returns:
-        dict with full yt-dlp info_dict including downloaded file info
-    """
-    # Auto-detect platform and output directory (before C-SPAN program rewrite)
-    platform = detect_platform(url)
-    original_url = url
-    cspan_meta = None
-    if is_cspan_program_url(url):
-        url, cspan_meta = prepare_cspan_url(url)
-
-    if output_dir is None:
-        output_dir = get_video_output_dir(platform)
-    else:
-        output_dir = Path(output_dir)
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Build yt-dlp options
+    """Download a single URL (already C-SPAN-resolved if applicable)."""
     http_headers = {
         "User-Agent": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -91,12 +73,7 @@ def download(
 
     outtmpl = str(output_dir / get_filename_template())
     if cspan_meta:
-        # m3u8 extracts often lack useful title/uploader; pin a stable name
-        raw_title = cspan_meta.get("title") or f"program_{cspan_meta.get('program_id')}"
-        safe_title = "".join(
-            ch if (ch.isalnum() or ch in " -_.") else "_" for ch in raw_title
-        ).strip()[:100]
-        outtmpl = str(output_dir / f"NA_C-SPAN_{safe_title}.%(ext)s")
+        outtmpl = _cspan_outtmpl(output_dir, cspan_meta)
 
     opts = {
         "outtmpl": outtmpl,
@@ -211,7 +188,7 @@ def download(
 
         opts["progress_hooks"] = [progress_hook]
 
-    # Download (url may be a resolved m3u8 for C-SPAN /program/ pages)
+    # Download (url may be a resolved m3u8 for C-SPAN UVP pages)
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
         info = merge_cspan_meta(info, cspan_meta)
@@ -245,10 +222,125 @@ def download(
     info["_zget_platform"] = platform
     info["_zget_downloaded_at"] = datetime.now().isoformat()
     if cspan_meta:
-        info["webpage_url"] = original_url
+        # Prefer event page when present; else program page; else original request
+        info["webpage_url"] = (
+            cspan_meta.get("event_url")
+            or cspan_meta.get("program_url")
+            or original_url
+        )
         info["original_url"] = original_url
 
+    # Provenance sidecar next to media (CLI, MCP, event multi-program, raw API)
+    if downloaded_filepath:
+        media_path = Path(downloaded_filepath)
+        if media_path.exists():
+            try:
+                from .metadata.librarian_json import generate_librarian_json_from_info
+
+                file_hash = compute_file_hash(media_path)
+                info["_zget_file_hash_sha256"] = file_hash
+                side = generate_librarian_json_from_info(
+                    media_path, info, sha256=file_hash
+                )
+                info["_zget_librarian_json"] = str(side)
+            except Exception:
+                # Sidecar must never fail the download itself
+                pass
+
     return info
+
+
+def download(
+    url: str,
+    output_dir: str | Path | None = None,
+    format_id: str | None = None,
+    audio_only: bool = False,
+    audio_format: str | None = None,  # "mp3", "m4a", "opus", etc. for audio_only
+    max_quality: str = "best",
+    cookies_from: str | None = None,
+    cookies_file: str | Path | None = None,
+    progress_callback: Callable[[ProgressDict], None] | None = None,
+    quiet: bool = False,
+) -> YtdlpInfo:
+    """
+    Download video/audio from URL.
+
+    Args:
+        url: Video URL (YouTube, Instagram, TikTok, Twitter, etc.)
+        output_dir: Output directory (default: auto-detect from platform)
+        format_id: Specific format ID to download (from list_formats)
+        audio_only: Extract audio only
+        audio_format: Desired audio codec when audio_only (e.g. "mp3", "m4a", "opus"). Defaults to mp3.
+        max_quality: Maximum video height (e.g., "1080", "720") or "best"
+        cookies_from: Browser to extract cookies from ("chrome", "firefox", "safari")
+        cookies_file: Path to cookies.txt file
+        progress_callback: Callback for progress updates
+        quiet: Suppress yt-dlp output
+
+    Returns:
+        dict with full yt-dlp info_dict including downloaded file info.
+
+        C-SPAN ``/event/`` URLs expand to every child program (speech + presser).
+        The first program is the return value; additional programs are in
+        ``_zget_cspan_siblings`` (list of info dicts).
+    """
+    # Auto-detect platform and output directory (before C-SPAN UVP rewrite)
+    platform = detect_platform(url)
+    original_url = url
+
+    if output_dir is None:
+        output_dir = get_video_output_dir(platform)
+    else:
+        output_dir = Path(output_dir)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    cspan_jobs: list[tuple[str, dict]] = []
+    if is_cspan_hls_url(url):
+        cspan_jobs = prepare_cspan_downloads(url, cookies_from_browser=cookies_from)
+
+    if not cspan_jobs:
+        return _download_one(
+            url,
+            platform=platform,
+            original_url=original_url,
+            output_dir=output_dir,
+            cspan_meta=None,
+            format_id=format_id,
+            audio_only=audio_only,
+            audio_format=audio_format,
+            max_quality=max_quality,
+            cookies_from=cookies_from,
+            cookies_file=cookies_file,
+            progress_callback=progress_callback,
+            quiet=quiet,
+        )
+
+    results: list[YtdlpInfo] = []
+    for job_url, job_meta in cspan_jobs:
+        results.append(
+            _download_one(
+                job_url,
+                platform=platform,
+                original_url=original_url,
+                output_dir=output_dir,
+                cspan_meta=job_meta,
+                format_id=format_id,
+                audio_only=audio_only,
+                audio_format=audio_format,
+                max_quality=max_quality,
+                cookies_from=cookies_from,
+                cookies_file=cookies_file,
+                progress_callback=progress_callback,
+                quiet=quiet,
+            )
+        )
+
+    primary = results[0]
+    if len(results) > 1:
+        primary["_zget_cspan_siblings"] = results[1:]
+        primary["_zget_cspan_event_program_count"] = len(results)
+    return primary
 
 
 def extract_info(
@@ -270,8 +362,22 @@ def extract_info(
     platform = detect_platform(url)
     original_url = url
     cspan_meta = None
-    if is_cspan_program_url(url):
-        url, cspan_meta = prepare_cspan_url(url)
+    if is_cspan_hls_url(url):
+        jobs = prepare_cspan_downloads(url, cookies_from_browser=cookies_from)
+        if jobs:
+            url, cspan_meta = jobs[0]
+            # Multi-program events: surface sibling titles without downloading
+            if len(jobs) > 1:
+                cspan_meta = dict(cspan_meta)
+                cspan_meta["_event_program_count"] = len(jobs)
+                cspan_meta["_event_programs"] = [
+                    {
+                        "program_id": m.get("program_id"),
+                        "title": m.get("title"),
+                        "m3u8_url": m.get("m3u8_url"),
+                    }
+                    for _, m in jobs
+                ]
 
     opts: dict = {
         "quiet": True,
@@ -301,8 +407,15 @@ def extract_info(
     info = merge_cspan_meta(info, cspan_meta)
     info["_zget_platform"] = platform
     if cspan_meta:
-        info["webpage_url"] = original_url
+        info["webpage_url"] = (
+            cspan_meta.get("event_url")
+            or cspan_meta.get("program_url")
+            or original_url
+        )
         info["original_url"] = original_url
+        if cspan_meta.get("_event_programs"):
+            info["_zget_cspan_event_programs"] = cspan_meta["_event_programs"]
+            info["_zget_cspan_event_program_count"] = cspan_meta["_event_program_count"]
     return info
 
 

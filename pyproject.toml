@@ -1,6 +1,6 @@
 [project]
 name = "zget"
-version = "0.5.0"
+version = "0.6.0"
 description = "Agentic local media capture: yt-dlp library, CLI, and MCP path handoff"
 authors = [{ name = "Zac Forristall" }]
 license = { text = "MIT" }

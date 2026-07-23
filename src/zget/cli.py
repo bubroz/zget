@@ -521,90 +521,113 @@ def handle_download(args):
                 quiet=args.quiet,
             )
 
-        # Get filepath and compute hash
-        filepath = Path(result.get("_zget_filepath", ""))
-        if filepath.exists():
-            file_hash = compute_file_hash(filepath)
-            file_size = filepath.stat().st_size
-        else:
-            file_hash = None
-            file_size = None
+        # C-SPAN events may expand to multiple programs (speech + presser)
+        all_results = [result] + list(result.get("_zget_cspan_siblings") or [])
 
-        # Cache thumbnail from metadata
         from zget.config import THUMBNAILS_DIR
         from zget.library.thumbnails import cache_thumbnail_sync
 
-        thumbnail_path = cache_thumbnail_sync(result, THUMBNAILS_DIR)
-
-        # Store in database
         store = VideoStore(DB_PATH)
 
-        video = Video(
-            url=args.url,
-            platform=platform,
-            video_id=result.get("id", ""),
-            title=result.get("title", "Untitled"),
-            description=result.get("description"),
-            uploader=(
-                "C-SPAN"
-                if platform == "c-span"
-                and (
-                    not result.get("uploader")
-                    or result.get("uploader", "").lower() in ("unknown", "null", "none")
-                )
-                else result.get("uploader", "unknown")
-            ),
-            uploader_id=result.get("uploader_id"),
-            upload_date=parse_upload_date(result.get("upload_date")),
-            duration_seconds=result.get("duration"),
-            view_count=result.get("view_count"),
-            like_count=result.get("like_count"),
-            resolution=f"{result.get('width', '?')}x{result.get('height', '?')}",
-            fps=result.get("fps"),
-            codec=result.get("vcodec"),
-            file_size_bytes=file_size,
-            file_hash_sha256=file_hash,
-            local_path=str(filepath) if filepath.exists() else None,
-            thumbnail_path=str(thumbnail_path) if thumbnail_path else None,
-            downloaded_at=datetime.now(),
-            raw_metadata=result,
-        )
-
-        try:
-            video.id = store.insert_video(video)
-            if not args.quiet:
-                console.print(f"[green]✓[/green] Added to library: {video.title}")
-
-            # PLEX INTEGRATION: Generate NFO sidecar and local thumbnail
+        for item in all_results:
+            # Get filepath and compute hash
+            filepath = Path(item.get("_zget_filepath", ""))
             if filepath.exists():
-                try:
-                    import shutil
+                file_hash = compute_file_hash(filepath)
+                file_size = filepath.stat().st_size
+            else:
+                file_hash = None
+                file_size = None
 
-                    from zget.config import THUMBNAILS_DIR
-                    from zget.metadata.nfo import generate_nfo
+            thumbnail_path = cache_thumbnail_sync(item, THUMBNAILS_DIR)
 
-                    # Generate NFO
-                    nfo_path = filepath.with_suffix(".nfo")
-                    generate_nfo(video, nfo_path)
+            video = Video(
+                url=item.get("original_url") or item.get("webpage_url") or args.url,
+                platform=platform,
+                video_id=item.get("id", ""),
+                title=item.get("title", "Untitled"),
+                description=item.get("description"),
+                uploader=(
+                    "C-SPAN"
+                    if platform == "c-span"
+                    and (
+                        not item.get("uploader")
+                        or item.get("uploader", "").lower() in ("unknown", "null", "none")
+                    )
+                    else item.get("uploader", "unknown")
+                ),
+                uploader_id=item.get("uploader_id"),
+                upload_date=parse_upload_date(item.get("upload_date")),
+                duration_seconds=item.get("duration"),
+                view_count=item.get("view_count"),
+                like_count=item.get("like_count"),
+                resolution=f"{item.get('width', '?')}x{item.get('height', '?')}",
+                fps=item.get("fps"),
+                codec=item.get("vcodec"),
+                file_size_bytes=file_size,
+                file_hash_sha256=file_hash,
+                local_path=str(filepath) if filepath.exists() else None,
+                thumbnail_path=str(thumbnail_path) if thumbnail_path else None,
+                downloaded_at=datetime.now(),
+                raw_metadata=item,
+            )
 
-                    # Copy thumbnail to video directory
-                    if video.thumbnail_path:
-                        thumb_src = Path(video.thumbnail_path)
-                        if thumb_src.exists():
-                            local_thumb = filepath.with_suffix(thumb_src.suffix)
-                            if not local_thumb.exists():
-                                shutil.copy2(thumb_src, local_thumb)
-                except Exception as nfo_error:
-                    if not args.quiet:
-                        console.print(f"[yellow]⚠[/yellow] NFO generation failed: {nfo_error}")
+            try:
+                video.id = store.insert_video(video)
+                if not args.quiet:
+                    console.print(f"[green]✓[/green] Added to library: {video.title}")
 
-        except Exception as e:
+                # Sidecars: NFO (Plex) + librarian.json (provenance; also written in core)
+                if filepath.exists():
+                    try:
+                        import shutil
+
+                        from zget.metadata.librarian_json import (
+                            generate_librarian_json_from_info,
+                        )
+                        from zget.metadata.nfo import generate_nfo
+
+                        # Generate NFO
+                        nfo_path = filepath.with_suffix(".nfo")
+                        generate_nfo(video, nfo_path)
+
+                        # Enrich / rewrite librarian.json with final DB-backed fields
+                        side_info = dict(item)
+                        side_info["title"] = video.title
+                        side_info["uploader"] = video.uploader
+                        side_info["_zget_platform"] = platform
+                        if video.upload_date:
+                            side_info["upload_date"] = video.upload_date.strftime(
+                                "%Y%m%d"
+                            )
+                        generate_librarian_json_from_info(
+                            filepath,
+                            side_info,
+                            sha256=file_hash,
+                        )
+
+                        # Copy thumbnail to video directory
+                        if video.thumbnail_path:
+                            thumb_src = Path(video.thumbnail_path)
+                            if thumb_src.exists():
+                                local_thumb = filepath.with_suffix(thumb_src.suffix)
+                                if not local_thumb.exists():
+                                    shutil.copy2(thumb_src, local_thumb)
+                    except Exception as nfo_error:
+                        if not args.quiet:
+                            console.print(
+                                f"[yellow]⚠[/yellow] Sidecar generation failed: {nfo_error}"
+                            )
+
+            except Exception as e:
+                if not args.quiet:
+                    console.print(
+                        f"[yellow]⚠[/yellow] Downloaded but not added to library: {e}"
+                    )
+
             if not args.quiet:
-                console.print(f"[yellow]⚠[/yellow] Downloaded but not added to library: {e}")
-
-        if not args.quiet:
-            console.print(f"[green]✓[/green] Downloaded: {result.get('title', 'video')}")
-            console.print(f"  → {filepath}")
+                console.print(f"[green]✓[/green] Downloaded: {item.get('title', 'video')}")
+                console.print(f"  → {filepath}")
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Download cancelled[/yellow]")
