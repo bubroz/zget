@@ -6,11 +6,13 @@ Pydantic models for type safety and validation.
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Video(BaseModel):
     """A downloaded video with all its metadata."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     # Database ID
     id: int | None = None
@@ -57,14 +59,11 @@ class Video(BaseModel):
     # Raw yt-dlp info_dict (stored as JSON in DB)
     raw_metadata: dict | None = None
 
-    class Config:
-        """Pydantic config."""
-
-        from_attributes = True
-
 
 class WatchedAccount(BaseModel):
     """An account being monitored for new content."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     # Database ID
     id: int | None = None
@@ -93,11 +92,6 @@ class WatchedAccount(BaseModel):
     # Timestamps
     created_at: datetime | None = None
 
-    class Config:
-        """Pydantic config."""
-
-        from_attributes = True
-
 
 class MonitorRun(BaseModel):
     """A single run of the account monitor."""
@@ -114,6 +108,8 @@ class MonitorRun(BaseModel):
 
 class DownloadTask(BaseModel):
     """A video download task in the queue."""
+
+    model_config = ConfigDict(from_attributes=True)
 
     id: int | None = None
     url: str
@@ -146,11 +142,6 @@ class DownloadTask(BaseModel):
     created_at: datetime | None = None
     started_at: datetime | None = None
     completed_at: datetime | None = None
-
-    class Config:
-        """Pydantic config."""
-
-        from_attributes = True
 
 
 class ExportedVideo(BaseModel):
