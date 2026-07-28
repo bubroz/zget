@@ -8,6 +8,7 @@ import hashlib
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 import yt_dlp
 
@@ -18,6 +19,7 @@ from .config import (
     get_filename_template,
     get_video_output_dir,
 )
+from .metadata.identity import is_raw_asset_url, publisher_from_url, resolve_title, title_from_url
 from .platforms.cspan import (
     cspan_http_headers,
     is_cspan_hls_url,
@@ -27,14 +29,31 @@ from .platforms.cspan import (
 from .types import ProgressDict, YtdlpInfo
 
 
+def _safe_filename_part(value: str) -> str:
+    return "".join(ch if (ch.isalnum() or ch in " -_.") else "_" for ch in value).strip()[:100]
+
+
 def _cspan_outtmpl(output_dir: Path, cspan_meta: dict) -> str:
     """Stable filename for C-SPAN HLS (m3u8 extracts often lack title/uploader)."""
     raw_title = cspan_meta.get("title") or f"program_{cspan_meta.get('program_id')}"
-    safe_title = "".join(
-        ch if (ch.isalnum() or ch in " -_.") else "_" for ch in raw_title
-    ).strip()[:100]
+    safe_title = _safe_filename_part(raw_title)
     date_prefix = cspan_meta.get("upload_date") or "NA"
     return str(output_dir / f"{date_prefix}_C-SPAN_{safe_title}.%(ext)s")
+
+
+def _identity_outtmpl(output_dir: Path, *, title: str, channel: str | None) -> str:
+    """Filename from an identity zget resolved rather than one yt-dlp guessed.
+
+    Mirrors the default template so captures stay sortable; ``%(upload_date)s``
+    still comes from the extractor. Without this, a capture from a raw asset URL
+    lands as ``NA_NA_index`` and has to be renamed by hand afterwards, which is
+    how a media file and its provenance sidecar drift apart.
+    """
+    return str(
+        output_dir
+        / f"%(upload_date)s_{_safe_filename_part(channel or 'NA')}"
+        f"_{_safe_filename_part(title)}.%(ext)s"
+    )
 
 
 def _download_one(
@@ -52,6 +71,9 @@ def _download_one(
     cookies_file: str | Path | None,
     progress_callback: Callable[[ProgressDict], None] | None,
     quiet: bool,
+    title: str | None = None,
+    source_url: str | None = None,
+    channel: str | None = None,
 ) -> YtdlpInfo:
     """Download a single URL (already C-SPAN-resolved if applicable)."""
     http_headers = {
@@ -74,6 +96,12 @@ def _download_one(
     outtmpl = str(output_dir / get_filename_template())
     if cspan_meta:
         outtmpl = _cspan_outtmpl(output_dir, cspan_meta)
+    elif title:
+        outtmpl = _identity_outtmpl(
+            output_dir,
+            title=title,
+            channel=channel or publisher_from_url(source_url or original_url or url),
+        )
 
     opts = {
         "outtmpl": outtmpl,
@@ -221,6 +249,27 @@ def _download_one(
     info["_zget_filepath"] = downloaded_filepath
     info["_zget_platform"] = platform
     info["_zget_downloaded_at"] = datetime.now().isoformat()
+
+    # Capture identity: never let a streaming filename stand in for a title,
+    # and never let a CDN asset URL stand in for a citable source.
+    page_url = source_url or (cspan_meta or {}).get("program_url") or original_url or url
+    resolved_title, title_source = resolve_title(
+        info.get("title"),
+        operator=title,
+        page_url=page_url,
+    )
+    if resolved_title:
+        info["title"] = resolved_title
+    info["_zget_title_source"] = (
+        (cspan_meta or {}).get("title_source", title_source) if cspan_meta else title_source
+    )
+    if source_url:
+        info["_zget_source_url"] = source_url
+        info["_zget_asset_url"] = url
+    if channel:
+        info["uploader"] = channel
+    elif not info.get("uploader"):
+        info["uploader"] = publisher_from_url(page_url) or info.get("uploader")
     if cspan_meta:
         # Prefer event page when present; else program page; else original request
         info["webpage_url"] = (
@@ -261,6 +310,9 @@ def download(
     cookies_file: str | Path | None = None,
     progress_callback: Callable[[ProgressDict], None] | None = None,
     quiet: bool = False,
+    title: str | None = None,
+    source_url: str | None = None,
+    channel: str | None = None,
 ) -> YtdlpInfo:
     """
     Download video/audio from URL.
@@ -276,6 +328,9 @@ def download(
         cookies_file: Path to cookies.txt file
         progress_callback: Callback for progress updates
         quiet: Suppress yt-dlp output
+        title: Source title, when the capture cannot report one (raw asset URLs)
+        source_url: Citable page the media belongs to, when ``url`` is an asset
+        channel: Publisher, when the capture reports no uploader
 
     Returns:
         dict with full yt-dlp info_dict including downloaded file info.
@@ -283,10 +338,28 @@ def download(
         C-SPAN ``/event/`` URLs expand to every child program (speech + presser).
         The first program is the return value; additional programs are in
         ``_zget_cspan_siblings`` (list of info dicts).
+
+    Raises:
+        ValueError: if ``url`` is a raw media asset with no recoverable identity
+            and no ``title`` was supplied. A capture named after its playlist
+            file cannot be cited, so it fails before the bytes are spent.
     """
     # Auto-detect platform and output directory (before C-SPAN UVP rewrite)
     platform = detect_platform(url)
     original_url = url
+
+    # An asset URL carries a stream filename, not a title. Refuse up front
+    # rather than write a capture called "index" and leave the identity to a
+    # later manual rename that the provenance sidecar never learns about.
+    if is_raw_asset_url(url) and not title:
+        title = title_from_url(source_url or "")
+        if not title:
+            raise ValueError(
+                f"{url} is a media asset, not a page: it can only be titled "
+                f"'{Path(urlparse(url).path).stem}'. Re-run with --title "
+                f"'<the publisher's headline>' and --source-url '<the article "
+                f"page>' so the capture is citable."
+            )
 
     if output_dir is None:
         output_dir = get_video_output_dir(platform)
@@ -314,6 +387,9 @@ def download(
             cookies_file=cookies_file,
             progress_callback=progress_callback,
             quiet=quiet,
+            title=title,
+            source_url=source_url,
+            channel=channel,
         )
 
     results: list[YtdlpInfo] = []
@@ -333,6 +409,9 @@ def download(
                 cookies_file=cookies_file,
                 progress_callback=progress_callback,
                 quiet=quiet,
+                title=title,
+                source_url=source_url,
+                channel=channel,
             )
         )
 
