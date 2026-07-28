@@ -32,6 +32,8 @@ from urllib.parse import unquote
 
 import httpx
 
+from ..metadata.identity import resolve_title
+
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -604,10 +606,17 @@ def _programs_from_event_html(
 
 
 def _resolve_to_meta(resolved: CspanProgramResolve) -> dict[str, Any]:
+    # The WAF can block both the API and the page, leaving no title at all.
+    # Without this the capture is named after its HLS stem
+    # (``program.674647.tsc``) and ships that as the source name. The program
+    # URL carries C-SPAN's own title slug, so derive from it and record that
+    # the title is derived rather than served.
+    title, title_source = resolve_title(resolved.title, page_url=resolved.page_url)
     meta: dict[str, Any] = {
         "program_id": resolved.program_id,
         "program_url": resolved.page_url,
-        "title": resolved.title,
+        "title": title,
+        "title_source": title_source,
         "m3u8_url": resolved.m3u8_url,
         "upload_date": resolved.upload_date,
         "_zget_cspan_program": True,

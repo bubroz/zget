@@ -194,8 +194,12 @@ def generate_librarian_json_from_info(
     for C-SPAN when present.
     """
     path = Path(media_path)
+    # An operator-supplied page URL outranks the asset that was downloaded: the
+    # sidecar's url is what a reader must be able to visit, and a CDN asset path
+    # is neither visitable nor durable.
     url = (
-        info.get("original_url")
+        info.get("_zget_source_url")
+        or info.get("original_url")
         or info.get("webpage_url")
         or info.get("url")
         or ""
@@ -229,6 +233,13 @@ def generate_librarian_json_from_info(
         cspan_extra["program_id"] = str(info.get("id"))
     if info.get("_zget_cspan_m3u8"):
         cspan_extra["m3u8_url"] = info.get("_zget_cspan_m3u8")
+
+    # How the title was obtained: publisher | url-slug | operator | unresolved.
+    # A derived title must be distinguishable from one the publisher served.
+    if info.get("_zget_title_source"):
+        cspan_extra["title_source"] = info["_zget_title_source"]
+    if info.get("_zget_asset_url"):
+        cspan_extra["asset_url"] = info["_zget_asset_url"]
 
     merged_extra = {**cspan_extra, **(extra or {})}
 

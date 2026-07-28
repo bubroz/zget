@@ -101,6 +101,20 @@ def main():
         help="Use flat output structure (no platform subdirectories)",
     )
 
+    # Capture identity: required when the URL is a media asset, not a page
+    parser.add_argument(
+        "--title",
+        help="Source title, for captures that cannot report one (raw .m3u8 asset URLs)",
+    )
+    parser.add_argument(
+        "--source-url",
+        help="Citable page the media belongs to, when the download URL is a CDN asset",
+    )
+    parser.add_argument(
+        "--channel",
+        help="Publisher, for captures that report no uploader",
+    )
+
     # Smokescreen Health Verification
     parser.add_argument(
         "--health",
@@ -519,6 +533,9 @@ def handle_download(args):
                 cookies_file=args.cookies,
                 progress_callback=None if args.quiet else progress_callback,
                 quiet=args.quiet,
+                title=getattr(args, "title", None),
+                source_url=getattr(args, "source_url", None),
+                channel=getattr(args, "channel", None),
             )
 
         # C-SPAN events may expand to multiple programs (speech + presser)
